@@ -4,3 +4,14 @@
 *.jar
 *.war
 *.ear
+
+# idea
+.idea/*
+*.iml
+
+logs/**
+*.ppt
+*~*.docx
+output/**
+
+target/*
