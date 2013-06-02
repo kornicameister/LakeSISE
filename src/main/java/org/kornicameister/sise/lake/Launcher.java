@@ -1,11 +1,13 @@
 package org.kornicameister.sise.lake;
 
-import CLIPSJNI.Environment;
+import org.kornicameister.sise.lake.clisp.ClispEnvironment;
 
 public class Launcher {
 
     public static void main(String[] args) {
-        Environment clisp = new Environment();
-        clisp.run();
+        ClispEnvironment clispEnvironment = ClispEnvironment.newInstance(args[0]);
+        if (clispEnvironment.isBootstrapped()) {
+            clispEnvironment.mainLoop();
+        }
     }
 }
