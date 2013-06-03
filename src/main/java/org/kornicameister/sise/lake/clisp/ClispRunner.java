@@ -115,8 +115,11 @@ class ClispRunner implements Runnable {
                 LOGGER.info(String
                         .format("doTypesLogic(type -> %s provided %d facts", clispTypeInstance.getName(), outputs
                                 .size()));
-                for (String fact : outputs) {
-                    pair.getEnvironment().assertString(fact);
+                if (outputs.size() > 0) {
+                    for (String fact : outputs) {
+                        pair.getEnvironment().assertString(fact);
+                    }
+                    pair.getEnvironment().run();
                 }
             } else {
                 LOGGER.warn(String
