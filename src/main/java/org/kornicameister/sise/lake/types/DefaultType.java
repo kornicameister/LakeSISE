@@ -1,5 +1,8 @@
 package org.kornicameister.sise.lake.types;
 
+import com.google.common.base.Objects;
+import org.kornicameister.sise.lake.io.DataStructure;
+
 import java.util.Properties;
 
 /**
@@ -15,27 +18,33 @@ import java.util.Properties;
 
 public abstract class DefaultType implements ClispType {
     private static Integer ID = 0;
-    private Integer id;
+    protected DataStructure dataStructure;
+    private   Integer       id;
+    private   String        outputFactName;
 
-    public DefaultType(final Properties properties) {
+    protected DefaultType(final Properties properties) {
         this.id = DefaultType.ID++;
-        this.resolveProperties(properties);
+        this.outputFactName = this.resolveProperties(properties);
     }
 
-    protected abstract void resolveProperties(final Properties properties);
+    /**
+     * This method resolves properties for actor particular implementation.
+     * It must return one variable which is output fact name by which {@link org.kornicameister.sise.lake.clisp.ClispRunner}
+     * is able to extract output fact for particular type
+     *
+     * @param properties
+     *
+     * @return outputFactName
+     */
+    protected abstract String resolveProperties(final Properties properties);
 
     public Integer getId() {
-        return id;
+        return this.id;
     }
 
     @Override
-    public String toClisp() {
-        return null;
-    }
-
-    @Override
-    public void fromClisp(final String inputData) {
-
+    public String getOutputFactName() {
+        return this.outputFactName;
     }
 
     @Override
@@ -44,7 +53,32 @@ public abstract class DefaultType implements ClispType {
     }
 
     @Override
-    public void doLogic() {
-        // no impl
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + outputFactName.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DefaultType)) {
+            return false;
+        }
+
+        DefaultType that = (DefaultType) o;
+
+        return id.equals(that.id) && outputFactName.equals(that.outputFactName);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("dataStructure", dataStructure)
+                .add("id", id)
+                .add("outputFactName", outputFactName)
+                .toString();
     }
 }

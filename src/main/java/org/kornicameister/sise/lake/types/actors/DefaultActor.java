@@ -14,25 +14,13 @@ import java.util.Properties;
  * @version 0.0.1
  * @since 0.0.1
  */
-
-
 public abstract class DefaultActor extends DefaultType {
-    private String type;
     private Double moveRange;
     private Integer age;
-    private Point location;
+    private Point  location;
 
     public DefaultActor(final Properties properties) {
         super(properties);
-    }
-
-    @Override
-    public String getName() {
-        return String.format("%s->%s", super.getName(), DefaultActor.class.getSimpleName());
-    }
-
-    public String getType() {
-        return type;
     }
 
     public Double getMoveRange() {
@@ -41,5 +29,10 @@ public abstract class DefaultActor extends DefaultType {
 
     public Point getLocation() {
         return location;
+    }
+
+    @Override
+    public String getName() {
+        return String.format("%s->%s", super.getName(), DefaultActor.class.getSimpleName());
     }
 }

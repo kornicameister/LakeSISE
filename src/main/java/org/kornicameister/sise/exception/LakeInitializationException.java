@@ -7,6 +7,11 @@ package org.kornicameister.sise.exception;
  */
 
 public class LakeInitializationException extends RuntimeException {
+
+    public LakeInitializationException(final String msg) {
+        super(msg);
+    }
+
     public LakeInitializationException(final Exception multipleE) {
         super(String.format("Exception of type -> %s interrupted in program loading", multipleE.getClass()
                 .getSimpleName()), multipleE);

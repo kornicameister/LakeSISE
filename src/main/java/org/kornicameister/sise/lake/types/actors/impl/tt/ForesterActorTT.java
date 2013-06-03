@@ -1,7 +1,9 @@
 package org.kornicameister.sise.lake.types.actors.impl.tt;
 
-import org.kornicameister.sise.lake.types.actors.impl.ForesterActor;
+import org.kornicameister.sise.lake.io.DataStructure;
+import org.kornicameister.sise.lake.types.actors.DefaultActor;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -10,15 +12,30 @@ import java.util.Properties;
  * @since 0.0.1
  */
 
-public class ForesterActorTT extends ForesterActor {
+public class ForesterActorTT extends DefaultActor {
 
     public ForesterActorTT(final Properties properties) {
         super(properties);
     }
 
     @Override
-    protected void resolveProperties(final Properties properties) {
+    protected String resolveProperties(final Properties properties) {
+        return null;
+    }
 
+    @Override
+    public String getOutputFactName() {
+        return null;
+    }
+
+    @Override
+    public void setInput(final DataStructure input) {
+
+    }
+
+    @Override
+    public List<String> getOutput() {
+        return null;
     }
 
     @Override

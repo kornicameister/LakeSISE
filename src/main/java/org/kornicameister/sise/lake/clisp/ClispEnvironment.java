@@ -11,9 +11,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * @author kornicameister
@@ -24,14 +24,14 @@ import java.util.Set;
 public class ClispEnvironment {
     private static final Logger LOGGER = Logger.getLogger(ClispEnvironment.class);
     private static final String LAKE_TYPES = "lake.types";
-    private static ClispEnvironment ourInstance;
-    private final String propertiesPath;
-    private Set<ClispTypeEnvironmentPair> typeEnvironmentPairMap;
-    private boolean bootstrapped;
+    private static ClispEnvironment               ourInstance;
+    private final  String                         propertiesPath;
+    private        List<ClispTypeEnvironmentPair> typeEnvironmentPairMap;
+    private        boolean                        bootstrapped;
 
     private ClispEnvironment(final String propertiesPath) {
         this.propertiesPath = propertiesPath;
-        this.typeEnvironmentPairMap = new HashSet<>();
+        this.typeEnvironmentPairMap = new ArrayList<>();
         this.bootstrapped = this.bootstrap();
     }
 
