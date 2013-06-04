@@ -24,15 +24,24 @@ import java.util.Properties;
 public class ClispEnvironment {
     private static final Logger LOGGER = Logger.getLogger(ClispEnvironment.class);
     private static final String LAKE_TYPES = "lake.types";
-    private static ClispEnvironment               ourInstance;
-    private final  String                         propertiesPath;
-    private        List<ClispTypeEnvironmentPair> typeEnvironmentPairMap;
-    private        boolean                        bootstrapped;
+    private static ClispEnvironment ourInstance;
+    private final String propertiesPath;
+    private List<ClispTypeEnvironmentPair> typeEnvironmentPairMap;
+    private boolean bootstrapped;
 
     private ClispEnvironment(final String propertiesPath) {
         this.propertiesPath = propertiesPath;
         this.typeEnvironmentPairMap = new ArrayList<>();
         this.bootstrapped = this.bootstrap();
+    }
+
+    public static ClispEnvironment newInstance(final String propertiesPath) {
+        ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
+        return ClispEnvironment.ourInstance;
+    }
+
+    public static ClispEnvironment getInstance() {
+        return ClispEnvironment.ourInstance;
     }
 
     private boolean bootstrap() {
@@ -78,18 +87,8 @@ public class ClispEnvironment {
         }
     }
 
-    public static ClispEnvironment newInstance(final String propertiesPath) {
-        ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
-        return ClispEnvironment.ourInstance;
-    }
-
-    public static ClispEnvironment getInstance() {
-        return ClispEnvironment.ourInstance;
-    }
-
     public void mainLoop() {
-        // run in thread
-        new Thread(new ClispRunner(this.typeEnvironmentPairMap)).start();
+        new ClispRunner(this.typeEnvironmentPairMap).run();
     }
 
     public boolean isBootstrapped() {

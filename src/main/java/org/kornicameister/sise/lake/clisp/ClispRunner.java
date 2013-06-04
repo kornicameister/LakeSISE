@@ -43,10 +43,11 @@ import java.util.ListIterator;
  * @since 0.0.1
  */
 
-class ClispRunner implements Runnable {
+class ClispRunner {
     private final static Logger LOGGER = Logger.getLogger(ClispRunner.class);
     private final List<ClispTypeEnvironmentPair> types;
-    private       ClispTypeEnvironmentPair       world;
+    private int iterationCounter = 1;
+    private ClispTypeEnvironmentPair world;
 
     public ClispRunner(final List<ClispTypeEnvironmentPair> types) {
         this.types = new ArrayList<>(types);
@@ -66,6 +67,10 @@ class ClispRunner implements Runnable {
         // ensure that world is processed as the last
     }
 
+    private static String findAllFactsString(final String outputFactName) {
+        return String.format("(find-all-facts ((?f %s)) TRUE)", outputFactName);
+    }
+
     /**
      * InOwnThreadRunner implements round processing functionality.
      * It goes as follow:
@@ -76,21 +81,18 @@ class ClispRunner implements Runnable {
      * <li></li>
      * </ol>
      */
-    @Override
     public void run() {
-        this.prepare();
-        boolean again = false;
-        int iterationCounter = 1;
-        do {
-            LOGGER.info(String.format("Entering iteration -> %d", iterationCounter));
-            {
-                this.reset();
-                this.doTypesLogic();
-                this.runEnv();
-                this.gatherOutputs();
-            }
-            LOGGER.info(String.format("Exiting iteration -> %d", iterationCounter++));
-        } while (again);
+        if (this.iterationCounter == 1) {
+            this.prepare();
+        }
+        LOGGER.info(String.format("Entering iteration -> %d", iterationCounter));
+        {
+            this.reset();
+            this.doTypesLogic();
+            this.runEnv();
+            this.gatherOutputs();
+        }
+        LOGGER.info(String.format("Exiting iteration -> %d", iterationCounter++));
     }
 
     private void runEnv() {
@@ -150,10 +152,6 @@ class ClispRunner implements Runnable {
             dataStructure.addValue("output", output);
             pair.getClispType().setInput(dataStructure);
         }
-    }
-
-    private static String findAllFactsString(final String outputFactName) {
-        return String.format("(find-all-facts ((?f %s)) TRUE)", outputFactName);
     }
 
     /**
