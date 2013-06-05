@@ -1,8 +1,8 @@
 package org.kornicameister.sise.lake.types.world;
 
-import org.kornicameister.sise.lake.types.DefaultType;
-
-import java.util.Properties;
+import CLIPSJNI.Environment;
+import org.kornicameister.sise.lake.types.DefaultClispType;
+import org.kornicameister.sise.lake.types.WorldField;
 
 /**
  * @author kornicameister
@@ -10,14 +10,30 @@ import java.util.Properties;
  * @since 0.0.1
  */
 
-abstract public class DefaultWorld extends DefaultType {
+abstract public class DefaultWorld extends DefaultClispType {
+    //clisp
+    protected Integer        width;
+    protected Integer        height;
+    protected Environment    environment;
+    protected WorldField[][] board;
+    //clisp
 
-    public DefaultWorld(final Properties properties) {
-        super(properties);
+    public DefaultWorld() {
+        super();
     }
 
     @Override
     public String getName() {
-        return String.format("%s->%s", super.getName(), DefaultWorld.class.getSimpleName());
+        return DefaultWorld.class.getSimpleName();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DefaultWorld{");
+        sb.append("width=").append(width);
+        sb.append(", height=").append(height);
+        sb.append(", environment=").append(environment);
+        sb.append('}');
+        return sb.toString();
     }
 }

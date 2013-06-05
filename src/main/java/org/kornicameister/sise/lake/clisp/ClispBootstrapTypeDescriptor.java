@@ -2,6 +2,8 @@ package org.kornicameister.sise.lake.clisp;
 
 import com.google.common.base.Objects;
 
+import java.util.List;
+
 /**
  * @author kornicameister
  * @version 0.0.1
@@ -9,11 +11,11 @@ import com.google.common.base.Objects;
  */
 
 class ClispBootstrapTypeDescriptor {
-    private final String clazz;
-    private final String clisp;
-    private final String initDataProperties;
+    private final String       clazz;
+    private final List<String> clisp;
+    private final String       initDataProperties;
 
-    public ClispBootstrapTypeDescriptor(final String clazz, final String clisp, final String initDataProperties) {
+    public ClispBootstrapTypeDescriptor(final String clazz, final List<String> clisp, final String initDataProperties) {
         this.clazz = clazz;
         this.clisp = clisp;
         this.initDataProperties = initDataProperties;
@@ -23,7 +25,7 @@ class ClispBootstrapTypeDescriptor {
         return clazz;
     }
 
-    public String getClisp() {
+    public List<String> getClisp() {
         return clisp;
     }
 
@@ -41,8 +43,12 @@ class ClispBootstrapTypeDescriptor {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ClispBootstrapTypeDescriptor)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ClispBootstrapTypeDescriptor)) {
+            return false;
+        }
 
         ClispBootstrapTypeDescriptor that = (ClispBootstrapTypeDescriptor) o;
 

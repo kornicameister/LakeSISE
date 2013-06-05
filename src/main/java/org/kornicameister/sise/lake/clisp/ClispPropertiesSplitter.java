@@ -12,11 +12,11 @@ import java.util.*;
  */
 
 public class ClispPropertiesSplitter {
-    private static final Logger LOGGER = Logger.getLogger(ClispPropertiesSplitter.class);
-    private static final String ENTRY_REGEX = ",";
-    private static final String PACKAGE_REGEX = "=";
-    private static final String CLAZZ_SUFFIX = "clazz";
-    private static final String CLISP_SUFFIX = "clisp";
+    private static final Logger LOGGER           = Logger.getLogger(ClispPropertiesSplitter.class);
+    private static final String ENTRY_REGEX      = ",";
+    private static final String PACKAGE_REGEX    = "=";
+    private static final String CLAZZ_SUFFIX     = "clazz";
+    private static final String CLISP_SUFFIX     = "clisp";
     private static final String INIT_DATA_SUFFIX = "init";
 
     public static Set<ClispBootstrapTypeDescriptor> load(final String key, final Properties properties) {
@@ -28,8 +28,11 @@ public class ClispPropertiesSplitter {
             final String clazz = properties.getProperty(String.format("%s.%s", accessKey, CLAZZ_SUFFIX)),
                     clisp = properties.getProperty(String.format("%s.%s", accessKey, CLISP_SUFFIX)),
                     init = properties.getProperty(String.format("%s.%s", accessKey, INIT_DATA_SUFFIX));
+
             if (clazz != null || clisp != null || init != null) {
-                descriptors.add(new ClispBootstrapTypeDescriptor(clazz, clisp, init));
+                assert clisp != null;
+                final List<String> clisps = new ArrayList<>(Arrays.asList(clisp.split(",")));
+                descriptors.add(new ClispBootstrapTypeDescriptor(clazz, clisps, init));
             } else {
                 throw new BadActorDescriptor("Either clazz,clisp,init is missing, check format against lake.actors.%s.actor.%s.[clisp,clazz,init]");
             }

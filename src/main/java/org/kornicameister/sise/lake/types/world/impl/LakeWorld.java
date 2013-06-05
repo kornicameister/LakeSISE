@@ -1,9 +1,8 @@
 package org.kornicameister.sise.lake.types.world.impl;
 
-import org.kornicameister.sise.lake.io.DataStructure;
+import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
 
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -13,30 +12,51 @@ import java.util.Properties;
  */
 
 public class LakeWorld extends DefaultWorld {
-    private static final String LAKE_OUTPUT_FACT_NAME_DV = "lake-output";
-    private static final String LAKE_OUTPUT_FACT_NAME    = "lake.output.fact.name";
+    private static final Integer MAX_PRESSURE = 1260;
+    private static final Integer MIN_PRESSURE = 900;
+    protected Integer lakeX;
+    protected Integer lakeY;
+    protected Integer lakeSize;
+    protected Integer rainTime;
+    protected Integer stormTime;
+    protected Integer pressureLevel;
 
-    public LakeWorld(final Properties properties) {
-        super(properties);
+    public LakeWorld() {
+        super();
     }
 
     @Override
-    protected String resolveProperties(final Properties properties) {
-        return properties.getProperty(LAKE_OUTPUT_FACT_NAME, LAKE_OUTPUT_FACT_NAME_DV);
-    }
-
-    @Override
-    public void setInput(final DataStructure input) {
+    public void run() {
 
     }
 
-    @Override
-    public List<String> getOutput() {
-        return null;
+    protected void resolveProperties(final Properties properties) {
+
+        this.width = Integer.valueOf(properties.getProperty("lake.world.width"));
+        this.height = Integer.valueOf(properties.getProperty("lake.world.height"));
+        this.lakeX = Integer.valueOf(properties.getProperty("lake.lake.x"));
+        this.lakeY = Integer.valueOf(properties.getProperty("lake.lake.y"));
+        this.lakeSize = Integer.valueOf(properties.getProperty("lake.lake.size"));
+        this.rainTime = Integer.valueOf(properties.getProperty("lake.world.rain"));
+        this.stormTime = Integer.valueOf(properties.getProperty("lake.world.storm"));
+        this.pressureLevel = Integer.valueOf(properties.getProperty("lake.world.pressure"));
+
+        this.board = new WorldField[this.width][this.height];
     }
 
     @Override
-    public String getName() {
-        return String.format("%s->%s", super.getName(), LakeWorld.class.getSimpleName());
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(" > ");
+        sb.append("LakeWorld{");
+        sb.append("lakeX=").append(lakeX);
+        sb.append(", lakeY=").append(lakeY);
+        sb.append(", lakeSize=").append(lakeSize);
+        sb.append(", rainTime=").append(rainTime);
+        sb.append(", stormTime=").append(stormTime);
+        sb.append(", pressureLevel=").append(pressureLevel);
+        sb.append('}');
+        return sb.toString();
     }
 }

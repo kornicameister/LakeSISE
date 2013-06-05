@@ -1,8 +1,9 @@
 package org.kornicameister.sise.lake.types;
 
-import org.kornicameister.sise.lake.io.DataStructure;
+import CLIPSJNI.Environment;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author kornicameister
@@ -13,35 +14,16 @@ import java.util.List;
 public interface ClispType {
 
     /**
-     * Method for each actor to implement.
-     * This method is used by each actor to modify
-     * its internal state without explicit knowledge
-     * of type's internal fields at the {@link org.kornicameister.sise.lake.clisp.ClispRunner level}
+     * Use this method to initialize ClispType
      *
-     * @param input
-     *         data to be set
+     * @param properties
+     * @param environment
      */
-    void setInput(final DataStructure input);
+    void initType(final Properties properties,
+                  final Environment environment,
+                  List<String> clpPaths);
 
-    /**
-     * Logic to be done on the Java side, like for example
-     * calculating next move and so on. However this method
-     * must return its result as list of String-transformed
-     * facts ready to be asserted to type's environment. Therefore
-     * can be quite large. This method should use {@link DataStructure} that type
-     * owns to produce an output
-     */
-    List<String> getOutput();
-
-    /**
-     * This method should return output fact name.
-     * In other {@link org.kornicameister.sise.lake.clisp.ClispRunner}
-     * expects that by using this name they will be able to extract output data from
-     * {@link CLIPSJNI.Environment}
-     *
-     * @return
-     */
-    String getOutputFactName();
+    void run();
 
     /**
      * Returns types name. It just exists for convenience purpose,
