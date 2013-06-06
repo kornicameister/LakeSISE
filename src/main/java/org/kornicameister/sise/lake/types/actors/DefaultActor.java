@@ -1,6 +1,6 @@
 package org.kornicameister.sise.lake.types.actors;
 
-import org.kornicameister.sise.lake.WorldFieldsStore;
+import org.kornicameister.sise.lake.WorldHelper;
 import org.kornicameister.sise.lake.adapters.BooleanToInteger;
 import org.kornicameister.sise.lake.types.ClispReady;
 import org.kornicameister.sise.lake.types.ClispType;
@@ -21,56 +21,27 @@ import java.util.Properties;
 public abstract class DefaultActor
         extends DefaultClispType
         implements ClispType, ClispReady {
-    private static final String   CLISP_PREFIX = "actor";
-    private static final String[] TEMPLATE     = {
-            //description
-            "(id %d)",
-            "(type %d)",
-            //description
-            //location
-            "(atField %d)",
-            "(toField %d)",
-            //location
-            //generic-abilities
-            "(canAttack %d)",
-            "(canFly %d)",
-            "(canSwim %d)",
-            //generic-abilities
-            //generic-properties
-            "(hp %d)",
-            "(visionRange %d)",
-            "(attackRange %d)",
-            "(attackPower %d)",
-            "(moveRange %d)",
-            //generic-properties
-            //attack-properties
-            "(targetId %d)",
-            "(targetHit %d)",
-            //attack-properties
-            //corruption-properties
-            "(cash %d)",
-            "(corruptionThreshold %d)",
-            "(validId %d)"
-            //corruption-properties
-    };
-    private static       Integer  ID           = 0;
-    private final Integer      id;
-    protected     LakeActors   type;
-    protected     WorldField   atField;
-    protected     WorldField   toField;
-    protected     Boolean      canAttack;
-    protected     Boolean      canFly;
-    protected     Boolean      canSwim;
-    protected     Integer      hp;
-    protected     Integer      visionRange;
-    protected     Integer      attackRange;
-    protected     Integer      moveRange;
-    protected     DefaultActor target;
-    protected     Boolean      targetHit;
-    protected     Integer      cash;
-    protected     Integer      corruptionThreshold;
-    protected     Boolean      validId;
-    private       Integer      attackPower;
+    private static final String DEFAULT_VALUE = String.valueOf(-1);
+    private static final String DEFAULT_VALUE_FALSE = "false";
+    private static final String CLISP_PREFIX = "actor";
+    private static Integer ID = 0;
+    protected final Integer id;
+    protected LakeActors type;
+    protected WorldField atField;
+    protected WorldField toField;
+    protected Boolean canAttack;
+    protected Boolean canFly;
+    protected Boolean canSwim;
+    protected Integer hp;
+    protected Integer visionRange;
+    protected Integer attackRange;
+    protected Integer moveRange;
+    protected DefaultActor target;
+    protected Boolean targetHit;
+    protected Integer cash;
+    protected Integer corruptionThreshold;
+    protected Boolean validId;
+    protected Integer attackPower;
 
     public DefaultActor() {
         this.id = DefaultActor.ID++;
@@ -78,23 +49,22 @@ public abstract class DefaultActor
 
     @Override
     protected final void resolveProperties(final Properties properties) {
-        int x = Integer.valueOf(properties.getProperty("actor.x"));
-        int y = Integer.valueOf(properties.getProperty("actor.y"));
-
-        this.hp = Integer.valueOf(properties.getProperty("actor.hp"), -1);
-        this.moveRange = Integer.valueOf(properties.getProperty("actor.move.range"), -1);
-        this.visionRange = Integer.valueOf(properties.getProperty("actor.vision.range"), -1);
-        this.attackRange = Integer.valueOf(properties.getProperty("actor.weapon.range"), -1);
-        this.attackPower = Integer.valueOf(properties.getProperty("actor.weapon.power"), -1);
-        this.canAttack = Boolean.valueOf(properties.getProperty("actor.weapon.canAttack", "false"));
-        this.canFly = Boolean.valueOf(properties.getProperty("actor.weapon.canFly", "false"));
-        this.canSwim = Boolean.valueOf(properties.getProperty("actor.weapon.canSwim", "false"));
-        this.cash = Integer.valueOf(properties.getProperty("actor.cash"), -1);
-        this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold"), -1);
+        this.hp = Integer.valueOf(properties.getProperty("actor.hp", DEFAULT_VALUE));
+        this.moveRange = Integer.valueOf(properties.getProperty("actor.move.range", DEFAULT_VALUE));
+        this.visionRange = Integer.valueOf(properties.getProperty("actor.vision.range", DEFAULT_VALUE));
+        this.attackRange = Integer.valueOf(properties.getProperty("actor.weapon.range", DEFAULT_VALUE));
+        this.attackPower = Integer.valueOf(properties.getProperty("actor.weapon.power", DEFAULT_VALUE));
+        this.canAttack = Boolean.valueOf(properties.getProperty("actor.weapon.canAttack", DEFAULT_VALUE_FALSE));
+        this.canFly = Boolean.valueOf(properties.getProperty("actor.weapon.canFly", DEFAULT_VALUE_FALSE));
+        this.canSwim = Boolean.valueOf(properties.getProperty("actor.weapon.canSwim", DEFAULT_VALUE_FALSE));
+        this.cash = Integer.valueOf(properties.getProperty("actor.cash", DEFAULT_VALUE));
+        this.validId = Boolean.valueOf(properties.getProperty("actor.cash", DEFAULT_VALUE_FALSE));
+        this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold", DEFAULT_VALUE));
         this.targetHit = false;
         this.type = this.setType();
-        this.atField = WorldFieldsStore.getField(x, y);
-        this.toField = this.atField;
+        this.target = null;
+
+        WorldHelper.registerActor(this);
     }
 
     protected abstract LakeActors setType();
@@ -110,24 +80,24 @@ public abstract class DefaultActor
         final StringBuilder builder = new StringBuilder();
 
         builder.append("( ")
-                .append(CLISP_PREFIX)
-                .append(String.format(TEMPLATE[Mapping.ID], this.id))
-                .append(String.format(TEMPLATE[Mapping.TYPE], this.type.ordinal()))
-                .append(String.format(TEMPLATE[Mapping.AT_FIELD], this.atField.getId()))
-                .append(String.format(TEMPLATE[Mapping.TO_FIELD], this.toField.getId()))
-                .append(String.format(TEMPLATE[Mapping.CAN_ATTACK], BooleanToInteger.toInteger(this.canAttack)))
-                .append(String.format(TEMPLATE[Mapping.CAN_FLY], BooleanToInteger.toInteger(this.canFly)))
-                .append(String.format(TEMPLATE[Mapping.CAN_SWIM], BooleanToInteger.toInteger(this.canSwim)))
-                .append(String.format(TEMPLATE[Mapping.HP], this.hp))
-                .append(String.format(TEMPLATE[Mapping.VISION_RANGE], this.visionRange))
-                .append(String.format(TEMPLATE[Mapping.ATTACK_RANGE], this.attackRange))
-                .append(String.format(TEMPLATE[Mapping.ATTACK_POWER], this.attackPower))
-                .append(String.format(TEMPLATE[Mapping.MOVE_RANGE], this.moveRange))
-                .append(String.format(TEMPLATE[Mapping.TARGET_ID], this.target.id))
-                .append(String.format(TEMPLATE[Mapping.TARGET_HIT], BooleanToInteger.toInteger(this.targetHit)))
-                .append(String.format(TEMPLATE[Mapping.CASH], this.cash))
-                .append(String.format(TEMPLATE[Mapping.CORR_THRESHOLD], this.corruptionThreshold))
-                .append(String.format(TEMPLATE[Mapping.VALID_ID], this.validId))
+                .append("actor \n")
+                .append(String.format("(id %d)\n", this.id))
+                .append(String.format("(type %d)\n", this.type.ordinal()))
+                .append(String.format("(atField %d)\n", this.atField != null ? this.atField.getId() : -1))
+                .append(String.format("(toField %d)\n", this.toField != null ? this.toField.getId() : -1))
+                .append(String.format("(canAttack %d)\n", BooleanToInteger.toInteger(this.canAttack)))
+                .append(String.format("(canFly %d)\n", BooleanToInteger.toInteger(this.canFly)))
+                .append(String.format("(canSwim %d)\n", BooleanToInteger.toInteger(this.canSwim)))
+                .append(String.format("(hp %d)\n", this.hp))
+                .append(String.format("(visionRange %d)\n", this.visionRange))
+                .append(String.format("(attackRange %d)\n", this.attackRange))
+                .append(String.format("(attackPower %d)\n", this.attackPower))
+                .append(String.format("(moveRange %d)\n", this.moveRange))
+                .append(String.format("(targetId %d)\n", this.target == null ? -1 : this.target.id))
+                .append(String.format("(targetHit %d)\n", BooleanToInteger.toInteger(this.targetHit)))
+                .append(String.format("(cash %d)\n", this.cash))
+                .append(String.format("(corruptionThreshold %d)\n", this.corruptionThreshold))
+                .append(String.format("(validId %d)\n", BooleanToInteger.toInteger(this.validId)))
                 .append(" )");
 
         return builder.toString();
@@ -287,25 +257,5 @@ public abstract class DefaultActor
         sb.append(", attackPower=").append(attackPower);
         sb.append('}');
         return sb.toString();
-    }
-
-    private static class Mapping {
-        private static final int ID             = 0;
-        private static final int TYPE           = 1;
-        private static final int AT_FIELD       = 2;
-        private static final int TO_FIELD       = 3;
-        private static final int CAN_ATTACK     = 4;
-        private static final int CAN_FLY        = 5;
-        private static final int CAN_SWIM       = 6;
-        private static final int HP             = 7;
-        private static final int VISION_RANGE   = 8;
-        private static final int ATTACK_RANGE   = 9;
-        private static final int ATTACK_POWER   = 10;
-        private static final int MOVE_RANGE     = 11;
-        private static final int TARGET_ID      = 12;
-        private static final int TARGET_HIT     = 13;
-        private static final int CASH           = 14;
-        private static final int CORR_THRESHOLD = 15;
-        private static final int VALID_ID       = 16;
     }
 }

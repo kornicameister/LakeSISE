@@ -22,7 +22,6 @@ public class ForesterActorTT extends DefaultActor {
 
     @Override
     public void run() {
-
     }
 
     @Override

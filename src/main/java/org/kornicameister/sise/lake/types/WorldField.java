@@ -9,24 +9,31 @@ import org.kornicameister.sise.lake.adapters.BooleanToInteger;
  */
 
 public class WorldField implements ClispReady {
+    private static int ID = 1;
+    private final Integer id;
     private boolean occupied;
     private boolean water;
     private Integer x;
     private Integer y;
-    private Object  id;
 
     public WorldField(Integer x, Integer y) {
-        this(x, y, false);
+        this(x, y, false, false);
     }
 
-    public WorldField(Integer x, Integer y, boolean occupied) {
+    public WorldField(Integer x, Integer y, boolean occupied, boolean water) {
+        this.id = WorldField.ID++;
         this.occupied = occupied;
         this.x = x;
         this.y = y;
+        this.water = water;
     }
 
-    public boolean isOccupied() {
-        return occupied;
+    public Integer getId() {
+        return id;
+    }
+
+    public boolean isFree() {
+        return !occupied;
     }
 
     public void setOccupied(boolean occupied) {
@@ -59,8 +66,9 @@ public class WorldField implements ClispReady {
 
     @Override
     public String getFact() {
-        return String.format("%s (x %d) (y %d) (occupied %d) (water %d)",
+        return String.format("(%s (id %d) (x %d) (y %d) (occupied %d) (water %d))",
                 "field",
+                this.id,
                 this.x,
                 this.y,
                 new BooleanToInteger().adaptOut(this.occupied),
@@ -77,9 +85,5 @@ public class WorldField implements ClispReady {
         sb.append(", y=").append(y);
         sb.append('}');
         return sb.toString();
-    }
-
-    public Object getId() {
-        return id;
     }
 }

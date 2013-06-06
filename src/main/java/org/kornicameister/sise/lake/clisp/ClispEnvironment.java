@@ -4,6 +4,7 @@ import CLIPSJNI.Environment;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.exception.LakeInitializationException;
 import org.kornicameister.sise.lake.types.ClispType;
+import org.kornicameister.sise.lake.types.world.DefaultWorld;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,18 +21,23 @@ import java.util.Properties;
  */
 
 public class ClispEnvironment {
-    private static final Logger      LOGGER      = Logger.getLogger(ClispEnvironment.class);
-    private static final String      LAKE_TYPES  = "lake.types";
+    private static final Logger LOGGER = Logger.getLogger(ClispEnvironment.class);
+    private static final String LAKE_TYPES = "lake.types";
     private static final Environment ENVIRONMENT = new Environment();
     private static ClispEnvironment ourInstance;
-    private final  String           propertiesPath;
-    private        List<ClispType>  clispTypes;
-    private        boolean          bootstrapped;
+    private final String propertiesPath;
+    private List<ClispType> clispTypes;
+    private boolean bootstrapped;
 
     private ClispEnvironment(final String propertiesPath) {
         this.propertiesPath = propertiesPath;
         this.clispTypes = new ArrayList<>();
         this.bootstrapped = this.bootstrap();
+    }
+
+    public static ClispEnvironment newInstance(final String propertiesPath) {
+        ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
+        return ClispEnvironment.ourInstance;
     }
 
     private boolean bootstrap() {
@@ -75,13 +81,27 @@ public class ClispEnvironment {
         }
     }
 
-    public static ClispEnvironment newInstance(final String propertiesPath) {
-        ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
-        return ClispEnvironment.ourInstance;
+    public void mainLoop() {
+        // find world
+        final DefaultWorld defaultWorld = this.findWorld();
+        if (defaultWorld == null) {
+            LOGGER.error("No world found...will exit");
+            throw new LakeInitializationException("There is no world defined...");
+        }
+        if (defaultWorld.initializeWorld()) {
+            defaultWorld.run();
+        } else {
+            throw new LakeInitializationException("World failed to be initialized...");
+        }
     }
 
-    public void mainLoop() {
-        new ClispRunner(this.clispTypes).run();
+    private DefaultWorld findWorld() {
+        for (ClispType clispType : this.clispTypes) {
+            if (clispType instanceof DefaultWorld) {
+                return (DefaultWorld) clispType;
+            }
+        }
+        return null;
     }
 
     public boolean isBootstrapped() {

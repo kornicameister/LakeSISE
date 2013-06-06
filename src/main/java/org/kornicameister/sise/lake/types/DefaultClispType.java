@@ -1,6 +1,7 @@
 package org.kornicameister.sise.lake.types;
 
 import CLIPSJNI.Environment;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Properties;
@@ -12,10 +13,17 @@ import java.util.Properties;
  */
 
 public abstract class DefaultClispType implements ClispType {
+    private static final Logger LOGGER = Logger.getLogger(DefaultClispType.class);
     protected Environment environment;
 
     @Override
     public void initType(final Properties properties, final Environment environment, final List<String> clpPaths) {
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Initializing clisp type\nproperties=%s,environment=%s,facts=%s",
+                    properties, environment, clpPaths));
+        }
+
         this.resolveProperties(properties);
         this.resolveEnvironment(environment);
         for (String clp : clpPaths) {
