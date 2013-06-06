@@ -1,6 +1,5 @@
 package org.kornicameister.sise.lake.types.actors;
 
-import CLIPSJNI.Environment;
 import org.kornicameister.sise.lake.adapters.BooleanToInteger;
 import org.kornicameister.sise.lake.types.ClispReady;
 import org.kornicameister.sise.lake.types.ClispType;
@@ -37,7 +36,6 @@ public abstract class DefaultActor
     protected     Integer     attackX;
     protected     Integer     attackY;
     protected     Integer     attackSuccess;
-    protected     Environment environment;
 
     public DefaultActor() {
         this.id = DefaultActor.ID++;
@@ -92,5 +90,27 @@ public abstract class DefaultActor
                 this.attackX,
                 this.attackY,
                 this.attackSuccess);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DefaultActor{");
+        sb.append("id=").append(id);
+        sb.append(", type=").append(type);
+        sb.append(", x=").append(x);
+        sb.append(", y=").append(y);
+        sb.append(", moveX=").append(moveX);
+        sb.append(", moveY=").append(moveY);
+        sb.append(", moveRange=").append(moveRange);
+        sb.append(", visionRange=").append(visionRange);
+        sb.append(", attackRange=").append(attackRange);
+        sb.append(", caught=").append(caught);
+        sb.append(", canAttack=").append(canAttack);
+        sb.append(", attackX=").append(attackX);
+        sb.append(", attackY=").append(attackY);
+        sb.append(", attackSuccess=").append(attackSuccess);
+        sb.append(", environment=").append(environment);
+        sb.append('}');
+        return sb.toString();
     }
 }

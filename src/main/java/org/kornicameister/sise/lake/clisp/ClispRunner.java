@@ -9,32 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class that executes mainLoop of the program
- * MainLoop works in following algorithm
- * <ol>
- * <li>
- * Gather inputs from all actors and world
- * </li>
- * <li>
- * Load input to environments
- * </li>
- * <li>
- * Run environments
- * </li>
- * <li>
- * Gather outputs from environments
- * </li>
- * <li>
- * Push output after transformation to actors
- * </li>
- * <li>
- * Do actors logic
- * </li>
- * <li>
- * Reset all and go to the next loop if necessary
- * </li>
- * </ol>
- *
  * @author kornicameister
  * @version 0.0.1
  * @since 0.0.1
@@ -65,6 +39,7 @@ class ClispRunner {
     }
 
     public void run() {
+
     }
 
 }

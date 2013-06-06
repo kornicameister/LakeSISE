@@ -20,8 +20,9 @@ import java.util.Properties;
  */
 
 public class ClispEnvironment {
-    private static final Logger LOGGER     = Logger.getLogger(ClispEnvironment.class);
-    private static final String LAKE_TYPES = "lake.types";
+    private static final Logger      LOGGER      = Logger.getLogger(ClispEnvironment.class);
+    private static final String      LAKE_TYPES  = "lake.types";
+    private static final Environment ENVIRONMENT = new Environment();
     private static ClispEnvironment ourInstance;
     private final  String           propertiesPath;
     private        List<ClispType>  clispTypes;
@@ -64,7 +65,7 @@ public class ClispEnvironment {
             Class<?> clazz = Class.forName(entry.getClazz());
             ClispType clispType = (ClispType) clazz.newInstance();
 
-            clispType.initType(loadData, new Environment(), entry.getClisp());
+            clispType.initType(loadData, ClispEnvironment.ENVIRONMENT, entry.getClisp());
 
             return clispType;
 

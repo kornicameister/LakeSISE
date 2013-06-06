@@ -1,6 +1,5 @@
 package org.kornicameister.sise.lake.types.world;
 
-import CLIPSJNI.Environment;
 import org.kornicameister.sise.lake.types.DefaultClispType;
 import org.kornicameister.sise.lake.types.WorldField;
 
@@ -14,7 +13,6 @@ abstract public class DefaultWorld extends DefaultClispType {
     //clisp
     protected Integer        width;
     protected Integer        height;
-    protected Environment    environment;
     protected WorldField[][] board;
     //clisp
 
