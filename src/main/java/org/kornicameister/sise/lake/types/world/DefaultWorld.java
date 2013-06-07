@@ -94,4 +94,6 @@ abstract public class DefaultWorld
         sb.append('}');
         return sb.toString();
     }
+
+    protected abstract void applyStateToEnvironment();
 }

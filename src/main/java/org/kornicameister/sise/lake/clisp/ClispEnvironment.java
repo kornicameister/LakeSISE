@@ -23,8 +23,8 @@ import java.util.Properties;
 public class ClispEnvironment {
     private static final Logger LOGGER = Logger.getLogger(ClispEnvironment.class);
     private static final String LAKE_TYPES = "lake.types";
-    private static final Environment ENVIRONMENT = new Environment();
     private static ClispEnvironment ourInstance;
+    private final Environment environment = new Environment();
     private final String propertiesPath;
     private List<ClispType> clispTypes;
     private boolean bootstrapped;
@@ -45,8 +45,9 @@ public class ClispEnvironment {
         try {
             properties.load(new BufferedReader(new FileReader(new File(this.propertiesPath))));
             for (ClispBootstrapTypeDescriptor entry : ClispPropertiesSplitter.load(LAKE_TYPES, properties)) {
+                LOGGER.info(String.format("Bootstrapping-> %s", entry.getClazz()));
                 final ClispType value = this.bootstrapInternal(entry);
-                LOGGER.info(String.format("Bootstrap -> %s to %s", entry.getClazz(), value));
+                LOGGER.info(String.format("Bootstrapped -> %s to %s", entry.getClazz(), value.getName()));
                 this.clispTypes.add(value);
             }
 
@@ -71,7 +72,7 @@ public class ClispEnvironment {
             Class<?> clazz = Class.forName(entry.getClazz());
             ClispType clispType = (ClispType) clazz.newInstance();
 
-            clispType.initType(loadData, ClispEnvironment.ENVIRONMENT, entry.getClisp());
+            clispType.initType(loadData, this.environment, entry.getClisp());
 
             return clispType;
 
@@ -84,7 +85,7 @@ public class ClispEnvironment {
     public void mainLoop() {
         // find world
         final DefaultWorld defaultWorld = this.findWorld();
-        if (defaultWorld == null) {
+        if (defaultWorld == null || !bootstrapped) {
             LOGGER.error("No world found...will exit");
             throw new LakeInitializationException("There is no world defined...");
         }
@@ -107,5 +108,10 @@ public class ClispEnvironment {
 
     public boolean isBootstrapped() {
         return bootstrapped;
+    }
+
+    public void destroy() {
+        LOGGER.info("Closing up, destroying environment");
+        this.environment.destroy();
     }
 }

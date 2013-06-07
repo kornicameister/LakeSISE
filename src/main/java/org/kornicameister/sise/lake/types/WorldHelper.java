@@ -3,6 +3,7 @@ package org.kornicameister.sise.lake.types;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
+import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 
 import javax.annotation.Nullable;
@@ -15,6 +16,7 @@ import java.util.*;
  */
 
 public abstract class WorldHelper {
+    private static final Logger LOGGER = Logger.getLogger(WorldHelper.class);
     private static final Predicate<WorldField> FREE_FIELD = new Predicate<WorldField>() {
         @Override
         public boolean apply(@Nullable WorldField input) {
@@ -49,6 +51,9 @@ public abstract class WorldHelper {
     }
 
     public static List<WorldField> getField(FieldPredicate predicate) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("getField(%s)", predicate));
+        }
         Collection<WorldField> free = new ArrayList<>(fields.values());
         switch (predicate) {
             case FREE_FIELD:
@@ -74,6 +79,9 @@ public abstract class WorldHelper {
             case WATER_FIELD:
                 free = Collections2.filter(free, WATER_FIELD_PREDICATE);
                 break;
+        }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("getField(%s) returns %d valid fields", predicate, free.size()));
         }
         return new ArrayList<>(free);
     }

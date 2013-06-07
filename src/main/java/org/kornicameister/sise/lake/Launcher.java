@@ -18,6 +18,7 @@ public class Launcher {
                 nextLoop = yes_no.equalsIgnoreCase("yes");
             }
             scanIn.close();
+            clispEnvironment.destroy();
         }
     }
 }

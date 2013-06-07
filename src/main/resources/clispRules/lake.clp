@@ -1,13 +1,9 @@
-(defglobal ?*lifeChange* = 5)
-
 (deftemplate lake
     "Lake describes our environment - in status before iteration"
     (slot width)
-    (slot length)
-    (slot depth)
-    (multislot actors)
-    (slot weather))
+    (slot length))
 
-(deftemplate lakeOut
-    "Describes out status of the world, after each iteration"
-    (multislot actors))
+(deftemplate lake-weather
+    (slot pressure)
+    (slot rain)
+    (slot storm))

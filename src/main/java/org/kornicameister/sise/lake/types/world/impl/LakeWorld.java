@@ -60,6 +60,7 @@ public class LakeWorld extends DefaultWorld {
     }
 
     private void applyLakeRules() {
+        LOGGER.info("Applying Lake-World rules");
         final Iterator<WorldField> fieldsIterator = WorldHelper.fieldIterator();
         WorldField worldField;
         boolean inLake;
@@ -73,6 +74,8 @@ public class LakeWorld extends DefaultWorld {
             }
             this.environment.assertString(worldField.getFact());
         }
+        this.applyStateToEnvironment();
+        LOGGER.info("Applied Lake-World rules");
     }
 
     @Override
@@ -89,5 +92,23 @@ public class LakeWorld extends DefaultWorld {
         sb.append(", pressureLevel=").append(pressureLevel);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    protected void applyStateToEnvironment() {
+        final StringBuilder stringBuilder = new StringBuilder();
+
+//        (deftemplate lake-weather
+//                (slot pressure)
+//        (slot rain)
+//        (slot storm))
+
+        stringBuilder.append("(lake-weather ")
+                .append(String.format("(pressure %d)", this.pressureLevel))
+                .append(String.format("(rain %d)", this.rainTime))
+                .append(String.format("(storm %d)", this.stormTime))
+                .append(" )");
+
+        this.environment.assertString(stringBuilder.toString());
     }
 }
