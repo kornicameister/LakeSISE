@@ -1,9 +1,9 @@
 package org.kornicameister.sise.lake.types.world;
 
 import org.apache.log4j.Logger;
-import org.kornicameister.sise.lake.WorldHelper;
 import org.kornicameister.sise.lake.types.DefaultClispType;
 import org.kornicameister.sise.lake.types.WorldField;
+import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 
 import java.util.Iterator;

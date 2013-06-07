@@ -1,8 +1,8 @@
 package org.kornicameister.sise.lake.types.world.impl;
 
 import org.apache.log4j.Logger;
-import org.kornicameister.sise.lake.WorldHelper;
 import org.kornicameister.sise.lake.types.WorldField;
+import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
 
@@ -26,18 +26,21 @@ public class LakeWorld extends DefaultWorld {
     protected Integer rainTime;
     protected Integer stormTime;
     protected Integer pressureLevel;
+    private Integer iteration;
 
     public LakeWorld() {
         super();
+        this.iteration = 0;
     }
 
     @Override
     public void run() {
-        LOGGER.info("Running world");
+        LOGGER.info(String.format("[%d] > world loop started", this.iteration));
         final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
         while (defaultActorIterator.hasNext()) {
             defaultActorIterator.next().run();
         }
+        LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
     }
 
     protected void resolveProperties(final Properties properties) {

@@ -88,6 +88,7 @@ public class ClispEnvironment {
             LOGGER.error("No world found...will exit");
             throw new LakeInitializationException("There is no world defined...");
         }
+        // find world
         if (defaultWorld.initializeWorld()) {
             defaultWorld.run();
         } else {

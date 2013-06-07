@@ -1,9 +1,8 @@
-package org.kornicameister.sise.lake;
+package org.kornicameister.sise.lake.types;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
-import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 
 import javax.annotation.Nullable;
@@ -15,7 +14,7 @@ import java.util.*;
  * @since 0.0.1
  */
 
-public class WorldHelper {
+public abstract class WorldHelper {
     private static final Predicate<WorldField> FREE_FIELD = new Predicate<WorldField>() {
         @Override
         public boolean apply(@Nullable WorldField input) {

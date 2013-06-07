@@ -1,11 +1,7 @@
 package org.kornicameister.sise.lake.types.actors;
 
-import org.kornicameister.sise.lake.WorldHelper;
 import org.kornicameister.sise.lake.adapters.BooleanToInteger;
-import org.kornicameister.sise.lake.types.ClispReady;
-import org.kornicameister.sise.lake.types.ClispType;
-import org.kornicameister.sise.lake.types.DefaultClispType;
-import org.kornicameister.sise.lake.types.WorldField;
+import org.kornicameister.sise.lake.types.*;
 
 import java.util.Properties;
 
