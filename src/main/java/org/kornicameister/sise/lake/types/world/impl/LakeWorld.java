@@ -68,6 +68,7 @@ public class LakeWorld extends DefaultWorld {
             if (LOGGER.isDebugEnabled() && inLake) {
                 LOGGER.debug(String.format("WorldField %s in lake", worldField));
             }
+            this.environment.assertString(worldField.getFact());
         }
     }
 

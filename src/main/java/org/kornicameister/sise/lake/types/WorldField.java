@@ -11,8 +11,8 @@ import org.kornicameister.sise.lake.adapters.BooleanToInteger;
 public class WorldField implements ClispReady {
     private static int ID = 1;
     private final Integer id;
-    private boolean occupied;
-    private boolean water;
+    private Boolean occupied;
+    private Boolean water;
     private Integer x;
     private Integer y;
 
@@ -66,13 +66,12 @@ public class WorldField implements ClispReady {
 
     @Override
     public String getFact() {
-        return String.format("(%s (id %d) (x %d) (y %d) (occupied %d) (water %d))",
-                "field",
+        return String.format("(field (id %d) (x %d) (y %d) (occupied %d) (water %d))",
                 this.id,
                 this.x,
                 this.y,
-                new BooleanToInteger().adaptOut(this.occupied),
-                new BooleanToInteger().adaptOut(this.water)
+                BooleanToInteger.toInteger(this.occupied),
+                BooleanToInteger.toInteger(this.water)
         );
     }
 

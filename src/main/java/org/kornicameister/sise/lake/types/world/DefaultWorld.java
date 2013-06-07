@@ -39,6 +39,7 @@ abstract public class DefaultWorld
                     this.randomizeField(next);
                     this.environment.assertString(next.getFact());
                 }
+                this.environment.reset();
                 this.worldReady = true;
             }
         } catch (Exception ex) {
@@ -64,6 +65,8 @@ abstract public class DefaultWorld
         freeFields = WorldHelper.getFieldInActorRange(actor, freeFields);
         final WorldField freeField = freeFields.get(new Random().nextInt(freeFields.size() - 1));
         WorldHelper.moveActorToField(actor, freeField.getX(), freeField.getY());
+        this.environment.assertString(freeField.getFact());
+        this.environment.assertString(actor.getFact());
     }
 
     @Override
@@ -75,9 +78,11 @@ abstract public class DefaultWorld
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 final WorldField worldField = new WorldField(i, j);
+                this.environment.assertString(worldField.getFact());
                 WorldHelper.registerField(worldField);
             }
         }
+        this.environment.reset();
     }
 
     @Override

@@ -24,12 +24,14 @@ public abstract class DefaultClispType implements ClispType {
                     properties, environment, clpPaths));
         }
 
-        this.resolveProperties(properties);
         this.resolveEnvironment(environment);
+
         for (String clp : clpPaths) {
             this.environment.load(clp);
         }
         this.environment.reset();
+
+        this.resolveProperties(properties);
     }
 
     protected final void resolveEnvironment(final Environment environment) {
