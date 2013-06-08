@@ -7,10 +7,10 @@ package org.kornicameister.sise.lake.types.actors;
  */
 
 public enum LakeActors {
-    POACHER,
-    ANGLER,
-    BIRD,
-    HERBIVORE_FISH,
-    PREDATOR_FISH,
-    FORESTER
+    POACHER,            //0
+    ANGLER,                //1
+    BIRD,                //2
+    HERBIVORE_FISH,        //3
+    PREDATOR_FISH,        //4
+    FORESTER            //5
 }

@@ -1,6 +1,7 @@
 package org.kornicameister.sise.lake.types;
 
-import org.kornicameister.sise.lake.adapters.BooleanToInteger;
+import CLIPSJNI.PrimitiveValue;
+import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 
 /**
  * @author kornicameister
@@ -66,13 +67,18 @@ public class WorldField implements ClispReady {
 
     @Override
     public String getFact() {
-        return String.format("(field (id %d) (x %d) (y %d) (occupied %d) (water %d))",
+        return String.format("(field (id %d) (x %d) (y %d) (occupied %s) (water %s))",
                 this.id,
                 this.x,
                 this.y,
-                BooleanToInteger.toInteger(this.occupied),
-                BooleanToInteger.toInteger(this.water)
+                BooleanToSymbol.toSymbol(this.occupied),
+                BooleanToSymbol.toSymbol(this.water)
         );
+    }
+
+    @Override
+    public void applyFact(PrimitiveValue value) throws Exception {
+        this.setOccupied(BooleanToSymbol.fromSymbol(value.getFactSlot("occupied").symbolValue()));
     }
 
     @Override

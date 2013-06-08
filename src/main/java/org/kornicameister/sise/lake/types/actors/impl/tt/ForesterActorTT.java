@@ -25,7 +25,7 @@ public class ForesterActorTT extends DefaultActor {
     }
 
     @Override
-    public String getName() {
+    public String getFactName() {
         return ForesterActorTT.class.getSimpleName();
     }
 }

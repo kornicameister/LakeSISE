@@ -47,7 +47,7 @@ public class ClispEnvironment {
             for (ClispBootstrapTypeDescriptor entry : ClispPropertiesSplitter.load(LAKE_TYPES, properties)) {
                 LOGGER.info(String.format("Bootstrapping-> %s", entry.getClazz()));
                 final ClispType value = this.bootstrapInternal(entry);
-                LOGGER.info(String.format("Bootstrapped -> %s to %s", entry.getClazz(), value.getName()));
+                LOGGER.info(String.format("Bootstrapped -> %s to %s", entry.getClazz(), value.getFactName()));
                 this.clispTypes.add(value);
             }
 

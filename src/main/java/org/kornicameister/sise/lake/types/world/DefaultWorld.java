@@ -35,11 +35,8 @@ abstract public class DefaultWorld
             if (!this.worldReady) {
                 final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
                 while (defaultActorIterator.hasNext()) {
-                    final DefaultActor next = defaultActorIterator.next();
-                    this.randomizeField(next);
-                    this.environment.assertString(next.getFact());
+                    this.randomizeField(defaultActorIterator.next());
                 }
-                this.environment.reset();
                 this.worldReady = true;
             }
         } catch (Exception ex) {
@@ -49,6 +46,11 @@ abstract public class DefaultWorld
     }
 
     private void randomizeField(DefaultActor actor) {
+        final WorldField freeField = this.getWorldFieldToActor(actor);
+        WorldHelper.moveActorToField(actor, freeField.getX(), freeField.getY());
+    }
+
+    protected WorldField getWorldFieldToActor(DefaultActor actor) {
         List<WorldField> freeFields = null;
         switch (actor.getType()) {
             case HERBIVORE_FISH:
@@ -63,26 +65,25 @@ abstract public class DefaultWorld
                 break;
         }
         freeFields = WorldHelper.getFieldInActorRange(actor, freeFields);
-        final WorldField freeField = freeFields.get(new Random().nextInt(freeFields.size() - 1));
-        WorldHelper.moveActorToField(actor, freeField.getX(), freeField.getY());
-        this.environment.assertString(freeField.getFact());
-        this.environment.assertString(actor.getFact());
+        return freeFields.get(new Random().nextInt(freeFields.size() - 1));
     }
 
     @Override
-    public String getName() {
+    public String getFactName() {
         return DefaultWorld.class.getSimpleName();
+    }
+
+    @Override
+    public String getFactId() {
+        return String.format("%s_%d", this.getFactName(), 0);
     }
 
     protected void registerFields() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                final WorldField worldField = new WorldField(i, j);
-                this.environment.assertString(worldField.getFact());
-                WorldHelper.registerField(worldField);
+                WorldHelper.registerField(new WorldField(i, j));
             }
         }
-        this.environment.reset();
     }
 
     @Override
@@ -96,4 +97,6 @@ abstract public class DefaultWorld
     }
 
     protected abstract void applyStateToEnvironment();
+
+    protected abstract String moveFact(final DefaultActor actor, WorldField randomField);
 }

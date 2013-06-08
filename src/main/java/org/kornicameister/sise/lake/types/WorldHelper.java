@@ -50,6 +50,10 @@ public abstract class WorldHelper {
         return null;
     }
 
+    public static WorldField getField(final int id) {
+        return fields.get(id);
+    }
+
     public static List<WorldField> getField(FieldPredicate predicate) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("getField(%s)", predicate));

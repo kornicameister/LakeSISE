@@ -31,5 +31,7 @@ public interface ClispType {
      *
      * @return type's name
      */
-    String getName();
+    String getFactName();
+
+    String getFactId();
 }

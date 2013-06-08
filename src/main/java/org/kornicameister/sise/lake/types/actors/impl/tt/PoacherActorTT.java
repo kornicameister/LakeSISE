@@ -21,7 +21,7 @@ public class PoacherActorTT extends DefaultActor {
     }
 
     @Override
-    public String getName() {
+    public String getFactName() {
         return PoacherActorTT.class.getSimpleName();
     }
 

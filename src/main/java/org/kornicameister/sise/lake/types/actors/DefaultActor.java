@@ -1,6 +1,7 @@
 package org.kornicameister.sise.lake.types.actors;
 
-import org.kornicameister.sise.lake.adapters.BooleanToInteger;
+import CLIPSJNI.PrimitiveValue;
+import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.*;
 
 import java.util.Properties;
@@ -24,7 +25,6 @@ public abstract class DefaultActor
     protected final Integer id;
     protected LakeActors type;
     protected WorldField atField;
-    protected WorldField toField;
     protected Boolean canAttack;
     protected Boolean canFly;
     protected Boolean canSwim;
@@ -76,27 +76,41 @@ public abstract class DefaultActor
         final StringBuilder builder = new StringBuilder();
 
         builder.append("( ")
-                .append("actor \n")
-                .append(String.format("(id %d)\n", this.id))
-                .append(String.format("(type %d)\n", this.type.ordinal()))
+                .append(String.format("%s \n", CLISP_PREFIX))
+                .append(String.format("(id \"%s\")\n", this.getFactId()))
+                .append(String.format("(type %s)\n", this.type.name().toLowerCase()))
                 .append(String.format("(atField %d)\n", this.atField != null ? this.atField.getId() : -1))
-                .append(String.format("(toField %d)\n", this.toField != null ? this.toField.getId() : -1))
-                .append(String.format("(canAttack %d)\n", BooleanToInteger.toInteger(this.canAttack)))
-                .append(String.format("(canFly %d)\n", BooleanToInteger.toInteger(this.canFly)))
-                .append(String.format("(canSwim %d)\n", BooleanToInteger.toInteger(this.canSwim)))
+                .append(String.format("(canAttack %s)\n", BooleanToSymbol.toSymbol(this.canAttack)))
+                .append(String.format("(canFly %s)\n", BooleanToSymbol.toSymbol(this.canFly)))
+                .append(String.format("(canSwim %s)\n", BooleanToSymbol.toSymbol(this.canSwim)))
                 .append(String.format("(hp %d)\n", this.hp))
                 .append(String.format("(visionRange %d)\n", this.visionRange))
                 .append(String.format("(attackRange %d)\n", this.attackRange))
                 .append(String.format("(attackPower %d)\n", this.attackPower))
                 .append(String.format("(moveRange %d)\n", this.moveRange))
                 .append(String.format("(targetId %d)\n", this.target == null ? -1 : this.target.id))
-                .append(String.format("(targetHit %d)\n", BooleanToInteger.toInteger(this.targetHit)))
+                .append(String.format("(targetHit %s)\n", BooleanToSymbol.toSymbol(this.targetHit)))
                 .append(String.format("(cash %d)\n", this.cash))
                 .append(String.format("(corruptionThreshold %d)\n", this.corruptionThreshold))
-                .append(String.format("(validId %d)\n", BooleanToInteger.toInteger(this.validId)))
+                .append(String.format("(validId %s)\n", BooleanToSymbol.toSymbol(this.validId)))
                 .append(" )");
 
         return builder.toString();
+    }
+
+    @Override
+    public void applyFact(PrimitiveValue value) throws Exception {
+        this.setAtField(WorldHelper.getField(value.getFactSlot("atField").intValue()));
+        this.setAttackPower(value.getFactSlot("attackPower").intValue());
+        this.setAttackRange(value.getFactSlot("attackRange").intValue());
+        this.setCash(value.getFactSlot("cash").intValue());
+        this.setHp(value.getFactSlot("hp").intValue());
+        this.setTargetHit(BooleanToSymbol.fromSymbol(value.getFactSlot("targetHit").symbolValue()));
+    }
+
+    @Override
+    public String getFactId() {
+        return String.format("%s_%d", this.getFactName(), this.getId());
     }
 
     public Integer getId() {
@@ -117,14 +131,6 @@ public abstract class DefaultActor
 
     public void setAtField(final WorldField atField) {
         this.atField = atField;
-    }
-
-    public WorldField getToField() {
-        return toField;
-    }
-
-    public void setToField(final WorldField toField) {
-        this.toField = toField;
     }
 
     public Boolean getCanAttack() {
@@ -237,7 +243,6 @@ public abstract class DefaultActor
         sb.append("id=").append(id);
         sb.append(", type=").append(type);
         sb.append(", atField=").append(atField);
-        sb.append(", toField=").append(toField);
         sb.append(", canAttack=").append(canAttack);
         sb.append(", canFly=").append(canFly);
         sb.append(", canSwim=").append(canSwim);

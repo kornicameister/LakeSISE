@@ -1,5 +1,6 @@
 package org.kornicameister.sise.lake.types.world.impl;
 
+import CLIPSJNI.PrimitiveValue;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
@@ -20,6 +21,8 @@ public class LakeWorld extends DefaultWorld {
     private static final Logger LOGGER = Logger.getLogger(LakeWorld.class);
     private static final Integer MAX_PRESSURE = 1260;
     private static final Integer MIN_PRESSURE = 900;
+    private static final String FIND_FACT_F_FIELD_F_ID_D = "(find-fact ((?f field)) (= ?f:id %d))";
+    private static final String FIND_FACT_A_ACTOR_EQ_A_ID_S = "(find-fact ((?a actor)) (eq ?a:id \"%s\"))";
     protected Integer lakeX;
     protected Integer lakeY;
     protected Integer lakeSize;
@@ -36,11 +39,67 @@ public class LakeWorld extends DefaultWorld {
     @Override
     public void run() {
         LOGGER.info(String.format("[%d] > world loop started", this.iteration));
+        final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
         final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+
+        this.environment.reset();
+
+        while (worldFieldIterator.hasNext()) {
+            this.environment.assertString(worldFieldIterator.next().getFact());
+        }
+
         while (defaultActorIterator.hasNext()) {
-            defaultActorIterator.next().run();
+            final DefaultActor actor = defaultActorIterator.next();
+
+            {
+                // apply actor state
+                this.environment.assertString(actor.getFact());
+                // apply actor state
+
+                // do actor logic
+                actor.run();
+                // do actor logic
+
+                // move actor
+                this.environment.assertString(this.moveFact(actor, this.getWorldFieldToActor(actor)));
+                // move actor
+            }
+            this.environment.run();
+
+            //collect results and update fields status and actors status
+            try {
+                final Integer previousFieldId = actor.getAtField().getId();
+
+                final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
+                PrimitiveValue value = this.environment.eval(findActorFactStr);
+                actor.applyFact(value.get(0));
+
+                final String findFieldFactStr = String.format(FIND_FACT_F_FIELD_F_ID_D, actor.getAtField().getId());
+                value = this.environment.eval(findFieldFactStr);
+                actor.getAtField().applyFact(value.get(0));
+
+                final String findPrevFieldStr = String.format(FIND_FACT_F_FIELD_F_ID_D, previousFieldId);
+                value = this.environment.eval(findPrevFieldStr);
+                WorldHelper.getField(previousFieldId).applyFact(value.get(0));
+
+            } catch (Exception exception) {
+                LOGGER.fatal(String.format("Failed to update actor %s", actor.getFactId()), exception);
+            }
         }
         LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
+    }
+
+    @Override
+    protected String moveFact(DefaultActor actor, WorldField toField) {
+        final StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("(moveActor ");
+        stringBuilder.append(String.format("(actor \"%s\")", String.format("%s_%d", actor.getFactName(), actor.getId())));
+        stringBuilder.append(String.format("(from %d)", actor.getAtField().getId()));
+        stringBuilder.append(String.format("(to %d)", toField.getId()));
+        stringBuilder.append(" )");
+
+        return stringBuilder.toString();
     }
 
     protected void resolveProperties(final Properties properties) {
@@ -72,7 +131,6 @@ public class LakeWorld extends DefaultWorld {
             if (LOGGER.isDebugEnabled() && inLake) {
                 LOGGER.debug(String.format("WorldField %s in lake", worldField));
             }
-            this.environment.assertString(worldField.getFact());
         }
         this.applyStateToEnvironment();
         LOGGER.info("Applied Lake-World rules");
@@ -97,11 +155,6 @@ public class LakeWorld extends DefaultWorld {
     @Override
     protected void applyStateToEnvironment() {
         final StringBuilder stringBuilder = new StringBuilder();
-
-//        (deftemplate lake-weather
-//                (slot pressure)
-//        (slot rain)
-//        (slot storm))
 
         stringBuilder.append("(lake-weather ")
                 .append(String.format("(pressure %d)", this.pressureLevel))
