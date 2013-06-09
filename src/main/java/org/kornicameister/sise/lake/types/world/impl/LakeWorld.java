@@ -1,7 +1,9 @@
 package org.kornicameister.sise.lake.types.world.impl;
 
 import CLIPSJNI.PrimitiveValue;
+import javafx.util.Pair;
 import org.apache.log4j.Logger;
+import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
@@ -26,8 +28,8 @@ public class LakeWorld extends DefaultWorld {
     protected Integer lakeX;
     protected Integer lakeY;
     protected Integer lakeSize;
-    protected Integer rainTime;
-    protected Integer stormTime;
+    protected Boolean rain;
+    protected Boolean storm;
     protected Integer pressureLevel;
     private Integer iteration;
 
@@ -109,8 +111,8 @@ public class LakeWorld extends DefaultWorld {
         this.lakeX = Integer.valueOf(properties.getProperty("lake.lake.x"));
         this.lakeY = Integer.valueOf(properties.getProperty("lake.lake.y"));
         this.lakeSize = Integer.valueOf(properties.getProperty("lake.lake.size"));
-        this.rainTime = Integer.valueOf(properties.getProperty("lake.world.rain"));
-        this.stormTime = Integer.valueOf(properties.getProperty("lake.world.storm"));
+        this.rain = Boolean.valueOf(properties.getProperty("lake.world.rain", "false"));
+        this.storm = Boolean.valueOf(properties.getProperty("lake.world.storm", "false"));
         this.pressureLevel = Integer.valueOf(properties.getProperty("lake.world.pressure", String.valueOf(new Random()
                 .nextInt() * (MAX_PRESSURE - MIN_PRESSURE) + MIN_PRESSURE)));
 
@@ -145,8 +147,8 @@ public class LakeWorld extends DefaultWorld {
         sb.append("lakeX=").append(lakeX);
         sb.append(", lakeY=").append(lakeY);
         sb.append(", lakeSize=").append(lakeSize);
-        sb.append(", rainTime=").append(rainTime);
-        sb.append(", stormTime=").append(stormTime);
+        sb.append(", rain=").append(rain);
+        sb.append(", storm=").append(storm);
         sb.append(", pressureLevel=").append(pressureLevel);
         sb.append('}');
         return sb.toString();
@@ -154,14 +156,36 @@ public class LakeWorld extends DefaultWorld {
 
     @Override
     protected void applyStateToEnvironment() {
-        final StringBuilder stringBuilder = new StringBuilder();
+        this.environment.eval(String.format("(bind ?*rain* %s)", BooleanToSymbol.toSymbol(this.rain)));
+        this.environment.eval(String.format("(bind ?*storm* %s)", BooleanToSymbol.toSymbol(this.storm)));
+        this.environment.eval(String.format("(bind ?*pressure* %d)", this.pressureLevel));
+        this.environment.eval(String.format("(bind ?*width* %d)", this.width));
+        this.environment.eval(String.format("(bind ?*height* %d)", this.height));
+        this.environment.eval(String.format("(bind ?*lakeX* %d)", this.lakeX));
+        this.environment.eval(String.format("(bind ?*lakeY* %d)", this.lakeY));
+        this.environment.eval(String.format("(bind ?*lakeSize* %d)", this.lakeSize));
+    }
 
-        stringBuilder.append("(lake-weather ")
-                .append(String.format("(pressure %d)", this.pressureLevel))
-                .append(String.format("(rain %d)", this.rainTime))
-                .append(String.format("(storm %d)", this.stormTime))
-                .append(" )");
+    public void modifyWorld(Pair<LakeProperty, Object>... propertyObjectPair) {
+        for (Pair<LakeProperty, Object> lakeProperty : propertyObjectPair) {
+            switch (lakeProperty.getKey()) {
+                case PRESSURE:
+                    this.pressureLevel = (Integer) lakeProperty.getValue();
+                    break;
+                case RAIN:
+                    this.rain = (Boolean) lakeProperty.getValue();
+                    break;
+                case STORM:
+                    this.storm = (Boolean) lakeProperty.getValue();
+                    break;
+            }
+        }
+        this.applyStateToEnvironment();
+    }
 
-        this.environment.assertString(stringBuilder.toString());
+    public enum LakeProperty {
+        RAIN,
+        STORM,
+        PRESSURE
     }
 }

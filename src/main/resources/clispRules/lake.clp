@@ -1,9 +1,10 @@
-(deftemplate lake
-    "Lake describes our environment - in status before iteration"
-    (slot width)
-    (slot length))
-
-(deftemplate lake-weather
-    (slot pressure)
-    (slot rain)
-    (slot storm))
+(defglobal
+	?*width* = 18
+	?*height* = 11
+	?*lakeX* = 0
+	?*lakeY* = 0
+	?*lakeSize* = 0
+	?*rain* = 0
+	?*storm* = 0
+	?*pressure* = 0
+)

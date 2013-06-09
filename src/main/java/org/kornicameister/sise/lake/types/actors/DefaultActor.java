@@ -28,6 +28,7 @@ public abstract class DefaultActor
     protected Boolean canAttack;
     protected Boolean canFly;
     protected Boolean canSwim;
+    protected Boolean isAlive;
     protected Integer hp;
     protected Integer visionRange;
     protected Integer attackRange;
@@ -59,6 +60,7 @@ public abstract class DefaultActor
         this.targetHit = false;
         this.type = this.setType();
         this.target = null;
+        this.isAlive = this.hp > 0;
 
         WorldHelper.registerActor(this);
     }
@@ -80,6 +82,7 @@ public abstract class DefaultActor
                 .append(String.format("(id \"%s\")\n", this.getFactId()))
                 .append(String.format("(type %s)\n", this.type.name().toLowerCase()))
                 .append(String.format("(atField %d)\n", this.atField != null ? this.atField.getId() : -1))
+                .append(String.format("(isAlive %s)\n", BooleanToSymbol.toSymbol(this.isAlive)))
                 .append(String.format("(canAttack %s)\n", BooleanToSymbol.toSymbol(this.canAttack)))
                 .append(String.format("(canFly %s)\n", BooleanToSymbol.toSymbol(this.canFly)))
                 .append(String.format("(canSwim %s)\n", BooleanToSymbol.toSymbol(this.canSwim)))
@@ -237,6 +240,14 @@ public abstract class DefaultActor
         this.attackPower = attackPower;
     }
 
+    public Boolean getAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(Boolean alive) {
+        isAlive = alive;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DefaultActor{");
@@ -247,6 +258,7 @@ public abstract class DefaultActor
         sb.append(", canFly=").append(canFly);
         sb.append(", canSwim=").append(canSwim);
         sb.append(", hp=").append(hp);
+        sb.append(", isAlive=").append(isAlive);
         sb.append(", visionRange=").append(visionRange);
         sb.append(", attackRange=").append(attackRange);
         sb.append(", moveRange=").append(moveRange);

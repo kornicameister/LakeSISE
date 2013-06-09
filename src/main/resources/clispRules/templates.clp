@@ -67,6 +67,9 @@
     ;-----------------generic-properties--------------;
     (slot hp
 		(type INTEGER))           		;behavior different for each actor
+    (slot isAlive
+		(type SYMBOL)
+		(allowed-symbols yes no))
     (slot visionRange
 		(type INTEGER))  				;how far can we look in to the void
     (slot attackRange
@@ -96,7 +99,34 @@
     ;-----------------corruption-properties-----------;
 )
 
+;----------------------functions------------------------;
+    ;------------------move-checking-functions----------;
+    (deffunction is-actor-in-range(?x ?y ?tX ?tY ?range)
+       (bind ?tmp (abs (- ?x ?tX)))
+       	(if (> ?tmp ?range) then
+       		0
+       	else
+       		(bind ?tmp (abs (- ?y ?tY)))
+       		(if (> ?tmp ?range) then
+       			0
+       		else
+       			1
+       		)
+       	)
+    )
+    ;------------------move-checking-functions----------;
+;----------------------functions------------------------;
+
 ;----------------------rules----------------------------;
+    ;------------------kill-rule------------------------;
+    (defrule kill
+    	?actor <- (actor (hp ?hp) (isAlive ?isAlive))
+    	(test (> 1 ?hp))
+    	(test (eq yes ?isAlive))
+    	=>
+    	(modify ?actor (isAlive ?*false*))
+    )
+    ;------------------kill-rule------------------------;
 	;------------------move-rules-----------------------;
 	;
 	; Moving rules behaves as follow, there can be only one
@@ -128,17 +158,18 @@
 		(defrule move-actor
 			"rule applies moving of an actor on the clisp side"
 			?move	<-	(moveActor (actor ?actor-id) (from ?ff-id) (to ?tf-id))
-			?actor 	<-	(actor (id ?actor-id))
-			(and  
-				(field (id ?ff-id) (occupied yes))
-				(field (id ?tf-id) (occupied no))
+			?actor 	<-	(actor (id ?actor-id) (type ?actor-name) (moveRange ?range))
+			(and
+				(field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes))
+				(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied no))
+			    (test (= 1 (is-actor-in-range ?x ?y ?tX ?tY ?range)))       ;can actor be moved
 			)
 			=>
 			(retract ?move)
 			(assert (occupyField (field ?tf-id)))
 			(assert (freeField (field ?ff-id)))
 			(modify ?actor 	(atField ?tf-id))
-			(printout t ?actor-id " moved from " ?ff-id " to " ?tf-id "."crlf)
+			(printout t ?actor-id "/" ?actor-name " moved from [" ?x ":" ?y "] to [" ?tX ":" ?tY "]."crlf)
 		)
 
 		(defrule clean-invalid-moves
