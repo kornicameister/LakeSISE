@@ -12,7 +12,7 @@
 	(visionRange 10)
 	(attackRange 1)
 	(attackPower 2)
-	(moveRange 3)
+	(moveRange 1)
 	(targetId -1)
 	(targetHit no)
 	(cash 100)
@@ -30,8 +30,8 @@
 
 (assert (field 
 	(id 1)
-	(x 1)
-	(y 1)
+	(x 5)
+	(y 5)
 	(occupied no)
 	(water no)
 ))

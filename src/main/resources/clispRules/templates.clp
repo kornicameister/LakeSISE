@@ -169,15 +169,18 @@
 			(assert (occupyField (field ?tf-id)))
 			(assert (freeField (field ?ff-id)))
 			(modify ?actor 	(atField ?tf-id))
-			(printout t ?actor-id "/" ?actor-name " moved from [" ?x ":" ?y "] to [" ?tX ":" ?tY "]."crlf)
+			(printout t ?actor-id "/" ?actor-name " moved from [" ?x ":" ?y "] to [" ?tX ":" ?tY "]." crlf)
 		)
 
 		(defrule clean-invalid-moves
 			"rule retracts all invalid moves"
 			?move	<-	(moveActor (actor ?actor-id) (from ?ff-id) (to ?tf-id))
-			(or  
-				(field (id ?ff-id) (occupied no))
-				(field (id ?tf-id) (occupied yes))
+			?actor 	<-	(actor (id ?actor-id) (type ?actor-name) (moveRange ?range))
+			(and
+				(field (id ?ff-id) (x ?x)   (y ?y)  (occupied no))
+				(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes))
+				(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes))
+			    (test (= 0 (is-actor-in-range ?x ?y ?tX ?tY ?range)))       ;can actor be moved
 			)
 			=>
 			(retract ?move)
