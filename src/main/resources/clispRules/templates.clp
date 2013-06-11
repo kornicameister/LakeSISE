@@ -117,13 +117,13 @@
     (deffunction is-actor-in-range(?x ?y ?tX ?tY ?range)
        (bind ?tmp (abs (- ?x ?tX)))
        	(if (> ?tmp ?range) then
-       		0
+       		(return 0)
        	else
        		(bind ?tmp (abs (- ?y ?tY)))
        		(if (> ?tmp ?range) then
-       			0
+       			(return 0)
        		else
-       			1
+       			(return 1)
        		)
        	)
     )
