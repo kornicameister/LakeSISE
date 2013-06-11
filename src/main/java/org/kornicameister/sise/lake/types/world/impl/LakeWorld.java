@@ -59,7 +59,7 @@ public class LakeWorld extends DefaultWorld {
                 // apply actor state
 
                 // do actor logic
-                actor.run();
+                actor.prepare(WorldHelper.getFieldInActorRange(actor)).run();
                 // do actor logic
 
                 // move actor

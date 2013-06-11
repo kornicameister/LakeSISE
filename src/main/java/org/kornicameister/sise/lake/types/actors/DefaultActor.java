@@ -4,6 +4,7 @@ import CLIPSJNI.PrimitiveValue;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.*;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -39,6 +40,7 @@ public abstract class DefaultActor
     protected Integer corruptionThreshold;
     protected Boolean validId;
     protected Integer attackPower;
+    private List<WorldField> neigboorhood;
 
     public DefaultActor() {
         this.id = DefaultActor.ID++;
@@ -66,6 +68,11 @@ public abstract class DefaultActor
     }
 
     protected abstract LakeActors setType();
+
+    public DefaultActor prepare(List<WorldField> neighbourhood) {
+        this.neigboorhood = neighbourhood;
+        return this;
+    }
 
     /**
      * This method must not be overridden.

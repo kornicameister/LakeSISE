@@ -97,14 +97,37 @@ public abstract class WorldHelper {
                 @Override
                 public boolean apply(@Nullable WorldField input) {
                     assert input != null;
-                    final int x = input.getX(),
-                            y = input.getY(),
-                            moveRange = actor.getMoveRange();
-                    return Math.abs(x - moveRange) + Math.abs(y - moveRange) > 0;
+                    return WorldHelper.isFieldInRange(input, actor);
                 }
             });
         }
         return new ArrayList<>(free);
+    }
+
+    public static List<WorldField> getFieldInActorRange(final DefaultActor actor) {
+        Collection<WorldField> free = new ArrayList<>(WorldHelper.fields.values());
+        if (actor != null) {
+            free = FluentIterable
+                    .from(free)
+                    .filter(new Predicate<WorldField>() {
+                        @Override
+                        public boolean apply(@Nullable WorldField input) {
+                            assert input != null;
+                            return WorldHelper.isFieldInRange(input, actor);
+                        }
+                    }).toList();
+        }
+        return new ArrayList<>(free);
+    }
+
+    private static boolean isFieldInRange(WorldField input, DefaultActor actor) {
+        final int x = input.getX(),
+                y = input.getY(),
+                aX = actor.getAtField() != null ? actor.getAtField().getX() : 0,
+                aY = actor.getAtField() != null ? actor.getAtField().getY() : 0,
+                moveRange = actor.getMoveRange();
+        return Math.abs(x - aX) <= moveRange
+                && Math.abs(y - aY) <= moveRange;
     }
 
     public static DefaultActor getActor(final int id) {
