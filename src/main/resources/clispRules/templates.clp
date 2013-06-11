@@ -106,6 +106,9 @@
     (slot validId
 		(type SYMBOL)
 		(allowed-symbols yes no))       ;if angler/poacher has no ID - fee, decrement cash
+	(slot tookBribe
+	    (type SYMBOL)
+	    (allowed-symbols yes no))
     ;-----------------corruption-properties-----------;
 )
 

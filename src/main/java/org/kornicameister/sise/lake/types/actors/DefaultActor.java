@@ -45,7 +45,7 @@ public abstract class DefaultActor
     protected Integer corruptionThreshold;
     protected Boolean validId;
     protected Integer attackPower;
-    private List<WorldField> neigboorhood;
+    private List<WorldField> neighbourhood;
 
     public DefaultActor() {
         this.id = DefaultActor.ID++;
@@ -75,7 +75,7 @@ public abstract class DefaultActor
     protected abstract LakeActors setType();
 
     public final DefaultActor prepare(List<WorldField> neighbourhood) {
-        this.neigboorhood = neighbourhood;
+        this.neighbourhood = neighbourhood;
 
         //asserting neighbours
         Iterator<WorldField> it = neighbourhood.iterator();
