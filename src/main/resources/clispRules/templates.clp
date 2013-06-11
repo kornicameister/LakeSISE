@@ -1,6 +1,16 @@
 (defglobal ?*true* 	= yes)
 (defglobal ?*false* = no)
 
+(deftemplate actorNeighbour
+	"template that describes actors neighbour"
+	(slot actor
+		(type INTEGER))
+	(slot neighbour
+		(type INTEGER))
+	(slot field
+		(type INTEGER))
+)
+
 (deftemplate field
 	"template for field"
     (slot id	

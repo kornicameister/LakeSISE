@@ -4,6 +4,7 @@ import CLIPSJNI.PrimitiveValue;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.*;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,6 +23,7 @@ public abstract class DefaultActor
     private static final String DEFAULT_VALUE = String.valueOf(-1);
     private static final String DEFAULT_VALUE_FALSE = "false";
     private static final String CLISP_PREFIX = "actor";
+    private static final String ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D = "(actorNeighbour (actor %d) (neighbour %d) (field %d))";
     private static Integer ID = 0;
     protected final Integer id;
     protected LakeActors type;
@@ -69,8 +71,26 @@ public abstract class DefaultActor
 
     protected abstract LakeActors setType();
 
-    public DefaultActor prepare(List<WorldField> neighbourhood) {
+    public final DefaultActor prepare(List<WorldField> neighbourhood) {
         this.neigboorhood = neighbourhood;
+
+        //asserting neighbours
+        Iterator<WorldField> it = neighbourhood.iterator();
+        while (it.hasNext()) {
+            final WorldField field = it.next();
+            final DefaultActor actor = WorldHelper.getActor(field);
+            if (actor != null) {
+                this.environment.assertString(String.format(
+                        ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D,
+                        this.getId(),
+                        actor.getId(),
+                        field.getId()
+                ));
+            }else{
+                it.remove();
+            }
+        }
+
         return this;
     }
 

@@ -90,6 +90,22 @@ public abstract class WorldHelper {
         return new ArrayList<>(free);
     }
 
+    public static DefaultActor getActor(final WorldField field) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("getActor(%s)", field));
+        }
+        List<DefaultActor> free = new ArrayList<>(actors.values());
+        Collections2.filter(free, new Predicate<DefaultActor>() {
+            @Override
+            public boolean apply(@Nullable DefaultActor input) {
+                assert input != null;
+                assert input.getAtField() != null;
+                return input.getAtField().equals(field);
+            }
+        });
+        return free.size() == 1 ? free.get(0) : null;
+    }
+
     public static List<WorldField> getFieldInActorRange(final DefaultActor actor, Collection<WorldField> fields) {
         Collection<WorldField> free = new ArrayList<>(fields);
         if (actor != null) {
