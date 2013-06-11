@@ -4,9 +4,9 @@
 (deftemplate actorNeighbour
 	"template that describes actors neighbour"
 	(slot actor
-		(type INTEGER))
+		(type STRING))
 	(slot neighbour
-		(type INTEGER))
+		(type STRING))
 	(slot field
 		(type INTEGER))
 )
@@ -130,11 +130,12 @@
 ;----------------------rules----------------------------;
     ;------------------kill-rule------------------------;
     (defrule kill
-    	?actor <- (actor (hp ?hp) (isAlive ?isAlive))
+    	?actor <- (actor (id ?a-id) (type ?a-type) (hp ?hp) (isAlive ?isAlive))
     	(test (> 1 ?hp))
     	(test (eq yes ?isAlive))
     	=>
     	(modify ?actor (isAlive ?*false*))
+		(printout t ?a-id "/" ?a-type " is no longer alive..." crlf)
     )
     ;------------------kill-rule------------------------;
 	;------------------move-rules-----------------------;
@@ -179,7 +180,7 @@
 			(assert (occupyField (field ?tf-id)))
 			(assert (freeField (field ?ff-id)))
 			(modify ?actor 	(atField ?tf-id))
-			(printout t ?actor-id "/" ?actor-name " moved from [" ?x ":" ?y "] to [" ?tX ":" ?tY "]." crlf)
+			(printout t ?actor-id "/" ?actor-name " moved from [" ?ff-id "=[" ?x ":" ?y "]] to [" ?tf-id "=[" ?tX ":" ?tY "]] with range " ?range "." crlf)
 		)
 
 		(defrule clean-invalid-moves

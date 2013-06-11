@@ -1,7 +1,7 @@
 package org.kornicameister.sise.lake.types.world.impl;
 
 import CLIPSJNI.PrimitiveValue;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.WorldField;

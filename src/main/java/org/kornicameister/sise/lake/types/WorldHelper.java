@@ -94,19 +94,24 @@ public abstract class WorldHelper {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("getActor(%s)", field));
         }
-        List<DefaultActor> free = new ArrayList<>(actors.values());
-        Collections2.filter(free, new Predicate<DefaultActor>() {
-            @Override
-            public boolean apply(@Nullable DefaultActor input) {
-                assert input != null;
-                assert input.getAtField() != null;
-                return input.getAtField().equals(field);
-            }
-        });
+        List<DefaultActor> free = new ArrayList<>(
+                FluentIterable
+                        .from(actors.values())
+                        .filter(new Predicate<DefaultActor>() {
+                            @Override
+                            public boolean apply(@Nullable DefaultActor input) {
+                                assert input != null;
+                                assert input.getAtField() != null;
+                                return input.getAtField().equals(field);
+                            }
+                        })
+                        .toList()
+        );
         return free.size() == 1 ? free.get(0) : null;
     }
 
-    public static List<WorldField> getFieldInActorRange(final DefaultActor actor, Collection<WorldField> fields) {
+    public static List<WorldField> getFieldInActorRange(final DefaultActor actor,
+                                                        Collection<WorldField> fields) {
         Collection<WorldField> free = new ArrayList<>(fields);
         if (actor != null) {
             free = Collections2.filter(free, new Predicate<WorldField>() {

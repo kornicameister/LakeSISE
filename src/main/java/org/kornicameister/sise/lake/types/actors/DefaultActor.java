@@ -1,6 +1,7 @@
 package org.kornicameister.sise.lake.types.actors;
 
 import CLIPSJNI.PrimitiveValue;
+import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.*;
 
@@ -20,10 +21,12 @@ import java.util.Properties;
 public abstract class DefaultActor
         extends DefaultClispType
         implements ClispType, ClispReady {
+    private static final Logger LOGGER = Logger.getLogger(DefaultActor.class);
     private static final String DEFAULT_VALUE = String.valueOf(-1);
     private static final String DEFAULT_VALUE_FALSE = "false";
     private static final String CLISP_PREFIX = "actor";
-    private static final String ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D = "(actorNeighbour (actor %d) (neighbour %d) (field %d))";
+    private static final String ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D =
+            "(actorNeighbour (actor \"%s\") (neighbour \"%s\") (field %d))";
     private static Integer ID = 0;
     protected final Integer id;
     protected LakeActors type;
@@ -80,17 +83,22 @@ public abstract class DefaultActor
             final WorldField field = it.next();
             final DefaultActor actor = WorldHelper.getActor(field);
             if (actor != null) {
-                this.environment.assertString(String.format(
-                        ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D,
-                        this.getId(),
-                        actor.getId(),
-                        field.getId()
-                ));
-            }else{
+                if (!actor.equals(this)) {
+                    this.environment.assertString(String.format(
+                            ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D,
+                            this.getFactId(),
+                            actor.getFactId(),
+                            field.getId()
+                    ));
+                }
+            } else {
                 it.remove();
             }
         }
 
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("%d/%s has %d in his area", this.id, this.type, neighbourhood.size()));
+        }
         return this;
     }
 
