@@ -1,0 +1,1 @@
+if you have 64-bit windwows rename CLIPSJNI.dll to CLIPSJNI32.dll them CLIPSJNI64.dll to CLIPSJNI.dll
