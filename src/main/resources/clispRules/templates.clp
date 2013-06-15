@@ -25,9 +25,6 @@
 	(slot water
 		(type SYMBOL)
 		(allowed-symbols yes no))
-	(slot isMoveChanged
-	    (type SYMBOL)
-	    (allowed-symbols yes no))
 )
 
 (deftemplate moveActor
@@ -63,6 +60,9 @@
     ;-----------------location----------------------;
 	(slot atField
 		(type INTEGER))            ;location field-id
+	(slot isMoveChanged
+	    (type SYMBOL)
+	    (allowed-symbols yes no))
     ;-----------------location----------------------;
 
     ;-----------------generic-abilities--------------;
