@@ -4,8 +4,10 @@ import CLIPSJNI.PrimitiveValue;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.*;
+import org.kornicameister.util.StatField;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -62,7 +64,7 @@ public abstract class DefaultActor
         this.canFly = Boolean.valueOf(properties.getProperty("actor.weapon.canFly", DEFAULT_VALUE_FALSE));
         this.canSwim = Boolean.valueOf(properties.getProperty("actor.weapon.canSwim", DEFAULT_VALUE_FALSE));
         this.cash = Integer.valueOf(properties.getProperty("actor.cash", DEFAULT_VALUE));
-        this.validId = Boolean.valueOf(properties.getProperty("actor.cash", DEFAULT_VALUE_FALSE));
+        this.validId = Boolean.valueOf(properties.getProperty("actor.validId", DEFAULT_VALUE_FALSE));
         this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold", DEFAULT_VALUE));
         this.targetHit = false;
         this.type = this.setType();
@@ -305,5 +307,19 @@ public abstract class DefaultActor
         sb.append(", attackPower=").append(attackPower);
         sb.append('}');
         return sb.toString();
+    }
+
+    public List<StatField> getStats() {
+        List<StatField> stats = new LinkedList<>();
+
+        stats.add(new StatField("ID", this.getFactId()));
+        stats.add(new StatField("Field", this.getAtField().getId()));
+        stats.add(new StatField("Alive", this.getId()));
+        stats.add(new StatField("Target", this.getTarget() != null ? this.getTarget().getFactId() : "none"));
+        stats.add(new StatField("TargetHit", this.getTargetHit()));
+        stats.add(new StatField("Cash", this.getCash()));
+        stats.add(new StatField("CorruptionT", this.getCorruptionThreshold()));
+
+        return stats;
     }
 }

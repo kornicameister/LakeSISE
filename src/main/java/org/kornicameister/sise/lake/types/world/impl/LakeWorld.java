@@ -1,6 +1,7 @@
 package org.kornicameister.sise.lake.types.world.impl;
 
 import CLIPSJNI.PrimitiveValue;
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
@@ -8,8 +9,10 @@ import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
+import org.kornicameister.util.StatField;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
@@ -25,6 +28,7 @@ public class LakeWorld extends DefaultWorld {
     private static final Integer MIN_PRESSURE = 900;
     private static final String FIND_FACT_F_FIELD_F_ID_D = "(find-fact ((?f field)) (= ?f:id %d))";
     private static final String FIND_FACT_A_ACTOR_EQ_A_ID_S = "(find-fact ((?a actor)) (eq ?a:id \"%s\"))";
+    private static final String STAT_STRING = "\t%1$-15s ::\t %2$-20s >>> \t%3$s";
     protected Integer lakeX;
     protected Integer lakeY;
     protected Integer lakeSize;
@@ -63,9 +67,16 @@ public class LakeWorld extends DefaultWorld {
             final DefaultActor actor = defaultActorIterator.next();
             //collect results and update fields status and actors status
             try {
-                final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
-                PrimitiveValue value = this.environment.eval(findActorFactStr);
-                actor.applyFact(value.get(0));
+                final List<StatField> before = actor.getStats();
+                {
+                    final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
+                    PrimitiveValue value = this.environment.eval(findActorFactStr);
+                    actor.applyFact(value.get(0));
+                }
+                final List<StatField> after = actor.getStats();
+
+                this.printComparison(before, after);
+
             } catch (Exception exception) {
                 LOGGER.fatal(String.format("Failed to update actor %s", actor.getFactId()), exception);
             }
@@ -79,6 +90,28 @@ public class LakeWorld extends DefaultWorld {
                 LOGGER.fatal(String.format("Failed to update field %s", field.getId()), exception);
             }
         }
+    }
+
+    private void printComparison(List<StatField> before, List<StatField> after) {
+        Preconditions.checkArgument(before.size() == after.size());
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("\tStatistic\t\n");
+
+        for (int i = 0; i < before.size(); i++) {
+            final StatField beforeStat = before.get(i);
+            final StatField afterStat = after.get(i);
+            if (beforeStat.getField().equals(afterStat.getField())) {
+                stringBuilder
+                        .append(
+                                String.format(STAT_STRING,
+                                        beforeStat.getField(),
+                                        beforeStat.getValue(),
+                                        afterStat.getValue()))
+                        .append("\n");
+            }
+        }
+        System.out.println(stringBuilder.toString());
     }
 
     private void assertFields() {

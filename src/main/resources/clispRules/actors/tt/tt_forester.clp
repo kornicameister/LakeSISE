@@ -20,22 +20,25 @@
 	=>
 	(retract ?dt)
 	(modify ?anf (cash (- ?anf-cash ?ticket)))
+    (printout t "TicketDo :: " ?ticket crlf)
 )
 
 (defrule tt_forester_ticket-for-invalid-id
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
 	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
 	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type ?suspect-type) (validId ?suspect-valid-id))
-	(test
-		(neq ?forester ?suspect))
-	(test
-		(> ?suspect-cash 0))
-	(test
-	    (< ?suspect-cash ?a-ct))
-	(test
-		(eq ?suspect-valid-id no))
-	(test
-		(eq 1 (tt_forester_check_type_valid_id ?suspect-type)))
+	(and
+        (test
+            (neq ?forester ?suspect))
+        (test
+            (> ?suspect-cash 0))
+        (test
+            (<= ?suspect-cash ?a-ct))
+        (test
+            (eq ?suspect-valid-id no))
+        (test
+            (eq 1 (tt_forester_check_type_valid_id ?suspect-type)))
+	)
 	=>
 	(retract ?nf)
 
@@ -45,6 +48,4 @@
 	)
 
 	(assert (tt_forester_doTicket (who ?n-id) (ticket ?tmp)))
-
-	(printout t ?n-id " ticket he got, cash took = " ?tmp "." crlf)
 )

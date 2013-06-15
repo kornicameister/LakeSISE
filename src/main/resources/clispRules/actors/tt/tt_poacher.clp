@@ -15,7 +15,7 @@
     (retract ?ttpb)
     (modify ?forester (cash (+ ?f-cash ?b)))
     (modify ?poacher (cash (- ?p-cash ?b)))
-    (printout t "TicketDo :: " ?b crlf)
+    (printout t "BribeDo :: " ?b crlf)
 )
 
 (defrule tt_poacher_bribe_forester
@@ -23,15 +23,19 @@
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?p-id) (field ?f-id))
 	?forester 	<-	(actor (id ?a-id) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
 	?poacher	<-	(actor (id ?p-id) (cash ?p-cash) (type poacher) (validId ?valid-id))
-	(test
-	    (>= ?p-cash ?a-ct))
-	(test
-	    (> ?p-cash 0))
+	(and
+        (test
+            (>= ?p-cash ?a-ct))
+        (test
+            (> ?p-cash 0))
+    )
 	=>
 	(retract ?nf)
 	(bind ?tmp (- ?p-cash ?a-ct))
 	(if (> ?tmp 0)
 	    then
 	        (assert (tt_poacher_bribe (poacher ?p-id) (forester ?a-id) (bribe ?tmp)))
+	        ; so the forester took bribe...change corruption threshold
+            (modify ?forester (corruptionThreshold (- ?a-ct 10)))
 	)
 )
