@@ -25,21 +25,21 @@
 (defrule tt_forester_ticket-for-invalid-id
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
 	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
-	?anf 		<-	(actor (id ?n-id) (cash ?anf-cash) (type ?anf-type) (validId ?anf-valid-id))
+	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type ?suspect-type) (validId ?suspect-valid-id))
 	(test
-		(neq ?forester ?anf))
+		(neq ?forester ?suspect))
 	(test
-		(> ?anf-cash 0))
+		(> ?suspect-cash 0))
 	(test
-	    (< ?anf-cash ?a-ct))
+	    (< ?suspect-cash ?a-ct))
 	(test
-		(neq ?anf-valid-id yes))
+		(neq ?suspect-valid-id yes))
 	(test
-		(eq 1 (tt_forester_check_type_valid_id ?anf-type)))
+		(eq 1 (tt_forester_check_type_valid_id ?suspect-type)))
 	=>
 	(retract ?nf)
 
-	(if (eq ?anf-type poacher)
+	(if (eq ?suspect-type poacher)
 		then (bind ?tmp (* ?a-ap 4))
 		else (bind ?tmp ?a-ap)
 	)
