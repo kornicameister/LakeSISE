@@ -1,24 +1,10 @@
-;---------------dodatkowy template dla mojej ryby--------------;
-;-- ale nie potrzebny juz bo dodany bedzie do actora--;
-(deftemplate predator
-	(slot actor 	
-		(type STRING))
-	(slot hunger	
-		(type INTEGER))
-	(slot aggressive	
-	(type SYMBOL)	
-		(allowed-symbols yes no))
-)
-
-
 ;----------------glodny - > agresja + MOC---------------;
 (defrule hungry
 ?actor <- (actor (id ?id) (moveRange ?mr) (visionRange ?vr) (attackPower ?ap) (hunger ?hunger) (aggressive ?aggressive))
 (test (> 50 ?hunger))
 (test (< 21 ?hunger))
 =>
-(modify ?predator (aggressive yes))
-(modify ?actor (moveRange (+ ?mr 1)) (visionRange (+ ?vr 1)) (attackPower (+ ?ap 40))))
+(modify ?actor (aggressive yes) (moveRange (+ ?mr 1)) (visionRange (+ ?vr 1)) (attackPower (+ ?ap 40))))
 
 
 ;--------------najedzony = spokojny i wolniutki--------------;
@@ -27,8 +13,7 @@
 (test (< 50 ?hunger))
 (test (eq yes ?aggressive))
 =>
-(modify ?predator (aggressive no))
-(modify ?actor (moveRange (- ?mr 1)) (visionRange (- ?vr 1)) (attackPower (- ?ap 40))))
+(modify ?actor (aggressive no) (moveRange (- ?mr 1)) (visionRange (- ?vr 1)) (attackPower (- ?ap 40))))
 
 
 ;----------------glodowka=smierc-----------------------;
@@ -50,7 +35,9 @@
 (test (eq ?tfid ?taf))
 (test (= 1 (is-actor-in-range ?x ?y ?tX ?tY ?ar)))
 (test (eq yes ?ag))
-(OR (eq ?type herbivore_fish) (eq ?type predator_fish))
+(or (test (eq ?type herbivore_fish))
+	(test (eq ?type predator_fish))
+)
 =>
 (modify ?target (hp (- ?hp ?ap)))
 (modify ?actor (hunger (+ ?hunger 60)))
