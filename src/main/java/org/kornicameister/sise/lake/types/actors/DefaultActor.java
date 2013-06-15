@@ -47,6 +47,8 @@ public abstract class DefaultActor
     protected Integer corruptionThreshold;
     protected Boolean validId;
     protected Integer attackPower;
+    protected Integer weight;
+    protected Boolean isMoveChanged;
     private List<WorldField> neighbourhood;
 
     public DefaultActor() {
@@ -65,11 +67,13 @@ public abstract class DefaultActor
         this.canSwim = Boolean.valueOf(properties.getProperty("actor.weapon.canSwim", DEFAULT_VALUE_FALSE));
         this.cash = Integer.valueOf(properties.getProperty("actor.cash", DEFAULT_VALUE));
         this.validId = Boolean.valueOf(properties.getProperty("actor.validId", DEFAULT_VALUE_FALSE));
+        this.weight = Integer.valueOf(properties.getProperty("actor.weight", DEFAULT_VALUE));
         this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold", DEFAULT_VALUE));
         this.targetHit = false;
         this.type = this.setType();
         this.target = null;
         this.isAlive = this.hp > 0;
+        this.isMoveChanged = false;
 
         WorldHelper.registerActor(this);
     }
@@ -119,10 +123,12 @@ public abstract class DefaultActor
                 .append(String.format("(id \"%s\")\n", this.getFactId()))
                 .append(String.format("(type %s)\n", this.type.name().toLowerCase()))
                 .append(String.format("(atField %d)\n", this.atField != null ? this.atField.getId() : -1))
+                .append(String.format("(isMoveChanged %s)\n", BooleanToSymbol.toSymbol(this.isMoveChanged)))
                 .append(String.format("(isAlive %s)\n", BooleanToSymbol.toSymbol(this.isAlive)))
                 .append(String.format("(canAttack %s)\n", BooleanToSymbol.toSymbol(this.canAttack)))
                 .append(String.format("(canFly %s)\n", BooleanToSymbol.toSymbol(this.canFly)))
                 .append(String.format("(canSwim %s)\n", BooleanToSymbol.toSymbol(this.canSwim)))
+                .append(String.format("(weight %d)\n", this.weight))
                 .append(String.format("(hp %d)\n", this.hp))
                 .append(String.format("(visionRange %d)\n", this.visionRange))
                 .append(String.format("(attackRange %d)\n", this.attackRange))
