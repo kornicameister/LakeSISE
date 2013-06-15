@@ -8,7 +8,8 @@
 # idea
 .idea/*
 *.iml
-
+.clisp/*
+*.dll
 logs/**
 *.ppt
 *~*.docx
