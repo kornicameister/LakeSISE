@@ -88,6 +88,8 @@
 		(type INTEGER))  				;how good we are in killing
     (slot moveRange
 		(type INTEGER))    				;how far can we go
+	(slot hunger	
+		(type INTEGER))
     ;-----------------generic-properties--------------;
 
     ;-----------------attack-properties---------------;
@@ -96,6 +98,9 @@
     (slot targetHit
 		(type SYMBOL)
 		(allowed-symbols yes no))    	;was actor hit
+	(slot aggressive
+		(type SYMBOL)					;is actor aaggresive	
+		(allowed-symbols yes no))
     ;-----------------attack-properties---------------;
 
     ;-----------------corruption-properties-----------;
