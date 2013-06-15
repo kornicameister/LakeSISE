@@ -31,8 +31,6 @@
 	(test
 		(> ?suspect-cash 0))
 	(test
-	    (< ?suspect-cash ?a-ct))
-	(test
 		(neq ?suspect-valid-id yes))
 	(test
 		(eq 1 (tt_forester_check_type_valid_id ?suspect-type)))

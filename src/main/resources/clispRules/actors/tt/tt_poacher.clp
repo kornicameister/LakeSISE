@@ -27,6 +27,8 @@
 	    (>= ?p-cash ?a-ct))
 	(test
 	    (> ?p-cash 0))
+	(test
+		(neq ?suspect-valid-id no))
 	=>
 	(retract ?nf)
 	(bind ?tmp (- ?p-cash ?a-ct))
