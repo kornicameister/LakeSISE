@@ -60,6 +60,9 @@
     ;-----------------location----------------------;
 	(slot atField
 		(type INTEGER))            ;location field-id
+	(slot isMoveChanged
+	    (type SYMBOL)
+	    (allowed-symbols yes no))
     ;-----------------location----------------------;
 
     ;-----------------generic-abilities--------------;
@@ -75,6 +78,8 @@
     ;-----------------generic-abilities--------------;
 
     ;-----------------generic-properties--------------;
+    (slot weight
+        (type INTEGER))
     (slot hp
 		(type INTEGER))           		;behavior different for each actor
     (slot isAlive
@@ -133,6 +138,20 @@
        	)
     )
     ;------------------move-checking-functions----------;
+    ;------------------type-checking--------------------;
+    (deffunction check_type_pred(?actor-type)
+    	(if  (eq ?actor-type predator_fish)
+    		then (return 1)
+    	)
+    	(return 0)
+    )
+    (deffunction check_type_herbi(?actor-type)
+    	(if  (eq ?actor-type herbivore_fish)
+    		then (return 1)
+    	)
+    	(return 0)
+    )
+    ;------------------type-checking--------------------;
 ;----------------------functions------------------------;
 
 ;----------------------rules----------------------------;
