@@ -19,9 +19,9 @@ public class ClispPropertiesSplitter {
     private static final String CLISP_SUFFIX     = "clisp";
     private static final String INIT_DATA_SUFFIX = "init";
 
-    public static Set<ClispBootstrapTypeDescriptor> load(final String key, final Properties properties) {
+    public static List<ClispBootstrapTypeDescriptor> load(final String key, final Properties properties) {
         final String[] actors = ClispPropertiesSplitter.getSplit(key, properties);
-        final Set<ClispBootstrapTypeDescriptor> descriptors = new HashSet<>(actors.length);
+        final List<ClispBootstrapTypeDescriptor> descriptors = new LinkedList<>();
 
         for (String actor : actors) {
             final String accessKey = String.format("%s.%s", key, actor);
