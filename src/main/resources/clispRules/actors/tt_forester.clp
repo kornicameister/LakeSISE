@@ -1,6 +1,6 @@
 ;Forester is an actor who hunts down poacher and checks anglers
 
-(deftemplate tt_forester_doTicker
+(deftemplate tt_forester_doTicket
 	(slot who
 		(type STRING))
 	(slot ticket
@@ -14,35 +14,37 @@
 	(return 0)
 )
 
-(defrule tt_forester_do_ticker
-	?dt			<- (tt_forester_doTicker (who ?w-id) (ticket ?ticket))
-	?anf 		<-	(actor (id ?w-id) (cash ?anf-cash))
+(defrule tt_forester_do_ticket
+	?dt			<-      (tt_forester_doTicket (who ?w-id) (ticket ?ticket))
+	?anf 		<-      (actor (id ?w-id) (cash ?anf-cash))
 	=>
 	(retract ?dt)
 	(modify ?anf (cash (- ?anf-cash ?ticket)))
 )
 
-(defrule tt_forester_ticker-for-invalid-id
+(defrule tt_forester_ticket-for-invalid-id
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
-	?forester 	<-	(actor (id ?a-id) (attackPower ?fap))
+	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
 	?anf 		<-	(actor (id ?n-id) (cash ?anf-cash) (type ?anf-type) (validId ?anf-valid-id))
-	(test 
+	(test
 		(neq ?forester ?anf))
-	(test 
-		(<> ?anf-cash 0))
-	(test 
+	(test
+		(> ?anf-cash 0))
+	(test
+	    (< ?anf-cash ?a-ct))
+	(test
 		(neq ?anf-valid-id yes))
-	(test 
+	(test
 		(eq 1 (tt_forester_check_type_valid_id ?anf-type)))
 	=>
 	(retract ?nf)
-	
+
 	(if (eq ?anf-type poacher)
-		then (bind ?tmp (* ?fap 4))
-		else (bind ?tmp ?fap)
+		then (bind ?tmp (* ?a-ap 4))
+		else (bind ?tmp ?a-ap)
 	)
-	
-	(assert (tt_forester_doTicker (who ?n-id) (ticket ?tmp)))
-	
+
+	(assert (tt_forester_doTicket (who ?n-id) (ticket ?tmp)))
+
 	(printout t ?n-id " ticket he got, cash took = " ?tmp "." crlf)
 )
