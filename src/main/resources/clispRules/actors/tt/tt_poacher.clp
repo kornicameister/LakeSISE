@@ -22,13 +22,11 @@
     "rule applies if the forester is the one who approaches poacher"
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?p-id) (field ?f-id))
 	?forester 	<-	(actor (id ?a-id) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
-	?poacher	<-	(actor (id ?p-id) (cash ?p-cash) (type poacher))
+	?poacher	<-	(actor (id ?p-id) (cash ?p-cash) (type poacher) (validId ?valid-id))
 	(test
 	    (>= ?p-cash ?a-ct))
 	(test
 	    (> ?p-cash 0))
-	(test
-		(neq ?suspect-valid-id no))
 	=>
 	(retract ?nf)
 	(bind ?tmp (- ?p-cash ?a-ct))

@@ -44,8 +44,13 @@ public class LakeWorld extends DefaultWorld {
 
         this.environment.reset();
         this.assertFields();
+
         this.assertActors();
         this.environment.run();
+
+        this.assertMoveActors();
+        this.environment.run();
+
         this.collectResults();
 
         LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
@@ -87,20 +92,16 @@ public class LakeWorld extends DefaultWorld {
         final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
-            LOGGER.info(String.format("%s [%d]", actor.getFactId(), actor.getCash()));
-            {
-                // apply actor state
-                this.environment.assertString(actor.getFact());
-                // apply actor state
+            this.environment.assertString(actor.getFact());
+            actor.prepare(WorldHelper.getFieldInActorRange(actor)).run();
+        }
+    }
 
-                // do actor logic
-                actor.prepare(WorldHelper.getFieldInActorRange(actor)).run();
-                // do actor logic
-
-                // move actor
-                this.environment.assertString(this.moveFact(actor, this.getWorldFieldToActor(actor)));
-                // move actor
-            }
+    private void assertMoveActors() {
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+        while (defaultActorIterator.hasNext()) {
+            final DefaultActor actor = defaultActorIterator.next();
+            this.environment.assertString(this.moveFact(actor, this.getWorldFieldToActor(actor)));
         }
     }
 
