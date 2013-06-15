@@ -131,16 +131,19 @@
 ;----------------------functions------------------------;
 
 ;----------------------rules----------------------------;
-    ;------------------kill-rule------------------------;
+    ;------------------kill-rules------------------------;
     (defrule kill
-    	?actor <- (actor (id ?a-id) (type ?a-type) (hp ?hp) (isAlive ?isAlive))
-    	(test (> 1 ?hp))
+    	?actor <- (actor (id ?a-id) (type ?a-type) (hp ?hp) (isAlive ?isAlive) (cash ?cash))
     	(test (eq yes ?isAlive))
+    	(or
+    	    (test (< ?hp 0))
+    	    (test (< ?cash 0))
+    	)
     	=>
-    	(modify ?actor (isAlive ?*false*))
+    	(retract ?actor)
 		(printout t ?a-id "/" ?a-type " is no longer alive..." crlf)
     )
-    ;------------------kill-rule------------------------;
+    ;------------------kill-rules------------------------;
 	;------------------move-rules-----------------------;
 	;
 	; Moving rules behaves as follow, there can be only one

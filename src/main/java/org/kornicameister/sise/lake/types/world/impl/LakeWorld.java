@@ -45,18 +45,19 @@ public class LakeWorld extends DefaultWorld {
     @Override
     public void run() {
         LOGGER.info(String.format("[%d] > world loop started", this.iteration));
-
         this.environment.reset();
-        this.assertFields();
-
-        this.assertActors();
-        this.environment.run();
-
-        this.assertMoveActors();
-        this.environment.run();
-
+        {
+            this.assertFields();
+        }
+        {
+            this.assertMoveActors();
+            this.environment.run();
+        }
+        {
+            this.assertActors();
+            this.environment.run();
+        }
         this.collectResults();
-
         LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
     }
 
@@ -67,15 +68,21 @@ public class LakeWorld extends DefaultWorld {
             final DefaultActor actor = defaultActorIterator.next();
             //collect results and update fields status and actors status
             try {
-                final List<StatField> before = actor.getStats();
-                {
-                    final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
-                    PrimitiveValue value = this.environment.eval(findActorFactStr);
-                    actor.applyFact(value.get(0));
-                }
-                final List<StatField> after = actor.getStats();
 
-                this.printComparison(before, after);
+                final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
+                PrimitiveValue value = this.environment.eval(findActorFactStr);
+                if (value.size() != 0) {
+
+                    final List<StatField> before = actor.getStats();
+                    actor.applyFact(value.get(0));
+                    final List<StatField> after = actor.getStats();
+
+                    this.printComparison(before, after);
+                } else {
+                    defaultActorIterator.remove();
+                    System.out.println(String.format("\t%s is no longer alive", actor.getFactId()));
+                }
+
 
             } catch (Exception exception) {
                 LOGGER.fatal(String.format("Failed to update actor %s", actor.getFactId()), exception);

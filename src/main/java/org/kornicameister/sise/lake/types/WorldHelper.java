@@ -185,6 +185,10 @@ public abstract class WorldHelper {
         return actors.values();
     }
 
+    public static void removeActor(Integer id) {
+        actors.remove(id);
+    }
+
     public enum FieldPredicate {
         LAND_FIELD,
         WATER_FIELD,
