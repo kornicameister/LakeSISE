@@ -181,6 +181,10 @@ public abstract class WorldHelper {
         return fields.values().iterator();
     }
 
+    public static Collection<DefaultActor> getActors() {
+        return actors.values();
+    }
+
     public enum FieldPredicate {
         LAND_FIELD,
         WATER_FIELD,

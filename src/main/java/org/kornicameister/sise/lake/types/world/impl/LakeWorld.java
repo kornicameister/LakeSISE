@@ -41,18 +41,53 @@ public class LakeWorld extends DefaultWorld {
     @Override
     public void run() {
         LOGGER.info(String.format("[%d] > world loop started", this.iteration));
-        final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
-        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
 
         this.environment.reset();
+        this.assertFields();
+        this.assertActors();
+        this.environment.run();
+        this.collectResults();
 
+        LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
+    }
+
+    private void collectResults() {
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+        final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
+        while (defaultActorIterator.hasNext()) {
+            final DefaultActor actor = defaultActorIterator.next();
+            //collect results and update fields status and actors status
+            try {
+                final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
+                PrimitiveValue value = this.environment.eval(findActorFactStr);
+                actor.applyFact(value.get(0));
+            } catch (Exception exception) {
+                LOGGER.fatal(String.format("Failed to update actor %s", actor.getFactId()), exception);
+            }
+        }
+        while (worldFieldIterator.hasNext()) {
+            final WorldField field = worldFieldIterator.next();
+            try {
+                final String findPrevFieldStr = String.format(FIND_FACT_F_FIELD_F_ID_D, field.getId());
+                field.applyFact(this.environment.eval(findPrevFieldStr).get(0));
+            } catch (Exception exception) {
+                LOGGER.fatal(String.format("Failed to update field %s", field.getId()), exception);
+            }
+        }
+    }
+
+    private void assertFields() {
+        final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
         while (worldFieldIterator.hasNext()) {
             this.environment.assertString(worldFieldIterator.next().getFact());
         }
+    }
 
+    private void assertActors() {
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
-
+            LOGGER.info(String.format("%s [%d]", actor.getFactId(), actor.getCash()));
             {
                 // apply actor state
                 this.environment.assertString(actor.getFact());
@@ -66,29 +101,7 @@ public class LakeWorld extends DefaultWorld {
                 this.environment.assertString(this.moveFact(actor, this.getWorldFieldToActor(actor)));
                 // move actor
             }
-            this.environment.run();
-
-            //collect results and update fields status and actors status
-            try {
-                final Integer previousFieldId = actor.getAtField().getId();
-
-                final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
-                PrimitiveValue value = this.environment.eval(findActorFactStr);
-                actor.applyFact(value.get(0));
-
-                final String findFieldFactStr = String.format(FIND_FACT_F_FIELD_F_ID_D, actor.getAtField().getId());
-                value = this.environment.eval(findFieldFactStr);
-                actor.getAtField().applyFact(value.get(0));
-
-                final String findPrevFieldStr = String.format(FIND_FACT_F_FIELD_F_ID_D, previousFieldId);
-                value = this.environment.eval(findPrevFieldStr);
-                WorldHelper.getField(previousFieldId).applyFact(value.get(0));
-
-            } catch (Exception exception) {
-                LOGGER.fatal(String.format("Failed to update actor %s", actor.getFactId()), exception);
-            }
         }
-        LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
     }
 
     @Override
