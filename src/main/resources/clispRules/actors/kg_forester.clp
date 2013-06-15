@@ -24,7 +24,7 @@
 
 (defrule kg_forester_ticket-for-invalid-id
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
-	?forester 	<-	(actor (id ?a-id) (akgackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
+	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (type forester))
 	?anf 		<-	(actor (id ?n-id) (cash ?anf-cash) (type ?anf-type) (validId ?anf-valid-id))
 	(test
 		(neq ?forester ?anf))
@@ -35,7 +35,7 @@
 	=>
 	(retract ?nf)
 
-	(bind ?tmp (* ?a-ap 4))
+	(bind ?tmp (* ?a-ap 10))
 
 	(assert (kg_forester_doTicket (who ?n-id) (ticket ?tmp)))
 
