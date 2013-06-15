@@ -51,7 +51,6 @@ public class LakeWorld extends DefaultWorld {
         }
         {
             this.assertMoveActors();
-            this.environment.run();
         }
         {
             this.assertActors();
