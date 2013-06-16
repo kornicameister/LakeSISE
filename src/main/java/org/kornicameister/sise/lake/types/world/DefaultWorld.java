@@ -72,8 +72,8 @@ abstract public class DefaultWorld
     }
 
     protected void registerFields() {
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
                 WorldHelper.registerField(new WorldField(i, j));
             }
         }
@@ -82,8 +82,8 @@ abstract public class DefaultWorld
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DefaultWorld{");
-        sb.append("width=").append(width);
-        sb.append(", height=").append(height);
+        sb.append("width=").append(getWidth());
+        sb.append(", height=").append(getHeight());
         sb.append(", environment=").append(environment);
         sb.append('}');
         return sb.toString();
@@ -128,4 +128,19 @@ abstract public class DefaultWorld
         return String.format("%s_%d", this.getFactName(), 0);
     }
 
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
 }

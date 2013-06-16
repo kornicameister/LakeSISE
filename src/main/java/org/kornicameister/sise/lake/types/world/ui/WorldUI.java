@@ -1,6 +1,17 @@
 package org.kornicameister.sise.lake.types.world.ui;
 
+import org.apache.log4j.Logger;
+import org.kornicameister.sise.lake.types.WorldHelper;
+import org.kornicameister.sise.lake.types.actors.impl.kg.ForesterActorKG;
+
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,13 +20,96 @@ import javax.swing.*;
  * Time: 00:22
  * To change this template use File | Settings | File Templates.
  */
-public class WorldUI extends JFrame {
+public class WorldUI extends JFrame implements ActionListener {
+    private final Logger LOGGER = Logger.getLogger(WorldUI.class);
     private int maxFieldsHorizontally;
     private int maxFieldsVertically;
+    private JPanel panel = null;
+    private List<Field> fields = null;
+    private JButton nextRound;
+    private JCheckBox autoNextRound;
+    private JCheckBox enableStorm;
 
-    public WorldUI(){
-        this.setTitle("LakeSISE");
+    public WorldUI(String propFile) {
+        //test
+        maxFieldsHorizontally = WorldHelper.getWorld().getWidth();
+        maxFieldsVertically = WorldHelper.getWorld().getHeight();
+        //panel setting
+        this.panel = new JPanel(null);
+        this.fields = new ArrayList<>();
+        this.setLayout(null);
+        this.setImages(propFile);
+        this.addFields();
+        this.nextRound = new JButton("Next round");
+        this.nextRound.setBounds(maxFieldsHorizontally * this.fields.get(0).getLabel().getSize().width +
+                (this.fields.get(0).getLabel().getSize().width / 2), 0, 100, 30);
+        this.nextRound.addActionListener(this);
+        this.nextRound.setVisible(true);
+        this.panel.add(nextRound);
+        this.autoNextRound = new JCheckBox("Auto round");
+        this.autoNextRound.setBounds((int) this.nextRound.getBounds().getX(), ((int) (this.nextRound.getBounds().getHeight() * 1.2)), 100, 20);
+        this.autoNextRound.addActionListener(this);
+        this.autoNextRound.setVisible(true);
+        this.panel.add(autoNextRound);
+        this.enableStorm = new JCheckBox("Storm");
+        this.enableStorm.setBounds((int) this.nextRound.getBounds().getX(),
+                ((int) ((this.autoNextRound.getBounds().getY() + this.autoNextRound.getBounds().getHeight()) * 1.2)), 100, 20);
+        this.enableStorm.setVisible(true);
+        this.panel.add(enableStorm);
+        panel.setSize(
+                (maxFieldsHorizontally + 1) * this.fields.get(0).getLabel().getSize().width + this.nextRound.getWidth(),
+                maxFieldsVertically * this.fields.get(0).getLabel().getSize().height + (this.fields.get(0).getLabel().getSize().height / 2));
+        //window setting
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
+        this.setResizable(false);
+        this.setSize(panel.getSize());
+        this.setContentPane(panel);
+        panel.setVisible(true);
+        this.setVisible(true);
+    }
+
+    private void setImages(String propFile) {
+        Properties properties = new Properties();
+        try {
+            properties.load(new BufferedReader(new FileReader(new File(propFile))));
+            Field.ANGLER_IMAGE = properties.getProperty("ANGLER_IMAGE");
+            Field.BIRD_IMAGE = properties.getProperty("BIRD_IMAGE");
+            Field.FORESTER_IMAGE = properties.getProperty("FORESTER_IMAGE");
+            Field.HERBIVORE_FISH_IMAGE = properties.getProperty("HERBIVORE_FISH_IMAGE");
+            Field.POACHER_IMAGE = properties.getProperty("POACHER_IMAGE");
+            Field.PREDATOR_FISH_IMAGE = properties.getProperty("PREDATOR_FISH_IMAGE");
+            Field.LAND_IMAGE = properties.getProperty("LAND_IMAGE");
+            Field.WATER_IMAGE = properties.getProperty("WATER_IMAGE");
+
+        } catch (IOException e) {
+            LOGGER.fatal(String.format("Failure when reading from properties file -> %s", propFile), e);
+            return;
+        }
+    }
+
+    public void addFields() {
+        for (int i = 0; i < maxFieldsVertically; i++) {
+            for (int j = 0; j < maxFieldsHorizontally; j++) {
+                this.fields.add(0, new Field(new JLabel(Integer.toString(i + j)), new ForesterActorKG()));
+                this.fields.get(0).getLabel().setBounds(
+                        this.fields.get(0).getLabel().getIcon().getIconWidth() * j,
+                        this.fields.get(0).getLabel().getIcon().getIconHeight() * i,
+                        this.fields.get(0).getLabel().getIcon().getIconWidth(),
+                        this.fields.get(0).getLabel().getIcon().getIconHeight());
+                panel.add(this.fields.get(0).getLabel());
+                this.fields.get(0).setWater(new Random().nextBoolean());
+            }
+        }
+        Collections.reverse(this.fields);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() instanceof JButton) {
+            //TODO
+        } else if (e.getSource() instanceof JCheckBox) {
+            //TODO
+        }
     }
 }
