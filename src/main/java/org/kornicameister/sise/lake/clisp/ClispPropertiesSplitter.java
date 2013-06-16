@@ -11,7 +11,7 @@ import java.util.*;
  * @since 0.0.1
  */
 
-public class ClispPropertiesSplitter {
+class ClispPropertiesSplitter {
     private static final Logger LOGGER           = Logger.getLogger(ClispPropertiesSplitter.class);
     private static final String ENTRY_REGEX      = ",";
     private static final String PACKAGE_REGEX    = "=";

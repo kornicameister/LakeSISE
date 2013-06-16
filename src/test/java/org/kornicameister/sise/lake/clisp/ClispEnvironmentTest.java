@@ -18,7 +18,7 @@ public class ClispEnvironmentTest {
 
     @Test
     public void test_1_GetInstance() throws Exception {
-        ClispEnvironmentTest.clispEnvironment = ClispEnvironment.newInstance(PROPERTIES);
+        ClispEnvironmentTest.clispEnvironment = ClispEnvironment.getInstance(PROPERTIES);
         Assert.assertNotNull("ClispEnvironment environment is null", ClispEnvironmentTest.clispEnvironment);
     }
 }

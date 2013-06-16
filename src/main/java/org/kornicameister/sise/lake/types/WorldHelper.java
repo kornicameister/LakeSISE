@@ -5,6 +5,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
+import org.kornicameister.sise.lake.types.world.DefaultWorld;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -38,8 +39,9 @@ public abstract class WorldHelper {
             return !input.isWater();
         }
     };
-    private static Map<Integer, WorldField> fields = new IdentityHashMap<>();
-    private static Map<Integer, DefaultActor> actors = new IdentityHashMap<>();
+    private static Map<Integer, WorldField> fields = new HashMap<>();
+    private static Map<Integer, DefaultActor> actors = new HashMap<>();
+    private static DefaultWorld world;
 
     public static WorldField getField(final int x, final int y) {
         for (WorldField field : fields.values()) {
@@ -187,6 +189,14 @@ public abstract class WorldHelper {
 
     public static void removeActor(Integer id) {
         actors.remove(id);
+    }
+
+    public static void registerWorld(DefaultWorld world) {
+        WorldHelper.world = world;
+    }
+
+    public static DefaultWorld getWorld() {
+        return world;
     }
 
     public enum FieldPredicate {

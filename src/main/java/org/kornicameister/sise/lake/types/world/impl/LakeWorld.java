@@ -147,6 +147,7 @@ public class LakeWorld extends DefaultWorld {
 
         this.registerFields();
         this.applyLakeRules();
+        WorldHelper.registerWorld(this);
     }
 
     private void applyLakeRules() {

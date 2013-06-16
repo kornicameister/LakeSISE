@@ -35,8 +35,11 @@ public class ClispEnvironment {
         this.bootstrapped = this.bootstrap();
     }
 
-    public static ClispEnvironment newInstance(final String propertiesPath) {
-        ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
+    public static ClispEnvironment getInstance(final String propertiesPath) {
+        if (ClispEnvironment.ourInstance == null) {
+            ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
+            return ClispEnvironment.ourInstance;
+        }
         return ClispEnvironment.ourInstance;
     }
 

@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Launcher {
 
     public static void main(String[] args) {
-        ClispEnvironment clispEnvironment = ClispEnvironment.newInstance(args[0]);
+        ClispEnvironment clispEnvironment = ClispEnvironment.getInstance(args[0]);
         Scanner scanIn = new Scanner(System.in);
         if (clispEnvironment.isBootstrapped()) {
             boolean nextLoop = true;
