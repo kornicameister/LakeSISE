@@ -48,6 +48,10 @@
 )
 
 (deftemplate actor
+    (slot logicDone
+        (type SYMBOL)
+        (allowed-symbols yes no)
+        (default no))
     ;-----------------description--------------------;
 	(slot id		
 		(type STRING))           ;ID actora + getName()
@@ -118,8 +122,34 @@
 )
 
 ;----------------------functions------------------------;
-    ;------------------move-checking-functions----------;
-    (deffunction is-actor-in-range(?x ?y ?tX ?tY ?range)
+    ;-------------------utility-------------------------;
+    (deffunction countFacts (?template)
+        (length (find-all-facts ((?fct ?template)) TRUE))
+    )
+    ;-------------------utility-------------------------;
+    ;------------------move-drawing-functions-----------;
+    (deffunction applyRangeMod(?actor ?range ?rm)
+        (bind ?tmp 0)
+        (if (= ?rm 0) then
+            (bind ?tmp ?rm)
+        else then
+            (if (< ?rm 0) then
+                (bind ?tmp 0)
+            else then
+                (bind ?tmp ?rm)
+            )
+            (if (> ?tmp ?*maxRange*) then (bind ?tmp ?*maxRange*))
+        )
+        (printout t "Applying range mode=" ?tmp crlf)
+        (return ?tmp)
+    )
+
+    (defgeneric affectRangeByWeather)
+    (defmethod affectRangeByWeather ((?range INTEGER) (?actor-type SYMBOL) (?id STRING))
+        (return ?range)
+    )
+
+    (deffunction isActorInRange(?x ?y ?tX ?tY ?range)
        (bind ?tmp (abs (- ?x ?tX)))
        	(if (> ?tmp ?range) then
        		(return 0)
@@ -127,12 +157,56 @@
        		(bind ?tmp (abs (- ?y ?tY)))
        		(if (> ?tmp ?range) then
        			(return 0)
-       		else
+       		else then
        			(return 1)
        		)
        	)
     )
-    ;------------------move-checking-functions----------;
+
+    (deffunction isMoveDrawn(?actor-isMoveChanged)
+        (if
+            (eq ?actor-isMoveChanged ?*false*)
+        then
+            (return 1)
+        else then
+            (return 0)
+        )
+    )
+
+    (deffunction findFieldToMoveRec(?fromField-id ?toField-id ?actor-moveRange ?actor-type ?fieldFound)
+        (while (or (= ?fromField-id ?toField-id) (= ?toField-id -1))
+            (bind ?toField-id (random 0 (countFacts field)))
+        )
+        (if (neq ?fieldFound ?*true*)
+            then
+                (do-for-fact
+                    ((?ff field) (?tf field))
+                    (and
+                        (> ?tf:id -1)
+                        (eq ?tf:id ?toField-id)
+                        (eq ?ff:id ?fromField-id)
+                    )
+                    (if (and
+                            (= 1 (isActorInRange ?ff:x ?ff:y ?tf:x ?tf:y ?actor-moveRange) )
+                            (eq ?tf:occupied ?*false*)
+                        )
+                        then
+		                    (printout t "Next::Found field, field-id=" ?toField-id crlf)
+                            (bind ?fieldFound ?*true*)
+                            (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-type ?fieldFound))
+                        else then
+		                    (printout t "Next::Looking for next field, field-id=" ?toField-id " not good" crlf)
+                            (bind ?toField-id (random 0 (countFacts field)))
+                            (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-type ?fieldFound))
+                    )
+                )
+            else
+		        (printout t "Final::Found field, field-id=" ?toField-id crlf)
+                (return ?toField-id)
+        )
+    )
+
+    ;------------------move-drawing-functions-----------;
     ;------------------type-checking--------------------;
     (deffunction check_type_pred(?actor-type)
     	(if  (eq ?actor-type predator_fish)
@@ -163,7 +237,7 @@
 		(printout t ?a-id "/" ?a-type " is no longer alive..." crlf)
     )
     ;------------------kill-rules------------------------;
-	;------------------move-rules-----------------------;
+	;------------------move-rules------------------------;
 	;
 	; Moving rules behaves as follow, there can be only one
 	; moveActor fact at the time - only one valid, because only
@@ -191,36 +265,74 @@
 			(modify	?f (occupied ?*false*))
 		)
 
-		(defrule move-actor
-			"rule applies moving of an actor on the clisp side"
-			?move	<-	(moveActor (actor ?actor-id) (from ?ff-id) (to ?tf-id))
-			?actor 	<-	(actor (id ?actor-id) (type ?actor-name) (moveRange ?range))
-			(and
-				(field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes))
-				(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied no))
-			    (test (= 1 (is-actor-in-range ?x ?y ?tX ?tY ?range)))       ;can actor be moved
-			)
-			=>
-			(retract ?move)
-			(assert (occupyField (field ?tf-id)))
-			(assert (freeField (field ?ff-id)))
-			(modify ?actor 	(atField ?tf-id))
-			(printout t ?actor-id "/" ?actor-name " moved from [" ?ff-id "=[" ?x ":" ?y "]] to [" ?tf-id "=[" ?tX ":" ?tY "]] with range " ?range "." crlf)
+		(deffunction moveActor (?actor-id ?fromField-id ?toField-id)
+		    (do-for-fact
+                ((?ff field) (?tf field) (?ac actor))
+                (and
+                    (eq  ?ac:id ?actor-id)
+                    (eq  ?tf:id ?toField-id)
+                    (eq  ?ff:id ?fromField-id)
+                    (eq ?ff:occupied ?*true*)
+                    (eq ?tf:occupied ?*false*)
+                )
+                (assert             (occupyField (field ?tf:id)))
+                (assert             (freeField (field ?ff:id)))
+                (modify ?ac 	    (atField ?tf:id))
+                (printout t ?ac:id "/" ?ac:type " moved from [" ?ff:id "=[" ?ff:x ":" ?ff:y "]] to [" ?tf:id "=[" ?tf:x ":" ?tf:y "]] with range " ?ac:moveRange "." crlf)
+                (return 1)
+            )
+            (return -1)
 		)
+        ;------------------find-neighbours------------------;
+        (deffunction findNeighbour(?actor-id ?neighbour-id ?range)
+            (do-for-fact
+                ((?neighbour actor) (?field field))
+                (and
+                    (neq ?neighbour:id ?actor-id)
+                    (eq ?neighbour:id ?neighbour-id))
+            )
+        )
+        (deffunction findNeighbours(?actor-id ?actor-range)
+            (bind ?count 0)
+            (do-for-all-facts ((?neighbour actor))
+                (findNeighbour ?actor-id ?neighbour:id ?actor-range)
+            )
+            (return ?count)
+        )
+        ;------------------find-neighbours------------------;
+        ;------------------create-move-rule------------------;
+        (deffunction createMove(?actor-id)
+            (do-for-fact
+                ((?actor actor))
+                (eq ?actor:id ?actor-id)
+                (if (= 1 (isMoveDrawn ?actor:isMoveChanged)) then
+                    (bind ?rangeMode ?actor:moveRange)
+                    (bind ?toField-id ?actor:atField)
 
-		(defrule clean-invalid-moves
-			"rule retracts all invalid moves"
-			?move	<-	(moveActor (actor ?actor-id) (from ?ff-id) (to ?tf-id))
-			?actor 	<-	(actor (id ?actor-id) (type ?actor-name) (moveRange ?range))
-			(and
-				(field (id ?ff-id) (x ?x)   (y ?y)  (occupied no))
-				(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes))
-				(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes))
-			    (test (= 0 (is-actor-in-range ?x ?y ?tX ?tY ?range)))       ;can actor be moved
-			)
-			=>
-			(retract ?move)
-			(printout t "Move from " ?ff-id " to " ?tf-id " is invalid." crlf)
-		)
+                    (bind   ?rangeMod       (applyRangeMod ?actor ?actor:moveRange (affectRangeByWeather ?actor:moveRange ?actor:type ?actor:id)))
+                    (bind   ?toField-id     (findFieldToMoveRec ?actor:atField -1 ?rangeMod ?actor:type ?*false*))
+                    (modify ?actor          (isMoveChanged ?*true*) (moveRange ?rangeMod))
+
+                    (moveActor ?actor:id ?actor:atField ?toField-id)
+                )
+            )
+        )
+        (deffunction createMoves()
+            (do-for-all-facts ((?actor actor))
+                (createMove ?actor:id)
+                (modify ?actor (logicDone ?*true*))
+            )
+            ;TODO add searching for neighbours
+            ;(do-for-all-facts ((?actor actor)) TRUE
+                ;(findNeighbours ?actor:id ?actor:moveRange)
+            ;)
+        )
+        (defrule doLogic
+            (actor (logicDone no))
+            =>
+            (createMoves)
+        )
+        ;------------------create-move-rule------------------;
 	;------------------move-rules-----------------------;
 ;----------------------rules----------------------------;
+

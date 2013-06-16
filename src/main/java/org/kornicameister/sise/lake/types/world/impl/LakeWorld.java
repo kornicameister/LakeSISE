@@ -50,9 +50,6 @@ public class LakeWorld extends DefaultWorld {
             this.assertFields();
         }
         {
-            this.assertMoveActors();
-        }
-        {
             this.assertActors();
             this.environment.run();
         }
@@ -134,27 +131,6 @@ public class LakeWorld extends DefaultWorld {
             this.environment.assertString(actor.getFact());
             actor.prepare(WorldHelper.getFieldInActorRange(actor)).run();
         }
-    }
-
-    private void assertMoveActors() {
-        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
-        while (defaultActorIterator.hasNext()) {
-            final DefaultActor actor = defaultActorIterator.next();
-            this.environment.assertString(this.moveFact(actor, this.getWorldFieldToActor(actor)));
-        }
-    }
-
-    @Override
-    protected String moveFact(DefaultActor actor, WorldField toField) {
-        final StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("(moveActor ");
-        stringBuilder.append(String.format("(actor \"%s\")", String.format("%s_%d", actor.getFactName(), actor.getId())));
-        stringBuilder.append(String.format("(from %d)", actor.getAtField().getId()));
-        stringBuilder.append(String.format("(to %d)", toField.getId()));
-        stringBuilder.append(" )");
-
-        return stringBuilder.toString();
     }
 
     protected void resolveProperties(final Properties properties) {

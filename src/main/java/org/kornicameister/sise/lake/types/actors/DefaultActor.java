@@ -152,6 +152,7 @@ public abstract class DefaultActor
         this.setCash(value.getFactSlot("cash").intValue());
         this.setHp(value.getFactSlot("hp").intValue());
         this.setTargetHit(BooleanToSymbol.fromSymbol(value.getFactSlot("targetHit").symbolValue()));
+        this.setAlive(BooleanToSymbol.fromSymbol(value.getFactSlot("isAlive").symbolValue()));
     }
 
     @Override

@@ -97,6 +97,4 @@ abstract public class DefaultWorld
     }
 
     protected abstract void applyStateToEnvironment();
-
-    protected abstract String moveFact(final DefaultActor actor, WorldField randomField);
 }

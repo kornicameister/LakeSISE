@@ -1,5 +1,34 @@
 ;Forester is an actor who hunts down poacher and checks anglers
 
+(defmethod affectRangeByWeather
+    (
+        (?range INTEGER)
+        (?type SYMBOL)
+        (?id STRING (eq ?id "ForesterActorTT_1"))
+    )
+    (do-for-fact
+        ((?ac actor))
+        (eq ?ac:id "ForesterActorTT_1")
+        (bind ?range ?ac:moveRange)
+
+        (if (and (eq ?*rain* yes) (eq ?*storm* yes)) then
+            (bind ?range 4)
+        else then
+            (if (and (eq ?*storm* yes) (eq ?*rain* no)) then
+                (bind ?range 2)
+            else then
+                (if (and (eq ?*storm* no) (eq ?*rain* yes)) then
+                    (bind ?range 3)
+                else then
+                    (bind ?range 1)
+                )
+            )
+        )
+        (printout t "ForesterActorTT_1 custom affectRangeByWeather, range=" ?range crlf)
+        (return ?range)
+    )
+)
+
 (deftemplate tt_forester_doTicket
 	(slot who
 		(type STRING))
