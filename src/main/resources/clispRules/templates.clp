@@ -1,5 +1,27 @@
+(reset)
+(clear)
+
 (defglobal ?*true* 	= yes)
 (defglobal ?*false* = no)
+
+(defglobal
+	?*width* = 18
+	?*height* = 11
+	?*lakeX* = 0
+	?*lakeY* = 0
+	?*lakeSize* = 0
+	?*rain* = 0
+	?*storm* = 0
+	?*pressure* = 0
+
+	?*fishRangeMod* = 2
+	?*birdRangeMod* = 4
+	?*foresterRangeMod* = 3
+	?*anglerPoacherRangeMod* = 1
+
+	?*maxRange* = 6
+)
+
 
 (deftemplate actorNeighbour
 	"template that describes actors neighbour"
@@ -178,10 +200,51 @@
         )
     )
 
+    ;generic method
     (defgeneric nextFieldId)
-    (defmethod nextFieldId((?currentNextField-Id INTEGER) (?actor-id STRING))
-         (bind ?toField-id (random 0 (countFacts field)))
-         (return ?toField-id)
+
+    ;1. specialized impl one - however still generic, it requires first two arguments to be passed
+    (defmethod nextFieldId ( (?currentNextField-Id INTEGER) (?actor-type SYMBOL) ($?actor-id STRING) )
+        (printout t "NFI::RANDOM" crlf)
+        (bind ?toField-id (random 0 (countFacts field)))
+        (return ?toField-id)
+    )
+
+    ;2. specialized impl - requires first two arguments to be passed, will be called only if ?actor-type is *-fish
+    (defmethod nextFieldId(
+        (?currentNextField-Id INTEGER)
+        (?actor-type SYMBOL (or
+                                (eq ?actor-type herbivore_fish) (eq ?actor-type predator_fish)))
+        ($?actor-id STRING))
+        (printout t "NFI::FISHES" crlf)
+        (do-for-fact
+            ((?waterField field))
+            (and
+                (eq ?waterField:occupied ?*false*)
+                (eq ?waterField:water ?*true*)
+                (neq ?waterField:id ?currentNextField-Id)
+            )
+            (printout t "NFI::FISHES nextFieldId=" ?waterField:id crlf)
+            (return ?waterField:id)
+        )
+    )
+
+    ;3. specialized impl - requires first two arguments to be passed, will be called only if ?actor-type is angler,poacher or forester
+    (defmethod nextFieldId(
+        (?currentNextField-Id INTEGER)
+        (?actor-type SYMBOL (or
+                                (eq ?actor-type angler) (eq ?actor-type poacher) (eq ?actor-type forester)))
+        ($?actor-id STRING))
+        (do-for-fact
+            ((?landField field))
+            (and
+                (eq ?landField:occupied ?*false*)
+                (eq ?landField:water ?*false*)
+                (neq ?landField:id ?currentNextField-Id)
+            )
+            (printout t "NFI::ANGLER/POACHER/FORESTER nextFieldId=" ?landField:id crlf)
+            (return ?landField:id)
+        )
     )
 
     (deffunction findFieldToMoveRec(
@@ -192,7 +255,7 @@
                 ?actor-type
                 ?fieldFound)
         (while (or (= ?fromField-id ?toField-id) (= ?toField-id -1))
-            (bind ?toField-id (nextFieldId ?toField-id ?actor-id))
+            (bind ?toField-id (nextFieldId ?toField-id ?actor-type ?actor-id))
         )
         (if (neq ?fieldFound ?*true*)
             then
@@ -213,7 +276,7 @@
                             (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-id ?actor-type ?fieldFound))
                         else then
 		                    (printout t "Next::Looking for next field, field-id=" ?toField-id " not good" crlf)
-                            (bind ?toField-id (nextFieldId ?toField-id ?actor-id))
+                            (bind ?toField-id (nextFieldId ?toField-id ?actor-type ?actor-id))
                             (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-id ?actor-type ?fieldFound))
                     )
                 )
@@ -337,19 +400,91 @@
         (deffunction createMoves()
             (do-for-all-facts ((?actor actor))
                 (createMove ?actor:id)
-                (modify ?actor (logicDone ?*true*))
             )
-            ;TODO add searching for neighbours
+            ; TODO add searching for neighbours
             ;(do-for-all-facts ((?actor actor)) TRUE
-                ;(findNeighbours ?actor:id ?actor:moveRange)
+
             ;)
         )
-        (defrule doLogic
-            (actor (logicDone no))
+        (defrule doBeforeLogic
+            ?actor <- (actor (id ?a-id) (logicDone no))
             =>
-            (createMoves)
+            (modify ?actor (logicDone ?*true*))
+            (createMove ?a-id)
+        )
+        (defrule doAfterLogic
+            (declare (salience -10))
+            ?actor <- (actor (id ?a-id) (moveRange ?a-moveRange) (logicDone yes))
+            =>
+            ;(findNeighbours ?a-id ?a-moveRange)
+            (printout t "doAfterLogic"  crlf)
         )
         ;------------------create-move-rule------------------;
 	;------------------move-rules-----------------------;
 ;----------------------rules----------------------------;
 
+                   (assert (actor
+                      	(id "ForesterActorTT_1")
+                      	(type forester)
+                      	(atField 0)
+                      	(canAttack yes)
+                      	(canFly no)
+                      	(canSwim no)
+                      	(hp 100)
+                      	(visionRange 10)
+                      	(attackRange 1)
+                      	(attackPower 2)
+                      	(moveRange 1)
+                      	(targetId -1)
+                      	(targetHit no)
+                      	(cash 0)
+                      	(corruptionThreshold 10)
+                      	(validId yes)
+                      	(isMoveChanged no)
+                    ))
+
+                    (assert (actor
+                    	(id "PoacherActorTT_2")
+                    	(type poacher)
+                    	(atField 1)
+                    	(canAttack yes)
+                    	(canFly no)
+                    	(canSwim no)
+                    	(hp 100)
+                    	(visionRange 10)
+                    	(attackRange 1)
+                    	(attackPower 2)
+                    	(moveRange 1)
+                    	(targetId -1)
+                    	(targetHit no)
+                    	(cash 100)
+                    	(corruptionThreshold 0)
+                    	(validId yes)
+                      	(isMoveChanged no)
+                    ))
+                   (assert (actor
+                       (id "PoacherActorTT_3")
+                       (type poacher)
+                       (atField 2)
+                       (canAttack yes)
+                       (canFly no)
+                       (canSwim no)
+                       (hp 100)
+                       (visionRange 10)
+                       (attackRange 1)
+                       (attackPower 2)
+                       (moveRange 1)
+                       (targetId -1)
+                       (targetHit no)
+                       (cash 100)
+                       (corruptionThreshold 0)
+                       (validId yes)
+                       (isMoveChanged no)
+                     ))
+
+                    (assert (field (id 0) (x 0) (y 0) (occupied yes) (water no)))
+                    (assert (field (id 1) (x 0) (y 1) (occupied yes) (water no)))
+                    (assert (field (id 2) (x 1) (y 0) (occupied yes) (water no)))
+                    (assert (field (id 3) (x 1) (y 1) (occupied no) (water no)))
+                    (assert (field (id 4) (x 1) (y 2) (occupied no) (water no)))
+                    (assert (field (id 5) (x 2) (y 0) (occupied no) (water no)))
