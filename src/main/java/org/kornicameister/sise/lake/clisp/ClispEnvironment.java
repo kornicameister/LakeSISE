@@ -4,6 +4,7 @@ import CLIPSJNI.Environment;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.exception.LakeInitializationException;
 import org.kornicameister.sise.lake.types.ClispType;
+import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
 
 import java.io.BufferedReader;
@@ -88,7 +89,7 @@ public class ClispEnvironment {
 
     public void mainLoop() {
         // find world
-        final DefaultWorld defaultWorld = this.findWorld();
+        final DefaultWorld defaultWorld = WorldHelper.getWorld();
         if (defaultWorld == null || !bootstrapped) {
             LOGGER.error("No world found...will exit");
             throw new LakeInitializationException("There is no world defined...");
@@ -99,15 +100,6 @@ public class ClispEnvironment {
         } else {
             throw new LakeInitializationException("World failed to be initialized...");
         }
-    }
-
-    private DefaultWorld findWorld() {
-        for (ClispType clispType : this.clispTypes) {
-            if (clispType instanceof DefaultWorld) {
-                return (DefaultWorld) clispType;
-            }
-        }
-        return null;
     }
 
     public boolean isBootstrapped() {

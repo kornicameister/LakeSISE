@@ -178,6 +178,9 @@
         )
     )
 
+    (defgeneric nextFieldId)
+    (defmethod nextFieldId((?currentNextField-Id INTEGER) ()
+
     (deffunction findFieldToMoveRec(?fromField-id ?toField-id ?actor-moveRange ?actor-type ?fieldFound)
         (while (or (= ?fromField-id ?toField-id) (= ?toField-id -1))
             (bind ?toField-id (random 0 (countFacts field)))
