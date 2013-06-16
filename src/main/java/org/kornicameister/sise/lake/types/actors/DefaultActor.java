@@ -41,8 +41,10 @@ public abstract class DefaultActor
     protected Integer visionRange;
     protected Integer attackRange;
     protected Integer moveRange;
+    protected Integer hunger;
     protected DefaultActor target;
     protected Boolean targetHit;
+    protected Boolean aggressive;
     protected Integer cash;
     protected Integer corruptionThreshold;
     protected Boolean validId;
@@ -62,9 +64,11 @@ public abstract class DefaultActor
         this.visionRange = Integer.valueOf(properties.getProperty("actor.vision.range", DEFAULT_VALUE));
         this.attackRange = Integer.valueOf(properties.getProperty("actor.weapon.range", DEFAULT_VALUE));
         this.attackPower = Integer.valueOf(properties.getProperty("actor.weapon.power", DEFAULT_VALUE));
+        this.hunger=Integer.valueOf(properties.getProperty("actor.hunger", DEFAULT_VALUE));
         this.canAttack = Boolean.valueOf(properties.getProperty("actor.weapon.canAttack", DEFAULT_VALUE_FALSE));
         this.canFly = Boolean.valueOf(properties.getProperty("actor.weapon.canFly", DEFAULT_VALUE_FALSE));
         this.canSwim = Boolean.valueOf(properties.getProperty("actor.weapon.canSwim", DEFAULT_VALUE_FALSE));
+        this.aggressive=Boolean.valueOf(properties.getProperty("actor.aggressive", DEFAULT_VALUE_FALSE));
         this.cash = Integer.valueOf(properties.getProperty("actor.cash", DEFAULT_VALUE));
         this.validId = Boolean.valueOf(properties.getProperty("actor.validId", DEFAULT_VALUE_FALSE));
         this.weight = Integer.valueOf(properties.getProperty("actor.weight", DEFAULT_VALUE));
@@ -133,9 +137,11 @@ public abstract class DefaultActor
                 .append(String.format("(visionRange %d)\n", this.visionRange))
                 .append(String.format("(attackRange %d)\n", this.attackRange))
                 .append(String.format("(attackPower %d)\n", this.attackPower))
+                .append(String.format("(hunger %d)\n", this.hunger))
                 .append(String.format("(moveRange %d)\n", this.moveRange))
                 .append(String.format("(targetId %d)\n", this.target == null ? -1 : this.target.id))
                 .append(String.format("(targetHit %s)\n", BooleanToSymbol.toSymbol(this.targetHit)))
+                .append(String.format("(aggressive %s)\n", BooleanToSymbol.toSymbol(this.aggressive)))
                 .append(String.format("(cash %d)\n", this.cash))
                 .append(String.format("(corruptionThreshold %d)\n", this.corruptionThreshold))
                 .append(String.format("(validId %s)\n", BooleanToSymbol.toSymbol(this.validId)))
@@ -152,7 +158,7 @@ public abstract class DefaultActor
         this.setCash(value.getFactSlot("cash").intValue());
         this.setHp(value.getFactSlot("hp").intValue());
         this.setTargetHit(BooleanToSymbol.fromSymbol(value.getFactSlot("targetHit").symbolValue()));
-        this.setAlive(BooleanToSymbol.fromSymbol(value.getFactSlot("isAlive").symbolValue()));
+        this.setHunger(value.getFactSlot("hunger").intValue());
     }
 
     @Override
@@ -306,8 +312,10 @@ public abstract class DefaultActor
         sb.append(", visionRange=").append(visionRange);
         sb.append(", attackRange=").append(attackRange);
         sb.append(", moveRange=").append(moveRange);
+        sb.append(", hunger=").append(hunger);
         sb.append(", target=").append(target);
         sb.append(", targetHit=").append(targetHit);
+        sb.append(", aggressive=").append(aggressive);
         sb.append(", cash=").append(cash);
         sb.append(", corruptionThreshold=").append(corruptionThreshold);
         sb.append(", validId=").append(validId);
@@ -322,11 +330,28 @@ public abstract class DefaultActor
         stats.add(new StatField("ID", this.getFactId()));
         stats.add(new StatField("Field", this.getAtField().getId()));
         stats.add(new StatField("Alive", this.getId()));
+        stats.add(new StatField("Hunger", this.getHunger()));
         stats.add(new StatField("Target", this.getTarget() != null ? this.getTarget().getFactId() : "none"));
         stats.add(new StatField("TargetHit", this.getTargetHit()));
         stats.add(new StatField("Cash", this.getCash()));
         stats.add(new StatField("CorruptionT", this.getCorruptionThreshold()));
 
         return stats;
+    }
+
+    public Integer getHunger() {
+        return hunger;
+    }
+
+    public void setHunger(Integer hunger) {
+        this.hunger = hunger;
+    }
+
+    public Boolean getAggressive() {
+        return aggressive;
+    }
+
+    public void setAggressive(Boolean aggressive) {
+        this.aggressive = aggressive;
     }
 }
