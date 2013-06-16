@@ -1,27 +1,5 @@
-(reset)
-(clear)
-
 (defglobal ?*true* 	= yes)
 (defglobal ?*false* = no)
-
-(defglobal
-	?*width* = 18
-	?*height* = 11
-	?*lakeX* = 0
-	?*lakeY* = 0
-	?*lakeSize* = 0
-	?*rain* = 0
-	?*storm* = 0
-	?*pressure* = 0
-
-	?*fishRangeMod* = 2
-	?*birdRangeMod* = 4
-	?*foresterRangeMod* = 3
-	?*anglerPoacherRangeMod* = 1
-
-	?*maxRange* = 6
-)
-
 
 (deftemplate actorNeighbour
 	"template that describes actors neighbour"
@@ -438,75 +416,4 @@
         ;------------------create-move-rule------------------;
 	;------------------move-rules-----------------------;
 ;----------------------rules----------------------------;
-
-(assert (actor
-    (id "ForesterActorTT_1")
-    (type forester)
-    (atField 0)
-    (canAttack yes)
-    (canFly no)
-    (canSwim no)
-    (hp 100)
-    (visionRange 10)
-    (attackRange 1)
-    (attackPower 2)
-    (moveRange 1)
-    (targetId -1)
-    (targetHit no)
-    (cash 0)
-    (corruptionThreshold 10)
-    (validId yes)
-    (isMoveChanged no)
-))
-
-(assert (actor
-    (id "PoacherActorTT_2")
-    (type poacher)
-    (atField 1)
-    (canAttack yes)
-    (canFly no)
-    (canSwim no)
-    (hp 100)
-    (visionRange 10)
-    (attackRange 1)
-    (attackPower 2)
-    (moveRange 1)
-    (targetId -1)
-    (targetHit no)
-    (cash 100)
-    (corruptionThreshold 0)
-    (validId yes)
-    (isMoveChanged no)
-))
-
-(assert (actor
-   (id "PoacherActorTT_3")
-   (type poacher)
-   (atField 5)
-   (canAttack yes)
-   (canFly no)
-   (canSwim no)
-   (hp 100)
-   (visionRange 10)
-   (attackRange 1)
-   (attackPower 2)
-   (moveRange 1)
-   (targetId -1)
-   (targetHit no)
-   (cash 100)
-   (corruptionThreshold 0)
-   (validId yes)
-   (isMoveChanged no)
- ))
-
-(assert (field (id 0) (x 0) (y 0) (occupied yes) (water no)))
-(assert (field (id 1) (x 0) (y 1) (occupied yes) (water no)))
-(assert (field (id 2) (x 1) (y 0) (occupied no) (water no)))
-(assert (field (id 3) (x 1) (y 1) (occupied no) (water no)))
-(assert (field (id 4) (x 1) (y 2) (occupied no) (water yes)))
-(assert (field (id 5) (x 2) (y 0) (occupied yes) (water no)))
-(assert (field (id 6) (x 2) (y 2) (occupied no) (water yes)))
-(assert (field (id 7) (x 3) (y 2) (occupied no) (water yes)))
-
-(run)
 
