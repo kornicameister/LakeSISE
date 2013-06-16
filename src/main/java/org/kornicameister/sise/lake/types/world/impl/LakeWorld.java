@@ -1,7 +1,7 @@
 package org.kornicameister.sise.lake.types.world.impl;
 
 import CLIPSJNI.PrimitiveValue;
-import com.google.common.base.Preconditions;
+import com.google.common.base.Objects;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
@@ -28,7 +28,6 @@ public class LakeWorld extends DefaultWorld {
     private static final Integer MIN_PRESSURE = 900;
     private static final String FIND_FACT_F_FIELD_F_ID_D = "(find-fact ((?f field)) (= ?f:id %d))";
     private static final String FIND_FACT_A_ACTOR_EQ_A_ID_S = "(find-fact ((?a actor)) (eq ?a:id \"%s\"))";
-    private static final String STAT_STRING = "\t%1$-15s ::\t %2$-20s >>> \t%3$s";
     protected Integer lakeX;
     protected Integer lakeY;
     protected Integer lakeSize;
@@ -95,46 +94,8 @@ public class LakeWorld extends DefaultWorld {
         }
     }
 
-    private void printComparison(List<StatField> before, List<StatField> after) {
-        Preconditions.checkArgument(before.size() == after.size());
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("\tStatistic\t\n");
-
-        for (int i = 0; i < before.size(); i++) {
-            final StatField beforeStat = before.get(i);
-            final StatField afterStat = after.get(i);
-            if (beforeStat.getField().equals(afterStat.getField())) {
-                stringBuilder
-                        .append(
-                                String.format(STAT_STRING,
-                                        beforeStat.getField(),
-                                        beforeStat.getValue(),
-                                        afterStat.getValue()))
-                        .append("\n");
-            }
-        }
-        System.out.println(stringBuilder.toString());
-    }
-
-    private void assertFields() {
-        final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
-        while (worldFieldIterator.hasNext()) {
-            this.environment.assertString(worldFieldIterator.next().getFact());
-        }
-    }
-
-    private void assertActors() {
-        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
-        while (defaultActorIterator.hasNext()) {
-            final DefaultActor actor = defaultActorIterator.next();
-            this.environment.assertString(actor.getFact());
-            actor.prepare(WorldHelper.getFieldInActorRange(actor)).run();
-        }
-    }
-
+    @Override
     protected void resolveProperties(final Properties properties) {
-
         this.width = Integer.valueOf(properties.getProperty("lake.world.width"));
         this.height = Integer.valueOf(properties.getProperty("lake.world.height"));
         this.lakeX = Integer.valueOf(properties.getProperty("lake.lake.x"));
@@ -147,6 +108,7 @@ public class LakeWorld extends DefaultWorld {
 
         this.registerFields();
         this.applyLakeRules();
+
         WorldHelper.registerWorld(this);
     }
 
@@ -168,34 +130,6 @@ public class LakeWorld extends DefaultWorld {
         LOGGER.info("Applied Lake-World rules");
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(" > ");
-        sb.append("LakeWorld{");
-        sb.append("lakeX=").append(lakeX);
-        sb.append(", lakeY=").append(lakeY);
-        sb.append(", lakeSize=").append(lakeSize);
-        sb.append(", rain=").append(rain);
-        sb.append(", storm=").append(storm);
-        sb.append(", pressureLevel=").append(pressureLevel);
-        sb.append('}');
-        return sb.toString();
-    }
-
-    @Override
-    protected void applyStateToEnvironment() {
-        this.environment.eval(String.format("(bind ?*rain* %s)", BooleanToSymbol.toSymbol(this.rain)));
-        this.environment.eval(String.format("(bind ?*storm* %s)", BooleanToSymbol.toSymbol(this.storm)));
-        this.environment.eval(String.format("(bind ?*pressure* %d)", this.pressureLevel));
-        this.environment.eval(String.format("(bind ?*width* %d)", this.width));
-        this.environment.eval(String.format("(bind ?*height* %d)", this.height));
-        this.environment.eval(String.format("(bind ?*lakeX* %d)", this.lakeX));
-        this.environment.eval(String.format("(bind ?*lakeY* %d)", this.lakeY));
-        this.environment.eval(String.format("(bind ?*lakeSize* %d)", this.lakeSize));
-    }
-
     public void modifyWorld(Pair<LakeProperty, Object>... propertyObjectPair) {
         for (Pair<LakeProperty, Object> lakeProperty : propertyObjectPair) {
             switch (lakeProperty.getKey()) {
@@ -211,6 +145,49 @@ public class LakeWorld extends DefaultWorld {
             }
         }
         this.applyStateToEnvironment();
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("super", super.toString())
+                .add("lakeX", lakeX)
+                .add("lakeY", lakeY)
+                .add("lakeSize", lakeSize)
+                .add("rain", rain)
+                .add("storm", storm)
+                .add("pressureLevel", pressureLevel)
+                .add("iteration", iteration)
+                .toString();
+    }
+
+    @Override
+    protected void applyStateToEnvironment() {
+        this.environment.eval(String.format("(bind ?*rain* %s)", BooleanToSymbol.toSymbol(this.rain)));
+        this.environment.eval(String.format("(bind ?*storm* %s)", BooleanToSymbol.toSymbol(this.storm)));
+        this.environment.eval(String.format("(bind ?*pressure* %d)", this.pressureLevel));
+        this.environment.eval(String.format("(bind ?*width* %d)", this.width));
+        this.environment.eval(String.format("(bind ?*height* %d)", this.height));
+        this.environment.eval(String.format("(bind ?*lakeX* %d)", this.lakeX));
+        this.environment.eval(String.format("(bind ?*lakeY* %d)", this.lakeY));
+        this.environment.eval(String.format("(bind ?*lakeSize* %d)", this.lakeSize));
+    }
+
+    @Override
+    protected void assertFields() {
+        final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
+        while (worldFieldIterator.hasNext()) {
+            this.environment.assertString(worldFieldIterator.next().getFact());
+        }
+    }
+
+    @Override
+    protected void assertActors() {
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+        while (defaultActorIterator.hasNext()) {
+            final DefaultActor actor = defaultActorIterator.next();
+            this.environment.assertString(actor.getFact());
+        }
     }
 
     public enum LakeProperty {

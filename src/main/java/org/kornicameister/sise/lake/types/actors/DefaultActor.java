@@ -6,7 +6,6 @@ import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.types.*;
 import org.kornicameister.util.StatField;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -64,11 +63,11 @@ public abstract class DefaultActor
         this.visionRange = Integer.valueOf(properties.getProperty("actor.vision.range", DEFAULT_VALUE));
         this.attackRange = Integer.valueOf(properties.getProperty("actor.weapon.range", DEFAULT_VALUE));
         this.attackPower = Integer.valueOf(properties.getProperty("actor.weapon.power", DEFAULT_VALUE));
-        this.hunger=Integer.valueOf(properties.getProperty("actor.hunger", DEFAULT_VALUE));
+        this.hunger = Integer.valueOf(properties.getProperty("actor.hunger", DEFAULT_VALUE));
         this.canAttack = Boolean.valueOf(properties.getProperty("actor.weapon.canAttack", DEFAULT_VALUE_FALSE));
         this.canFly = Boolean.valueOf(properties.getProperty("actor.weapon.canFly", DEFAULT_VALUE_FALSE));
         this.canSwim = Boolean.valueOf(properties.getProperty("actor.weapon.canSwim", DEFAULT_VALUE_FALSE));
-        this.aggressive=Boolean.valueOf(properties.getProperty("actor.aggressive", DEFAULT_VALUE_FALSE));
+        this.aggressive = Boolean.valueOf(properties.getProperty("actor.aggressive", DEFAULT_VALUE_FALSE));
         this.cash = Integer.valueOf(properties.getProperty("actor.cash", DEFAULT_VALUE));
         this.validId = Boolean.valueOf(properties.getProperty("actor.validId", DEFAULT_VALUE_FALSE));
         this.weight = Integer.valueOf(properties.getProperty("actor.weight", DEFAULT_VALUE));
@@ -83,34 +82,6 @@ public abstract class DefaultActor
     }
 
     protected abstract LakeActors setType();
-
-    public final DefaultActor prepare(List<WorldField> neighbourhood) {
-        this.neighbourhood = neighbourhood;
-
-        //asserting neighbours
-        Iterator<WorldField> it = neighbourhood.iterator();
-        while (it.hasNext()) {
-            final WorldField field = it.next();
-            final DefaultActor actor = WorldHelper.getActor(field);
-            if (actor != null) {
-                if (!actor.equals(this)) {
-                    this.environment.assertString(String.format(
-                            ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D,
-                            this.getFactId(),
-                            actor.getFactId(),
-                            field.getId()
-                    ));
-                }
-            } else {
-                it.remove();
-            }
-        }
-
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("%d/%s has %d in his area", this.id, this.type, neighbourhood.size()));
-        }
-        return this;
-    }
 
     /**
      * This method must not be overridden.
