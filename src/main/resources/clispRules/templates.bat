@@ -198,8 +198,15 @@
     ;1. specialized impl one - however still generic, it requires first two arguments to be passed
     (defmethod nextFieldId ( (?currentNextField-Id INTEGER) (?actor-type SYMBOL) ($?actor-id STRING) )
         (printout t "NFI::RANDOM" crlf)
-        (bind ?toField-id (random 0 (countFacts field)))
-        (return ?toField-id)
+        (do-for-fact
+            ((?field field))
+            (and
+                (eq     ?field:occupied     ?*false*)
+                (neq    ?field:id           ?currentNextField-Id)
+            )
+            (printout t "NFI::FISHES nextFieldId=" ?field:id crlf)
+            (return ?field:id)
+        )
     )
 
     ;2. specialized impl - requires first two arguments to be passed, will be called only if ?actor-type is *-fish
@@ -208,13 +215,13 @@
         (?actor-type SYMBOL (or
                                 (eq ?actor-type herbivore_fish) (eq ?actor-type predator_fish)))
         ($?actor-id STRING))
-        (printout t "NFI::FISHES" crlf)
+
         (do-for-fact
             ((?waterField field))
             (and
-                (eq ?waterField:occupied ?*false*)
-                (eq ?waterField:water ?*true*)
-                (neq ?waterField:id ?currentNextField-Id)
+                (eq ?waterField:occupied    ?*false*)
+                (eq ?waterField:water       ?*true*)
+                (neq ?waterField:id         ?currentNextField-Id)
             )
             (printout t "NFI::FISHES nextFieldId=" ?waterField:id crlf)
             (return ?waterField:id)
@@ -227,12 +234,13 @@
         (?actor-type SYMBOL (or
                                 (eq ?actor-type angler) (eq ?actor-type poacher) (eq ?actor-type forester)))
         ($?actor-id STRING))
+
         (do-for-fact
             ((?landField field))
             (and
-                (eq ?landField:occupied ?*false*)
-                (eq ?landField:water ?*false*)
-                (neq ?landField:id ?currentNextField-Id)
+                (eq ?landField:occupied     ?*false*)
+                (eq ?landField:water        ?*false*)
+                (neq ?landField:id          ?currentNextField-Id)
             )
             (printout t "NFI::ANGLER/POACHER/FORESTER nextFieldId=" ?landField:id crlf)
             (return ?landField:id)
@@ -373,7 +381,7 @@
         )
         (deffunction findNeighbours (?actor-id ?actor-range)
             (bind ?count 0)
-            (do-for-all-facts ((?neighbour actor))
+            (delayed-do-for-all-facts ((?neighbour actor))
                 (printout t "FNS:: actorId=" ?actor-id ", possibleNeighbourId=" ?neighbour:id ",actorRange=" ?actor-range crlf)
                 (findNeighbour ?actor-id ?neighbour:id ?actor-range)
                 (bind ?count (+ ?count 1))
@@ -399,6 +407,7 @@
             )
         )
         (defrule doBeforeLogic
+            (declare (auto-focus TRUE))
             ?actor <- (actor (id ?a-id) (logicDone 0))
             =>
             (modify ?actor (logicDone 1))
@@ -406,7 +415,7 @@
             (printout t "doBeforeLogic, actor-id=" ?a-id  crlf)
         )
         (defrule doAfterLogic
-            (declare (salience -20))
+            (declare (salience -10))
             ?actor <- (actor (id ?a-id) (moveRange ?a-moveRange) (logicDone 1))
             =>
             (modify ?actor (logicDone 2))
