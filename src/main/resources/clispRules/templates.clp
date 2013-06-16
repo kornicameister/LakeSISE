@@ -179,11 +179,20 @@
     )
 
     (defgeneric nextFieldId)
-    (defmethod nextFieldId((?currentNextField-Id INTEGER) ()
+    (defmethod nextFieldId((?currentNextField-Id INTEGER) (?actor-id STRING))
+         (bind ?toField-id (random 0 (countFacts field)))
+         (return ?toField-id)
+    )
 
-    (deffunction findFieldToMoveRec(?fromField-id ?toField-id ?actor-moveRange ?actor-type ?fieldFound)
+    (deffunction findFieldToMoveRec(
+                ?fromField-id
+                ?toField-id
+                ?actor-moveRange
+                ?actor-id
+                ?actor-type
+                ?fieldFound)
         (while (or (= ?fromField-id ?toField-id) (= ?toField-id -1))
-            (bind ?toField-id (random 0 (countFacts field)))
+            (bind ?toField-id (nextFieldId ?toField-id ?actor-id))
         )
         (if (neq ?fieldFound ?*true*)
             then
@@ -201,11 +210,11 @@
                         then
 		                    (printout t "Next::Found field, field-id=" ?toField-id crlf)
                             (bind ?fieldFound ?*true*)
-                            (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-type ?fieldFound))
+                            (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-id ?actor-type ?fieldFound))
                         else then
 		                    (printout t "Next::Looking for next field, field-id=" ?toField-id " not good" crlf)
-                            (bind ?toField-id (random 0 (countFacts field)))
-                            (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-type ?fieldFound))
+                            (bind ?toField-id (nextFieldId ?toField-id ?actor-id))
+                            (return (findFieldToMoveRec ?fromField-id ?toField-id ?actor-moveRange ?actor-id ?actor-type ?fieldFound))
                     )
                 )
             else
@@ -318,7 +327,7 @@
                     (bind ?toField-id ?actor:atField)
 
                     (bind   ?rangeMod       (applyRangeMod ?actor ?actor:moveRange (affectRangeByWeather ?actor:moveRange ?actor:type ?actor:id)))
-                    (bind   ?toField-id     (findFieldToMoveRec ?actor:atField -1 ?rangeMod ?actor:type ?*false*))
+                    (bind   ?toField-id     (findFieldToMoveRec ?actor:atField -1 ?rangeMod ?actor:id ?actor:type ?*false*))
                     (modify ?actor          (isMoveChanged ?*true*) (moveRange ?rangeMod))
 
                     (moveActor ?actor:id ?actor:atField ?toField-id)
