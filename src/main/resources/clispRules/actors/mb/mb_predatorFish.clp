@@ -89,7 +89,7 @@
 ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
 (test (eq ?fid ?paf))
 (test (eq ?tfid ?taf))
-(test (= 1 (is-actor-in-range ?x ?y ?tX ?tY ?ar)))
+(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
 (test (eq yes ?ag))
 (test (eq ?typ predator_fish))
 (test (eq yes ?alive))
