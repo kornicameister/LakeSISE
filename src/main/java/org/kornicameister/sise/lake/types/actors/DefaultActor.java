@@ -107,6 +107,7 @@ public abstract class DefaultActor
                 .append(String.format("(canFly %s)\n", BooleanToSymbol.toSymbol(this.canFly)))
                 .append(String.format("(canSwim %s)\n", BooleanToSymbol.toSymbol(this.canSwim)))
                 .append(String.format("(weight %d)\n", this.weight))
+                .append(String.format("(howManyFises %d)\n", this.howManyFishes))
                 .append(String.format("(hp %d)\n", this.hp))
                 .append(String.format("(visionRange %d)\n", this.visionRange))
                 .append(String.format("(attackRange %d)\n", this.attackRange))
@@ -143,9 +144,11 @@ public abstract class DefaultActor
         this.setHp(value.getFactSlot("hp").intValue());
         this.setTargetHit(BooleanToSymbol.fromSymbol(value.getFactSlot("targetHit").symbolValue()));
         this.setHunger(value.getFactSlot("hunger").intValue());
+        this.setWeight(value.getFactSlot("weight").intValue());
+        this.setHowManyFishes(value.getFactSlot("howManyFises").intValue());
     }
 
-    protected String appendExtraDataToFact() {
+	protected String appendExtraDataToFact() {
         return EMPTY_STRING;
     }
 
@@ -317,7 +320,15 @@ public abstract class DefaultActor
     public void setTarget(final DefaultActor target) {
         this.target = target;
     }
-
+    
+    public int getWeight()
+    {
+    	return this.weight;
+    }
+    public void setWeight(final int weight)
+    {
+    	this.weight = weight;
+    }
     public WorldField getAtField() {
         return atField;
     }
