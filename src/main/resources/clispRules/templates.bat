@@ -152,7 +152,7 @@
             )
             (if (> ?tmp ?*maxRange*) then (bind ?tmp ?*maxRange*))
         )
-        (printout t "Applying range mode=" ?tmp crlf)
+        ;(printout t "Applying range mode=" ?tmp crlf)
         (return ?tmp)
     )
 
@@ -162,7 +162,7 @@
     )
 
     (deffunction euclideanDistance(?x ?y ?tX ?tY)
-        (return (+ (abs (- ?x ?tX)) (abs (- ?y ?tY)) ))
+        (return (sqrt (+ (abs (- ?x ?tX)) (abs (- ?y ?tY)) )))
     )
 
     (deffunction isActorInRange(?x ?y ?tX ?tY ?range)
@@ -200,14 +200,14 @@
 
     ;1. specialized impl one - however still generic, it requires first two arguments to be passed
     (defmethod nextFieldId ( (?currentNextField-Id INTEGER) (?actor-type SYMBOL) ($?actor-id STRING) )
-        (printout t "NFI::RANDOM" crlf)
+        ;(printout t "NFI::RANDOM" crlf)
         (do-for-fact
             ((?field field))
             (and
                 (eq     ?field:occupied     ?*false*)
                 (eq     ?field:id           ?currentNextField-Id)
             )
-            (printout t "NFI::FISHES nextFieldId=" ?field:id crlf)
+            ;(printout t "NFI::FISHES nextFieldId=" ?field:id crlf)
             (return ?field:id)
         )
         (return -1)
@@ -227,7 +227,7 @@
                 (eq ?waterField:water       ?*true*)
                 (eq ?waterField:id          ?currentNextField-Id)
             )
-            (printout t "NFI::FISHES nextFieldId=" ?waterField:id crlf)
+            ;(printout t "NFI::FISHES nextFieldId=" ?waterField:id crlf)
             (return ?waterField:id)
         )
         (return -1)
@@ -247,7 +247,7 @@
                 (eq ?landField:water        ?*false*)
                 (eq ?landField:id           ?currentNextField-Id)
             )
-            (printout t "NFI::ANGLER/POACHER/FORESTER nextFieldId=" ?landField:id crlf)
+            ;(printout t "NFI::ANGLER/POACHER/FORESTER nextFieldId=" ?landField:id crlf)
             (return ?landField:id)
         )
         (return -1)
@@ -297,21 +297,6 @@
 	; This move is valid, because actor occupies field ID=1
 	; but if we would like to move actor from field ID=2 to field ID=4
 	; this would be impossible, because actor occupies field ID=1
-		(defrule occupy-field
-			?tof	<- (occupyField (field ?f-id))
-			?f		<- (field (id ?f-id) (occupied no))
-			=>
-			(retract ?tof)
-			(modify	?f (occupied ?*true*))
-		)
-
-		(defrule free-field
-			?tof	<- (freeField (field ?f-id))
-			?f		<- (field (id ?f-id) (occupied yes))
-			=>
-			(retract ?tof)
-			(modify	?f (occupied ?*false*))
-		)
 
         ;------------------find-neighbours------------------;
         (deffunction findNeighbour (?actor-id ?neighbour-id ?range)
@@ -322,7 +307,7 @@
                     (eq ?neighbour:id ?neighbour-id)
                     (eq ?actor:id ?actor-id))
                 (if (= 1 (isActorInRangeByField ?actor:atField ?neighbour:atField ?range)) then
-                   ; (printout t "FN:: actorId=" ?actor:id ", neighbourId=" ?neighbour:id ", fieldId=" ?neighbour:atField crlf)
+                    ;(printout t "FN:: actorId=" ?actor:id ", neighbourId=" ?neighbour:id ", fieldId=" ?neighbour:atField crlf)
                     (assert (actorNeighbour (actor ?actor:id) (neighbour ?neighbour-id) (field ?neighbour:atField)))
                 else then
                     ;(printout t "FN_OUT_OF_RANGE:: actorId=" ?actor:id ", neighbourId=" ?neighbour:id ", fieldId=" ?neighbour:atField crlf)
@@ -354,13 +339,12 @@
                 )
             )
             =>
-            (printout t "doMove_step1, actor-id=" ?a-id  crlf)
-            (do-for-fact
-                ((?actor actor))
-                (eq ?actor:id ?a-id)
-                    (bind   ?rangeMod       (applyRangeMod ?actor:moveRange (affectRangeByWeather ?actor:moveRange ?actor:type ?actor:id)))
-                    (modify ?vActor         (moveRange ?rangeMod) (logicDone 2))
-            )
+            ;(printout t "doMove_step1, actor-id=" ?a-id  crlf)
+
+            (bind   ?rangeMod       (applyRangeMod ?a-mr (affectRangeByWeather ?a-mr ?a-t ?a-id)))
+            (printout t "aa::" ?rangeMod crlf)
+            (modify ?vActor         (moveRange ?rangeMod) (logicDone 2))
+
             (retract ?dbm)
         )
         (defrule doMove_step2
@@ -376,8 +360,10 @@
                     ( eq    ?ff-o       yes)
                     ( eq    ?tf-o       no)
                     ( =     ?tf-id      (nextFieldId ?tf-id ?a-t ?a-id))
+                    ( =     1           (isActorInRangeByField ?ff-id ?tf-id ?a-mr))
                 )
             )
+
             =>
             (modify ?toField
                 (occupied ?*true*)
@@ -397,15 +383,15 @@
             =>
             (modify ?actor (logicDone 1))
             (assert (doBeforeMove (actor ?a-id)))
-            (printout t "doBeforeLogic, actor-id=" ?a-id  crlf)
+            ;(printout t "doBeforeLogic, actor-id=" ?a-id  crlf)
         )
         (defrule doAfterLogic
-            (declare (salience -10))
+            (declare (salience ?*LOW-PRIORITY*))
             ?actor <- (actor (id ?a-id) (moveRange ?a-moveRange) (logicDone 3) (isMoveChanged yes))
             =>
             (modify ?actor (logicDone 4))
             (findNeighbours ?a-id ?a-moveRange)
-            (printout t "doAfterLogic, actor-id=" ?a-id  crlf)
+            ;(printout t "doAfterLogic, actor-id=" ?a-id  crlf)
         )
         ;------------------create-move-rule------------------;
 	;------------------move-rules-----------------------;
