@@ -8,23 +8,18 @@ public class AnglerActorTS extends DefaultActor {
 	public AnglerActorTS () {
 		super();
 		}
-	
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getFactName() {
-		// TODO Auto-generated method stub
-		return AnglerActorTS.class.getSimpleName();
-	}
-
+		
 	@Override
 	protected LakeActors setType() {
-		// TODO Auto-generated method stub
 		return LakeActors.ANGLER;
-	}
-
+		}
+		
+	@Override
+	public void run() {
+		}
+	
+	@Override
+	public String getFactName() {
+		return AnglerActorTS.class.getSimpleName();
+		}
 }
