@@ -37,7 +37,6 @@ public class WorldUI extends JFrame implements ActionListener {
     private JCheckBox autoNextRound;
     private JCheckBox enableStorm;
     private ClispEnvironment environment;
-    private boolean lock = false;
 
     public WorldUI(String worldProp, String propFile) {
         this.environment = ClispEnvironment.getInstance(worldProp);
@@ -134,7 +133,16 @@ public class WorldUI extends JFrame implements ActionListener {
                 this.generateWorld();
             }
         } else if (e.getSource() instanceof JCheckBox) {
-            //TODO if will be time :)
+            while (((JCheckBox) (e.getSource())).isSelected()) {
+                environment.mainLoop();
+                System.out.print("Next tour -> \t");
+                this.generateWorld();
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e1) {
+//                   //LOGGER.fatal("Thread was interaped",e1);
+//                }
+            }
         }
     }
 

@@ -50,6 +50,7 @@ public abstract class DefaultActor
     protected Integer attackPower;
     protected Integer weight;
     protected Boolean isMoveChanged;
+    protected Integer howManyFishes;
     private List<WorldField> neighbourhood;
 
     public DefaultActor() {
@@ -72,6 +73,7 @@ public abstract class DefaultActor
         this.validId = Boolean.valueOf(properties.getProperty("actor.validId", DEFAULT_VALUE_FALSE));
         this.weight = Integer.valueOf(properties.getProperty("actor.weight", DEFAULT_VALUE));
         this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold", DEFAULT_VALUE));
+        this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
         this.targetHit = false;
         this.type = this.setType();
         this.target = null;
@@ -324,5 +326,13 @@ public abstract class DefaultActor
 
     public void setAggressive(Boolean aggressive) {
         this.aggressive = aggressive;
+    }
+
+    public Integer getHowManyFishes() {
+        return this.howManyFishes;
+    }
+
+    public void setHowManyFishes(Integer howManyFishes) {
+        this.howManyFishes = howManyFishes;
     }
 }
