@@ -1,59 +1,35 @@
-;----------------glodny - > wolniejszy---------------;
-(defrule hungrybird
-?actor <- (actor (id ?id) (moveRange ?mr) (visionRange ?vr) (attackPower ?ap) (hunger ?hunger) (aggressive ?aggressive) (type ?type))
-(test (> 30 ?hunger))
-(test (< 11 ?hunger))
-(test (eq no ?aggressive))
-(test (eq ?type bird))
-=>
-(modify ?actor (aggressive yes) (moveRange (- ?mr 2)) (visionRange (+ ?vr 1))))
+(defmethod affectRangeByWeather
+    (
+        (?range INTEGER)
+        (?type SYMBOL)
+		 (?id STRING ( < 0 (str-compare ?id "BirdActorKG")) )
+    )
+    (do-for-fact
+        ((?ac actor))
+        (eq ?ac:id ?id)
+        (bind ?range ?ac:moveRange)
 
-
-;--------------najedzony = szybki i sprawny--------------;
-(defrule chillingbird
-?actor <- (actor (id ?id) (moveRange ?mr) (visionRange ?vr) (attackPower ?ap)(hunger ?hunger) (aggressive ?aggressive) (type ?type))
-(test (< 30 ?hunger))
-(test (eq yes ?aggressive))
-(test (eq ?type bird))
-
-=>
-(modify ?actor (aggressive no) (moveRange (+ ?mr 2)) (visionRange (- ?vr 1))))
-
-
-;----------------glodowka=smierc-----------------------;
-
-(defrule starvingb3
-(declare (salience -4)) 
-?removing <- (removing done)
-?starving <- (starving ?c ?d)
-?remove <- (remove_hp ?a)
-?startf <- (check-hungerb)
-(removing done)
-=>
-(retract ?removing)
-(retract ?starving)
-(retract ?remove)
-(retract ?startf)
+        (if (eq ?*storm* yes) then
+            (bind ?range 0)
+        else then
+            (if (eq ?*rain* yes) then
+                (bind ?range 2)
+            else then
+                (bind ?range 5)
+            )
+        )
+        (return ?range)
+    )
 )
-
-(defrule starving-check
-(declare (salience 1)) 
-(test (= 1 1))
+(defrule starving
+?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (type ?type))
 =>
-(assert (check-hungerb)))
-
-(defrule clear-starve
-(declare (salience -999))
-?retf <- (check-hungerb)
-(test (= 1 1))
-=>
-(retract ?retf))
-
-;------------------agresywny+cel w zasiegu = omnomnom---------;
-(defrule attackb
-?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (aggressive ?ag) (hunger ?hunger) (type ?typ))
+(modify ?actor (hp (- ?hp 6)))
+)
+(defrule attack
+?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (hunger ?hunger) (type ?typ))
 ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
-?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive ?alive))
+?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive ?alive) (weight ?weight))
 ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
 (test (eq ?fid ?paf))
 (test (eq ?tfid ?taf))
@@ -63,28 +39,18 @@
 (not (test (eq ?id ?tid)))
 (test (eq ?typ bird))
 (test (eq yes ?alive))
-
 =>
-(modify ?target (hp (- ?hp 100)))
-(modify ?actor (hunger (+ ?hunger 20)))
+(modify ?target (hp (- ?hp ?ap)))
+(bind ?tmp (/ ?weight 2))
+(modify ?actor (hunger (+ ?hunger ?tmp)))
 )
 
-
-
-;---------------czas = glod -----------------------;
-(defrule growinghungerb
+(defrule growinghunger
 ?actor <- (actor (id ?id) (hunger ?hunger) (type ?type))
 ?startf <- (growing-hunger)
 (growing-hunger)
 (test (eq ?type bird))
 =>
-(modify ?actor (hunger (- ?hunger 1)))
+(modify ?actor (hunger (- ?hunger 3)))
 (retract ?startf)
-)
-
-(defrule hungerdec
-(declare (salience 1)) 
-(test (= 1 1))
-=>
-(assert (growing-hunger))
 )

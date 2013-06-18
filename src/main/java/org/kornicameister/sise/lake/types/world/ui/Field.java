@@ -76,7 +76,7 @@ public class Field {
         this.actor = actor;
         if (this.actor != null) {
             //System.out.println(actor.toString());
-            this.label.setToolTipText(this.actor.toString());
+            this.label.setToolTipText(this.actor.getStats().toString());
             this.setIcon(this.actor);
         } else {
             this.label.setToolTipText("");

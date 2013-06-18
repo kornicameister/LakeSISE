@@ -15,16 +15,6 @@ public class Launcher {
                 new WorldUI(clispEnvironment, uiPropFile);
             }
         });
-//        if (clispEnvironment.isBootstrapped()) {
-//            boolean nextLoop = true;
-//            while (nextLoop) {
-//                clispEnvironment.mainLoop();
-//                System.out.print("Next tour -> \t");
-//                String yes_no = scanIn.next();
-//                nextLoop = yes_no.equalsIgnoreCase("yes");
-//            }
-//            scanIn.close();
-//            clispEnvironment.destroy();
-//        }
+
     }
 }

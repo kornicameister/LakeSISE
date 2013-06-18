@@ -1,4 +1,4 @@
-;Forester is an actor who hunts down poacher and checks anglers
+
 
 (defrule kg_forester_ticketForInvalidId
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?fieldId))
