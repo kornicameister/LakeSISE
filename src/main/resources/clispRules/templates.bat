@@ -342,7 +342,6 @@
             ;(printout t "doMove_step1, actor-id=" ?a-id  crlf)
 
             (bind   ?rangeMod       (applyRangeMod ?a-mr (affectRangeByWeather ?a-mr ?a-t ?a-id)))
-            (printout t "aa::" ?rangeMod crlf)
             (modify ?vActor         (moveRange ?rangeMod) (logicDone 2))
 
             (retract ?dbm)

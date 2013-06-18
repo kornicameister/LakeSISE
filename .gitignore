@@ -8,7 +8,7 @@
 # idea
 .idea/*
 *.iml
-clisp/**.dll
+*.dll
 logs/**
 .settings/*
 .classpath
