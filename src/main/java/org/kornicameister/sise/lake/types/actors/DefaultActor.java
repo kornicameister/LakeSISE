@@ -50,6 +50,7 @@ public abstract class DefaultActor
     protected Integer attackPower;
     protected Integer weight;
     protected Boolean isMoveChanged;
+    protected Integer howManyFishes;
     private List<WorldField> neighbourhood;
 
     public DefaultActor() {
@@ -72,6 +73,7 @@ public abstract class DefaultActor
         this.validId = Boolean.valueOf(properties.getProperty("actor.validId", DEFAULT_VALUE_FALSE));
         this.weight = Integer.valueOf(properties.getProperty("actor.weight", DEFAULT_VALUE));
         this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold", DEFAULT_VALUE));
+        this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
         this.targetHit = false;
         this.type = this.setType();
         this.target = null;
@@ -273,24 +275,24 @@ public abstract class DefaultActor
     public String toString() {
         final StringBuilder sb = new StringBuilder("DefaultActor{");
         sb.append("id=").append(id);
-        sb.append(", type=").append(type);
-        sb.append(", atField=").append(atField);
-        sb.append(", canAttack=").append(canAttack);
-        sb.append(", canFly=").append(canFly);
-        sb.append(", canSwim=").append(canSwim);
-        sb.append(", hp=").append(hp);
-        sb.append(", isAlive=").append(isAlive);
-        sb.append(", visionRange=").append(visionRange);
-        sb.append(", attackRange=").append(attackRange);
-        sb.append(", moveRange=").append(moveRange);
-        sb.append(", hunger=").append(hunger);
-        sb.append(", target=").append(target);
-        sb.append(", targetHit=").append(targetHit);
-        sb.append(", aggressive=").append(aggressive);
-        sb.append(", cash=").append(cash);
-        sb.append(", corruptionThreshold=").append(corruptionThreshold);
-        sb.append(", validId=").append(validId);
-        sb.append(", attackPower=").append(attackPower);
+        sb.append("\n, type=").append(type);
+        sb.append("\n, atField=").append(atField);
+        sb.append("\n, canAttack=").append(canAttack);
+        sb.append("\n, canFly=").append(canFly);
+        sb.append("\n, canSwim=").append(canSwim);
+        sb.append("\n, hp=").append(hp);
+        sb.append("\n, isAlive=").append(isAlive);
+        sb.append("\n, visionRange=").append(visionRange);
+        sb.append("\n, attackRange=").append(attackRange);
+        sb.append("\n, moveRange=").append(moveRange);
+        sb.append("\n, hunger=").append(hunger);
+        sb.append("\n, target=").append(target);
+        sb.append("\n, targetHit=").append(targetHit);
+        sb.append("\n, aggressive=").append(aggressive);
+        sb.append("\n, cash=").append(cash);
+        sb.append("\n, corruptionThreshold=").append(corruptionThreshold);
+        sb.append("\n, validId=").append(validId);
+        sb.append("\n, attackPower=").append(attackPower);
         sb.append('}');
         return sb.toString();
     }
@@ -324,5 +326,13 @@ public abstract class DefaultActor
 
     public void setAggressive(Boolean aggressive) {
         this.aggressive = aggressive;
+    }
+
+    public Integer getHowManyFishes() {
+        return this.howManyFishes;
+    }
+
+    public void setHowManyFishes(Integer howManyFishes) {
+        this.howManyFishes = howManyFishes;
     }
 }

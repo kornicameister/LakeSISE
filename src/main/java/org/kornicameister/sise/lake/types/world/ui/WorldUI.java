@@ -1,17 +1,24 @@
 package org.kornicameister.sise.lake.types.world.ui;
 
 import org.apache.log4j.Logger;
+import org.kornicameister.sise.lake.clisp.ClispEnvironment;
+import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.impl.kg.ForesterActorKG;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,8 +36,11 @@ public class WorldUI extends JFrame implements ActionListener {
     private JButton nextRound;
     private JCheckBox autoNextRound;
     private JCheckBox enableStorm;
+    private ClispEnvironment environment;
 
-    public WorldUI(String propFile) {
+    public WorldUI(String worldProp, String propFile) {
+        this.environment = ClispEnvironment.getInstance(worldProp);
+        ;
         //test
         maxFieldsHorizontally = WorldHelper.getWorld().getWidth();
         maxFieldsVertically = WorldHelper.getWorld().getHeight();
@@ -40,6 +50,7 @@ public class WorldUI extends JFrame implements ActionListener {
         this.setLayout(null);
         this.setImages(propFile);
         this.addFields();
+        this.generateWorld();
         this.nextRound = new JButton("Next round");
         this.nextRound.setBounds(maxFieldsHorizontally * this.fields.get(0).getLabel().getSize().width +
                 (this.fields.get(0).getLabel().getSize().width / 2), 0, 100, 30);
@@ -67,6 +78,14 @@ public class WorldUI extends JFrame implements ActionListener {
         this.setContentPane(panel);
         panel.setVisible(true);
         this.setVisible(true);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (WorldUI.this.environment.isBootstrapped()) {
+                    WorldUI.this.environment.destroy();
+                }
+            }
+        });
     }
 
     private void setImages(String propFile) {
@@ -91,6 +110,7 @@ public class WorldUI extends JFrame implements ActionListener {
     public void addFields() {
         for (int i = 0; i < maxFieldsVertically; i++) {
             for (int j = 0; j < maxFieldsHorizontally; j++) {
+                // System.out.println(i + " " + j);
                 this.fields.add(0, new Field(new JLabel(Integer.toString(i + j)), new ForesterActorKG()));
                 this.fields.get(0).getLabel().setBounds(
                         this.fields.get(0).getLabel().getIcon().getIconWidth() * j,
@@ -98,18 +118,46 @@ public class WorldUI extends JFrame implements ActionListener {
                         this.fields.get(0).getLabel().getIcon().getIconWidth(),
                         this.fields.get(0).getLabel().getIcon().getIconHeight());
                 panel.add(this.fields.get(0).getLabel());
-                this.fields.get(0).setWater(new Random().nextBoolean());
             }
         }
+        //System.out.println(panel.getComponentCount());
         Collections.reverse(this.fields);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JButton) {
-            //TODO
+            if (environment.isBootstrapped()) {
+                environment.mainLoop();
+                System.out.print("Next tour -> \t");
+                this.generateWorld();
+            }
         } else if (e.getSource() instanceof JCheckBox) {
-            //TODO
+            while (((JCheckBox) (e.getSource())).isSelected()) {
+                environment.mainLoop();
+                System.out.print("Next tour -> \t");
+                this.generateWorld();
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e1) {
+//                   //LOGGER.fatal("Thread was interaped",e1);
+//                }
+            }
+        }
+    }
+
+    private void generateWorld() {
+        for (int i = 0; i < fields.size(); i++) {
+            int x = fields.get(i).getLabel().getX() /
+                    fields.get(i).getLabel().getIcon().getIconHeight();
+            int y = fields.get(i).getLabel().getY() /
+                    fields.get(i).getLabel().getIcon().getIconWidth();
+            WorldField next = WorldHelper.getField(x, y);
+            if (next.isFree())
+                this.fields.get(i).setWater(next.isWater());
+            else {
+                fields.get(i).setActor(WorldHelper.getActor(next));
+            }
         }
     }
 }

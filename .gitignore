@@ -11,8 +11,15 @@
 clisp/*
 *.dll
 logs/**
+.settings/*
+.classpath
+.project
 *.ppt
 *~*.docx
 output/**
 
 target/*
+
+*.classpath
+*.project
+*.settings/**

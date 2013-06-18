@@ -1,7 +1,6 @@
 package org.kornicameister.sise.lake.types.world.ui;
 
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
-import org.kornicameister.sise.lake.types.actors.LakeActors;
 
 import javax.swing.*;
 
@@ -29,14 +28,9 @@ public class Field {
         this.label = label;
         this.actor = actor;
         this.setWater(false);
-        if (this.actor != null) {
-            this.actor.setType(LakeActors.BIRD);
-            this.label.setToolTipText(this.actor.toString());
-            this.setIcon(this.actor);
-        } else {
-            this.label.setToolTipText("");
-            this.label.setIcon(new ImageIcon(LAND_IMAGE));
-        }
+        this.label.setToolTipText("");
+        this.label.setIcon(new ImageIcon(LAND_IMAGE));
+        label.setVisible(true);
     }
 
     public JLabel getLabel() {
@@ -81,6 +75,7 @@ public class Field {
     public void setActor(DefaultActor actor) {
         this.actor = actor;
         if (this.actor != null) {
+            //System.out.println(actor.toString());
             this.label.setToolTipText(this.actor.toString());
             this.setIcon(this.actor);
         } else {
@@ -88,7 +83,6 @@ public class Field {
             if (!isWater()) this.label.setIcon(new ImageIcon(LAND_IMAGE));
             else this.label.setIcon(new ImageIcon(WATER_IMAGE));
         }
-
     }
 
     public boolean isWater() {

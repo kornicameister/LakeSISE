@@ -99,6 +99,8 @@
 		(type INTEGER))    				;how far can we go
 	(slot hunger	
 		(type INTEGER))
+	(slot howManyFises
+		(type INTEGER))
     ;-----------------generic-properties--------------;
 
     ;-----------------attack-properties---------------;
