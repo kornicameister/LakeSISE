@@ -7,7 +7,7 @@
 	?targetField <- (field (id ?TID)(x ?tx)(y ?ty))
 	(test (eq ?AID ?anglerFID))
 	(test (eq ?TID ?targetFID))
-	;(test (eq ?AnglerActorID "AnglerActorTS_5"))
+	(?id STRING ( < 0 (str-compare ?AnglerActorID "AnglerActorTS")))
 	(test (>= ?anglerAR (sqrt (+ (abs (- ?ax ?tx)) (abs (- ?ay ?ty))))))
 	(test (>= ?anglerAP ?healthPts))
 	(or (test (eq ?tarTyp predator_fish))
