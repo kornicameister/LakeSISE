@@ -28,6 +28,7 @@ public abstract class DefaultActor
     private static final String CLISP_PREFIX = "actor";
     private static final String ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D =
             "(actorNeighbour (actor \"%s\") (neighbour \"%s\") (field %d))";
+    private static final String EMPTY_STRING = "";
     private static Integer ID = 0;
     protected final Integer id;
     protected LakeActors type;
@@ -118,9 +119,19 @@ public abstract class DefaultActor
                 .append(String.format("(cash %d)\n", this.cash))
                 .append(String.format("(corruptionThreshold %d)\n", this.corruptionThreshold))
                 .append(String.format("(validId %s)\n", BooleanToSymbol.toSymbol(this.validId)))
+                .append(this.appendExtraDataToFact())
                 .append(" )");
 
         return builder.toString();
+    }
+
+    @Override
+    public String getFactId() {
+        return String.format("%s_%d", this.getFactName(), this.getId());
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Override
@@ -134,13 +145,8 @@ public abstract class DefaultActor
         this.setHunger(value.getFactSlot("hunger").intValue());
     }
 
-    @Override
-    public String getFactId() {
-        return String.format("%s_%d", this.getFactName(), this.getId());
-    }
-
-    public Integer getId() {
-        return id;
+    protected String appendExtraDataToFact() {
+        return EMPTY_STRING;
     }
 
     public LakeActors getType() {
@@ -149,14 +155,6 @@ public abstract class DefaultActor
 
     public void setType(final LakeActors type) {
         this.type = type;
-    }
-
-    public WorldField getAtField() {
-        return atField;
-    }
-
-    public void setAtField(final WorldField atField) {
-        this.atField = atField;
     }
 
     public Boolean getCanAttack() {
@@ -213,38 +211,6 @@ public abstract class DefaultActor
 
     public void setMoveRange(final Integer moveRange) {
         this.moveRange = moveRange;
-    }
-
-    public DefaultActor getTarget() {
-        return target;
-    }
-
-    public void setTarget(final DefaultActor target) {
-        this.target = target;
-    }
-
-    public Boolean getTargetHit() {
-        return targetHit;
-    }
-
-    public void setTargetHit(final Boolean targetHit) {
-        this.targetHit = targetHit;
-    }
-
-    public Integer getCash() {
-        return cash;
-    }
-
-    public void setCash(final Integer cash) {
-        this.cash = cash;
-    }
-
-    public Integer getCorruptionThreshold() {
-        return corruptionThreshold;
-    }
-
-    public void setCorruptionThreshold(final Integer corruptionThreshold) {
-        this.corruptionThreshold = corruptionThreshold;
     }
 
     public Boolean getValidId() {
@@ -318,6 +284,46 @@ public abstract class DefaultActor
 
     public void setHunger(Integer hunger) {
         this.hunger = hunger;
+    }
+
+    public Integer getCorruptionThreshold() {
+        return corruptionThreshold;
+    }
+
+    public void setCorruptionThreshold(final Integer corruptionThreshold) {
+        this.corruptionThreshold = corruptionThreshold;
+    }
+
+    public Integer getCash() {
+        return cash;
+    }
+
+    public void setCash(final Integer cash) {
+        this.cash = cash;
+    }
+
+    public Boolean getTargetHit() {
+        return targetHit;
+    }
+
+    public void setTargetHit(final Boolean targetHit) {
+        this.targetHit = targetHit;
+    }
+
+    public DefaultActor getTarget() {
+        return target;
+    }
+
+    public void setTarget(final DefaultActor target) {
+        this.target = target;
+    }
+
+    public WorldField getAtField() {
+        return atField;
+    }
+
+    public void setAtField(final WorldField atField) {
+        this.atField = atField;
     }
 
     public Boolean getAggressive() {
