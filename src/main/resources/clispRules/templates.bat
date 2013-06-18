@@ -313,24 +313,6 @@
 			(modify	?f (occupied ?*false*))
 		)
 
-		(deffunction moveActor (?actor-id ?fromField-id ?toField-id)
-		    (do-for-fact
-                ((?ff field) (?tf field) (?ac actor))
-                (and
-                    (eq  ?ac:id ?actor-id)
-                    (eq  ?tf:id ?toField-id)
-                    (eq  ?ff:id ?fromField-id)
-                    (eq ?ff:occupied ?*true*)
-                    (eq ?tf:occupied ?*false*)
-                )
-                (assert             (occupyField (field ?tf:id)))
-                (assert             (freeField (field ?ff:id)))
-                (modify ?ac 	    (atField ?tf:id))
-                (printout t ?ac:id "/" ?ac:type " moved from [" ?ff:id "=[" ?ff:x ":" ?ff:y "]] to [" ?tf:id "=[" ?tf:x ":" ?tf:y "]] with range " ?ac:moveRange "." crlf)
-                (return 1)
-            )
-            (return -1)
-		)
         ;------------------find-neighbours------------------;
         (deffunction findNeighbour (?actor-id ?neighbour-id ?range)
             (do-for-fact
@@ -383,17 +365,32 @@
         )
         (defrule doMove_step2
             (declare (salience -8))
-            ?vActor     <-  (actor (id ?a-id)   (atField ?ff-id) (moveRange ?a-mr) (type ?a-t) (logicDone 2) (isMoveChanged no) )
-            ?fromField  <-  (field (id ?ff-id)  (occupied yes))
-            ?toField    <-  (field (id ?tf-id)  (occupied no))
+            ?actor      <-  (actor (id ?a-id)   (atField ?ff-id) (moveRange ?a-mr) (type ?a-t) (logicDone ?a-logic) (isMoveChanged ?a-mc) )
+            ?fromField  <-  (field (id ?ff-id)  (x ?ff-x) (y ?ff-y)     (occupied ?ff-o))
+            ?toField    <-  (field (id ?tf-id)  (x ?tf-x) (y ?tf-y)     (occupied ?tf-o))
+
             (test
-                ( = ?tf-id (nextFieldId ?tf-id ?a-t ?a-id))
+                (and
+                    ( eq    ?a-mc       no)
+                    ( =     ?a-logic    2)
+                    ( eq    ?ff-o       yes)
+                    ( eq    ?tf-o       no)
+                    ( =     ?tf-id      (nextFieldId ?tf-id ?a-t ?a-id))
+                )
             )
             =>
-            (printout t "doMove_step2, actor-id=" ?a-id  crlf)
-            (if (= 1 (moveActor ?a-id ?ff-id ?tf-id)) then
-                (modify ?vActor (atField ?tf-id) (logicDone 3) (isMoveChanged ?*true*))
+            (modify ?toField
+                (occupied ?*true*)
             )
+            (modify ?fromField
+                (occupied ?*false*)
+            )
+            (modify ?actor
+                (atField ?tf-id)
+                (logicDone 3)
+                (isMoveChanged ?*true*)
+            )
+            (printout t ?a-id "/" ?a-t " moved from [" ?ff-id "=[" ?ff-x ":" ?ff-y "]] to [" ?tf-id "=[" ?tf-x ":" ?tf-y "]] with range " ?a-mr "." crlf)
         )
         (defrule doBeforeLogic
             ?actor <- (actor (id ?a-id) (logicDone 0))
