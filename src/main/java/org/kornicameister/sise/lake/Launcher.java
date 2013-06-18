@@ -1,10 +1,8 @@
 package org.kornicameister.sise.lake;
 
-import org.kornicameister.sise.lake.clisp.ClispEnvironment;
 import org.kornicameister.sise.lake.types.world.ui.WorldUI;
 
 import java.awt.*;
-import java.util.Scanner;
 
 public class Launcher {
 
