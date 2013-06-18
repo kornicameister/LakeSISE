@@ -36,24 +36,19 @@ public class ClispEnvironment {
         this.bootstrapped = this.bootstrap();
     }
 
-    public static ClispEnvironment getInstance(final String propertiesPath) {
-        if (ClispEnvironment.ourInstance == null) {
-            ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
-            return ClispEnvironment.ourInstance;
-        }
-        return ClispEnvironment.ourInstance;
-    }
-
     private boolean bootstrap() {
         final Properties properties = new Properties();
         try {
             properties.load(new BufferedReader(new FileReader(new File(this.propertiesPath))));
 
             for (ClispBootstrapTypeDescriptor entry : ClispPropertiesSplitter.load(LAKE_TYPES, properties)) {
-                LOGGER.info(String.format("Bootstrapping-> %s", entry.getClazz()));
-                final ClispType value = this.bootstrapInternal(entry);
-                LOGGER.info(String.format("Bootstrapped -> %s to %s", entry.getClazz(), value.getFactName()));
-                this.clispTypes.add(value);
+                final Integer count = entry.getNumber();
+                for (int i = 1; i <= count; i++) {
+                    LOGGER.info(String.format("[%d]>>>Bootstrapping-> %s", i, entry.getClazz()));
+                    final ClispType value = this.bootstrapInternal(entry);
+                    LOGGER.info(String.format("[%d]>>>Bootstrapped -> %s to %s", i, entry.getClazz(), value.getFactName()));
+                    this.clispTypes.add(value);
+                }
             }
 
             return this.clispTypes.size() != 0;
@@ -71,12 +66,12 @@ public class ClispEnvironment {
                 LOGGER.debug(String.format("Loading type -> %s", entry.getClazz()));
             }
 
-            Properties loadData = new Properties();
+            final Properties loadData = new Properties();
             loadData.load(new BufferedReader(new FileReader(new File(entry.getInitDataProperties()))));
+
 
             Class<?> clazz = Class.forName(entry.getClazz());
             ClispType clispType = (ClispType) clazz.newInstance();
-
             clispType.initType(loadData, this.environment, entry.getClisp());
 
             return clispType;
@@ -85,6 +80,14 @@ public class ClispEnvironment {
             LOGGER.error(String.format("Failure in creating actor for entry -> %s", entry.getClazz()), multipleE);
             throw new LakeInitializationException(multipleE);
         }
+    }
+
+    public static ClispEnvironment getInstance(final String propertiesPath) {
+        if (ClispEnvironment.ourInstance == null) {
+            ClispEnvironment.ourInstance = new ClispEnvironment(propertiesPath);
+            return ClispEnvironment.ourInstance;
+        }
+        return ClispEnvironment.ourInstance;
     }
 
     public void mainLoop() {

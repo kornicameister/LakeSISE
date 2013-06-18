@@ -67,7 +67,9 @@ abstract public class DefaultWorld
                 freeFields = WorldHelper.getField(WorldHelper.FieldPredicate.FREE_LAND_FIELD);
                 break;
         }
-        freeFields = WorldHelper.getFieldInActorRange(actor, freeFields);
+        if (freeFields.size() == 1) {
+            return freeFields.get(0);
+        }
         return freeFields.get(new Random().nextInt(freeFields.size() - 1));
     }
 
@@ -77,6 +79,22 @@ abstract public class DefaultWorld
                 WorldHelper.registerField(new WorldField(i, j));
             }
         }
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
     }
 
     @Override
@@ -91,7 +109,17 @@ abstract public class DefaultWorld
 
     protected abstract void applyStateToEnvironment();
 
+    @Override
+    public String getFactName() {
+        return DefaultWorld.class.getSimpleName();
+    }
+
     protected abstract void assertFields();
+
+    @Override
+    public String getFactId() {
+        return String.format("%s_%d", this.getFactName(), 0);
+    }
 
     protected abstract void assertActors();
 
@@ -117,30 +145,5 @@ abstract public class DefaultWorld
         System.out.println(stringBuilder.toString());
     }
 
-    @Override
-    public String getFactName() {
-        return DefaultWorld.class.getSimpleName();
-    }
 
-
-    @Override
-    public String getFactId() {
-        return String.format("%s_%d", this.getFactName(), 0);
-    }
-
-    public Integer getWidth() {
-        return width;
-    }
-
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
-
-    public Integer getHeight() {
-        return height;
-    }
-
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
 }
