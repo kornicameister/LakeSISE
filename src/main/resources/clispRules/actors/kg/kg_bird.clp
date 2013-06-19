@@ -23,6 +23,7 @@
 )
 (defrule starving
 ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (type ?type))
+(test (< ?hunger 0))
 =>
 (modify ?actor (hp (- ?hp 6)))
 )

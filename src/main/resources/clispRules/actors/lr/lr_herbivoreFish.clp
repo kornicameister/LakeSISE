@@ -24,6 +24,7 @@
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
+	(test (< 13 ?rangeMove))
 	)
 	=> 
 	;(modify ?fi (occupied no))
