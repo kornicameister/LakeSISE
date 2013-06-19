@@ -40,14 +40,14 @@
                         (eq ?field3:occupied ?*false*)
                         (eq ?field3:water ?*false*)
                     )
-                    (printout t "TT_F::NFI next field id=" ?field3:id crlf)
+                    ;(printout t "TT_F::NFI next field id=" ?field3:id crlf)
                     (return ?field3:id)
                 )
             )
 
 	    )
 
-        (printout t "TT_F::NFI no next field id=" -1 crlf)
+        ;(printout t "TT_F::NFI no next field id=" -1 crlf)
         (return (call-next-method))  ; no need to affect default behaviour
 )
 ; having fun with chasing
@@ -76,7 +76,7 @@
                 )
             )
         )
-        (printout t "ForesterActorTT_1 custom affectRangeByWeather, range=" ?range crlf)
+        ;(printout t "ForesterActorTT_1 custom affectRangeByWeather, range=" ?range crlf)
         (return ?range)
     )
 )
@@ -87,8 +87,8 @@
 	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type angler) (validId ?suspect-valid-id))
 	(test
         (and
-            (neq ?forester ?suspect))
-            (<= ?suspect-cash ?a-ct))
+            ( < 0 (str-compare ?a-id "ForesterActorTT"))
+            (<= ?suspect-cash ?a-ct)
             (eq ?suspect-valid-id no)
         )
 	)
@@ -96,21 +96,22 @@
 	(retract ?nf)
 	(bind ?tmp ?a-ap)
 	(modify ?suspect (cash (- ?suspect-cash ?tmp)))
+	(printout t "DUPA_3" crlf)
 )
 
 (defrule tt_forester_CatchPoacher
-    (declare (salience -20))
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
 	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
 	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type poacher) (validId ?suspect-valid-id))
 	(test
         (and
-            (neq ?forester ?suspect)
-            (<= ?suspect-cash ?a-ct)
+            ( < 0 (str-compare ?a-id "ForesterActorTT"))
+            ( <= ?suspect-cash ?a-ct)
         )
 	)
 	=>
 	(retract ?nf)
 	(bind ?tmp (* ?a-ap 4))
 	(modify ?suspect (cash (- ?suspect-cash ?tmp)))
+	(printout t "DUPA_1" crlf)
 )

@@ -309,19 +309,10 @@
                 (if (= 1 (isActorInRangeByField ?actor:atField ?neighbour:atField ?range)) then
                     ;(printout t "FN:: actorId=" ?actor:id ", neighbourId=" ?neighbour:id ", fieldId=" ?neighbour:atField crlf)
                     (assert (actorNeighbour (actor ?actor:id) (neighbour ?neighbour-id) (field ?neighbour:atField)))
-                else then
-                    ;(printout t "FN_OUT_OF_RANGE:: actorId=" ?actor:id ", neighbourId=" ?neighbour:id ", fieldId=" ?neighbour:atField crlf)
+                    (return 1)
                 )
             )
-        )
-        (deffunction findNeighbours (?actor-id ?actor-range)
-            (bind ?count 0)
-            (delayed-do-for-all-facts ((?neighbour actor))
-                ;(printout t "FNS:: actorId=" ?actor-id ", possibleNeighbourId=" ?neighbour:id ",actorRange=" ?actor-range crlf)
-                (findNeighbour ?actor-id ?neighbour:id ?actor-range)
-                (bind ?count (+ ?count 1))
-            )
-            (return ?count)
+            (return 0)
         )
         ;------------------find-neighbours------------------;
         ;------------------create-move-rule------------------;
@@ -388,9 +379,15 @@
             (declare (salience ?*LOW-PRIORITY*))
             ?actor <- (actor (id ?a-id) (moveRange ?a-moveRange) (logicDone 3) (isMoveChanged yes))
             =>
-            (modify ?actor (logicDone 4))
-            (findNeighbours ?a-id ?a-moveRange)
-            ;(printout t "doAfterLogic, actor-id=" ?a-id  crlf)
+            (printout t ?a-id " has neighbours = ")
+            (do-for-all-facts ((?neighbour actor)) TRUE
+                (bind ?tmp (findNeighbour ?a-id ?neighbour:id ?a-moveRange))
+                (if (> ?tmp 0) then
+                    (printout t ?neighbour:id ", ")
+                )
+            )
+            (printout t crlf)
+            (modify ?actor (logicDone 66))
         )
         ;------------------create-move-rule------------------;
 	;------------------move-rules-----------------------;
