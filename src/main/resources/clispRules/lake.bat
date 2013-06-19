@@ -4,7 +4,7 @@
 	?*lakeX* = 0
 	?*lakeY* = 0
 	?*lakeSize* = 0
-	?*rain* = 0
+	?*rain* = yes
 	?*storm* = 0
 	?*pressure* = 0
 

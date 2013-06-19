@@ -88,8 +88,7 @@
 	(test
         (and
             ( < 0 (str-compare ?a-id "ForesterActorTT"))
-            (<= ?suspect-cash ?a-ct)
-            (eq ?suspect-valid-id no)
+            ( eq ?suspect-valid-id no )
         )
 	)
 	=>
