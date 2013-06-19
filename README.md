@@ -14,4 +14,7 @@ Preconditions:
 *** [1] path to ui.properties
 
 To launch the program
-You need to include -Djava.library.path=dll/ (or the path which points to CLISPJNI.dll na libCLISPJNI.jnilib) to Your launcher cfg
+You need to include -Djava.library.path=dll/ (or the path which points to CLISPJNI.dll na libCLISPJNI.jnilib)
+to Your launcher cfg
+
+Repository is available at http://github.com/kornicameister/LakeSISE
