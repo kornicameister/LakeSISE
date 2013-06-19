@@ -5,10 +5,10 @@
 ) 
 )
 ;----------------------funkcja przesuwajaca----------------------------;
-(defmethod nextFieldId((?currentNextField-Id INTEGER) (?actor-id STRING (eq ?actor-id “MyActorId”))) 
-         (return 2) 
+;(defmethod nextFieldId((?currentNextField-Id INTEGER) (?actor-id STRING (eq ?actor-id “MyActorId”))) 
+;         (return 2) 
 
-    )
+ ;   )
 ;-------------------funkcja zwraca wartosc gdzi ma byc drapieznik---------;
 (deffunction getval(?x ?y ?Tx ?Ty ?rangeMove)
  
@@ -44,13 +44,62 @@
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
 	)
 	=> 
-	(modify ?fi (occupied no))
+	;(modify ?fi (occupied no))
 	(printout t ?actor-id "/" ?actor-name " goni rybe!!!!!!!!!!!!!!!  " ?actor-id-sec "/" ?actor-name-sec ?x " " ?y " " ?tX " " ?tY " "crlf crlf)
 	(bind ?tmpx (getval ?x ?y ?tX ?tY ?rangeMove))
 	(bind ?tmpy (getval ?y ?x ?tY ?tX ?rangeMove))	
 	(bind ?id-pola (findFieldByXY ?tmpx ?tmpy))
-	
+	;---------------------wychacza sie jak modyfikuje pole-------------------------------;
 	;(modify ?actor (atField ?id-pola))
 ;---------------------------do zrobienia trzeba przesunac aktora----------------------;
 	;(assert(przesun (id ?actor-id)(x ?tmpx)(y ?tmpy)))	
+)
+
+
+
+;-----------------------------rola jedz------------------------------------;
+;rola sprawdza okolice drapieznika nastepnie zjada rybe (drapieznik lub zwykla)o mniejszej wadze od siebie. 
+;Ryba traci predkosc poniewaz jest  coraz ciezsza
+
+(defrule zjedz ;sprawdza okolice i zjada ryby 
+   ?actor 	    <-  (actor
+                        (id ?actor-id)
+                        (atField ?atField)
+                        (type ?actor-name)
+                        (visionRange ?rangeVision)
+                        (moveRange ?rangeMove)
+                        (attackRange ?rangeAttack)
+                        (weight ?waga)
+                        (isAlive ?isAlive))
+  	?actorSec   <-  (actor
+                        (id ?actor-id-sec)
+                        (type ?actor-name-sec)
+                        (atField ?atField-sec)
+                        (weight ?waga-sec)
+                        (isAlive ?isAlive-sec))
+
+	(and
+        ?fi <- (field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes))  ;from
+        (field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes))         ;to
+        (test (= 1 (check_type_pred ?actor-name)) )                 ;spr czy atakujacy jest drapierzny
+        (test
+            (or
+                (= 1 (check_type_pred ?actor-name-sec))             ;spr czy ofiara jest roslino lub mieso zernaa
+                (= 1 (check_type_herbi ?actor-name-sec))
+            )
+        )
+        (test (= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)))       ;czy ofiara jest w polu ataku
+        (test (or(!= ?tX ?x) (!= ?tX ?x)))
+        (test (= ?atField ?ff-id))
+        (test (= ?atField-sec ?tf-id))
+        (test (>= ?waga ?waga-sec))
+        (test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))
+	)
+	=> 
+        (printout t ?actor-id "/" ?actor-name " zjada rybe x="?x " y="?y  "zjada rybe x2="?tX " y2="?tY crlf crlf crlf)
+        (modify ?fi (occupied no))
+        (bind ?tmp(+ ?waga ?waga-sec))
+        (bind ?tmpSpeed(- ?rangeMove(div ?rangeMove (div ?waga ?waga-sec))))
+        ;(modify ?actor (atField ?tf-id)(weight ?tmp)(moveRange ?tmpSpeed))
+        (modify ?actorSec (isAlive ?*false*)(hp 0))
 )

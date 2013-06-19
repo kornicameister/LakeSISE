@@ -83,13 +83,14 @@
 
 ;------------------agresywny+cel w zasiegu = omnomnom---------;
 (defrule attackb
+(declare (salience 101)) 
 ?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (aggressive ?ag) (hunger ?hunger) (type ?typ))
 ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
 ?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive ?alive))
 ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
 (test (eq ?fid ?paf))
 (test (eq ?tfid ?taf))
-(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
+(test (= 1 (is-actor-in-range ?x ?y ?tX ?tY ?ar)))
 (test (eq yes ?alive))
 (test (eq ?type herbivore_fish))
 (not (test (eq ?id ?tid)))
@@ -123,13 +124,14 @@
 
 ;-------------kuku dla ludzi-------------------;
 (defrule troll
+(declare (salience 100)) 
 ?actor <- (actor (id ?id) (attackRange ?ar) (atField ?paf) (type ?typ))
 ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
 ?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (moveRange ?mr) (visionRange ?vr))
 ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
 (test (eq ?fid ?paf))
 (test (eq ?tfid ?taf))
-(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
+(test (= 1 (is-actor-in-range ?x ?y ?tX ?tY ?ar)))
 (or (test (eq ?type angler))
 	(test (eq ?type poacher))
 	(test (eq ?type forester))
@@ -142,6 +144,34 @@
 )
 
 
+;----------------------pogoda a ruch------------------------;
+(defmethod affectRangeByWeatherB
+    (
+        (?range INTEGER)
+        (?type SYMBOL)
+        (?id STRING (eq ?id "BirdActorMB_1"))
+    )
+    (do-for-fact
+        ((?ac actor))
+        (eq ?ac:id "BirdActorMB_1")
+        (bind ?range ?ac:moveRange)
 
+        (if (and (eq ?*rain* yes) (eq ?*storm* yes)) then
+            (bind ?range 1)
+        else then
+            (if (and (eq ?*storm* yes) (eq ?*rain* no)) then
+                (bind ?range 2)
+            else then
+                (if (and (eq ?*storm* no) (eq ?*rain* yes)) then
+                    (bind ?range 3)
+                else then
+                    (bind ?range 5)
+                )
+            )
+        )
+        (printout t "BirdActorMB_1 custom affectRangeByWeather, range=" ?range crlf)
+        (return ?range)
+    )
+)
 
 
