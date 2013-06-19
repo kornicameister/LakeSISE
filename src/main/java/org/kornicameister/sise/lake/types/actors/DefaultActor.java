@@ -261,14 +261,6 @@ public abstract class DefaultActor
         this.visionRange = visionRange;
     }
 
-    public Integer getAttackRange() {
-        return attackRange;
-    }
-
-    public void setAttackRange(final Integer attackRange) {
-        this.attackRange = attackRange;
-    }
-
     public Integer getMoveRange() {
         return moveRange;
     }
@@ -283,22 +275,6 @@ public abstract class DefaultActor
 
     public void setValidId(final Boolean validId) {
         this.validId = validId;
-    }
-
-    public Integer getAttackPower() {
-        return attackPower;
-    }
-
-    public void setAttackPower(final Integer attackPower) {
-        this.attackPower = attackPower;
-    }
-
-    public Boolean getAlive() {
-        return isAlive;
-    }
-
-    public void setAlive(Boolean alive) {
-        isAlive = alive;
     }
 
     @Override
@@ -332,12 +308,17 @@ public abstract class DefaultActor
 
         stats.add(new StatField("ID", this.getFactId()));
         stats.add(new StatField("Field", this.getAtField().getId()));
-        stats.add(new StatField("Alive", this.getId()));
+        stats.add(new StatField("Alive", this.getAlive()));
         stats.add(new StatField("Hunger", this.getHunger()));
+        stats.add(new StatField("Fished", this.getHowManyFishes()));
         stats.add(new StatField("Target", this.getTarget() != null ? this.getTarget().getFactId() : "none"));
         stats.add(new StatField("TargetHit", this.getTargetHit()));
         stats.add(new StatField("Cash", this.getCash()));
         stats.add(new StatField("CorruptionT", this.getCorruptionThreshold()));
+        stats.add(new StatField("-------", ""));
+        stats.add(new StatField("AttackPwr", this.getAttackPower()));
+        stats.add(new StatField("AttackRg", this.getAttackRange()));
+        stats.add(new StatField("-------", ""));
 
         return stats;
     }
@@ -390,6 +371,38 @@ public abstract class DefaultActor
         this.atField = atField;
     }
 
+    public Integer getHowManyFishes() {
+        return this.howManyFishes;
+    }
+
+    public void setHowManyFishes(Integer howManyFishes) {
+        this.howManyFishes = howManyFishes;
+    }
+
+    public Boolean getAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(Boolean alive) {
+        isAlive = alive;
+    }
+
+    public Integer getAttackPower() {
+        return attackPower;
+    }
+
+    public void setAttackPower(final Integer attackPower) {
+        this.attackPower = attackPower;
+    }
+
+    public Integer getAttackRange() {
+        return attackRange;
+    }
+
+    public void setAttackRange(final Integer attackRange) {
+        this.attackRange = attackRange;
+    }
+
     public int getWeight() {
         return this.weight;
     }
@@ -404,13 +417,5 @@ public abstract class DefaultActor
 
     public void setAggressive(Boolean aggressive) {
         this.aggressive = aggressive;
-    }
-
-    public Integer getHowManyFishes() {
-        return this.howManyFishes;
-    }
-
-    public void setHowManyFishes(Integer howManyFishes) {
-        this.howManyFishes = howManyFishes;
     }
 }

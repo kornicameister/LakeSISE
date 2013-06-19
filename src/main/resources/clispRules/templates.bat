@@ -38,16 +38,6 @@
 		(type INTEGER))
 )
 
-(deftemplate occupyField
-	(slot field
-		(type INTEGER))
-)
-
-(deftemplate freeField
-	(slot field
-		(type INTEGER))
-)
-
 (deftemplate actor
     (slot logicDone
         (type INTEGER)
