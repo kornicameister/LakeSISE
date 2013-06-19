@@ -5,22 +5,26 @@ import org.kornicameister.sise.lake.types.actors.LakeActors;
 
 public class HerbivoreFishActorRG extends DefaultActor {
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
+    public HerbivoreFishActorRG() {
+        super();
+    }
 
-	@Override
-	public String getFactName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
 
-	@Override
-	protected LakeActors setType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
+
+    @Override
+    public String getFactName() {
+        // TODO Auto-generated method stub
+        return HerbivoreFishActorRG.class.getSimpleName();
+    }
+
+    @Override
+    protected LakeActors setType() {
+        // TODO Auto-generated method stub
+        return LakeActors.HERBIVORE_FISH;
+    }
 
 }
