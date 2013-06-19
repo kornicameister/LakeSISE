@@ -2,6 +2,7 @@ package org.kornicameister.sise.lake.types;
 
 import CLIPSJNI.Environment;
 import org.apache.log4j.Logger;
+import org.kornicameister.sise.lake.clisp.InitMode;
 
 import java.util.List;
 import java.util.Properties;
@@ -17,7 +18,7 @@ public abstract class DefaultClispType implements ClispType {
     protected Environment environment;
 
     @Override
-    public void initType(final Properties properties, final Environment environment, final List<String> clpPaths) {
+    public void initType(final Properties properties, final Environment environment, final List<String> clpPaths, InitMode initMode) {
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("Initializing clisp type\nproperties=%s,environment=%s,facts=%s",
@@ -31,12 +32,12 @@ public abstract class DefaultClispType implements ClispType {
         }
         this.environment.reset();
 
-        this.resolveProperties(properties);
+        this.resolveProperties(properties, initMode);
     }
 
     protected final void resolveEnvironment(final Environment environment) {
         this.environment = environment;
     }
 
-    protected abstract void resolveProperties(final Properties properties);
+    protected abstract void resolveProperties(final Properties properties, InitMode initMode);
 }

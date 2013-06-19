@@ -47,7 +47,7 @@
 
 	    )
 
-        ;(printout t "TT_F::NFI no next field id=" -1 crlf)
+        (printout t "TT_F::NFI no next field id=" -1 crlf)
         (return (call-next-method))  ; no need to affect default behaviour
 )
 ; having fun with chasing
@@ -76,7 +76,7 @@
                 )
             )
         )
-        ;(printout t "ForesterActorTT_1 custom affectRangeByWeather, range=" ?range crlf)
+        (printout t "ForesterActorTT_1 custom affectRangeByWeather, range=" ?range crlf)
         (return ?range)
     )
 )
@@ -97,7 +97,7 @@
 	(retract ?nf)
 	(bind ?tmp ?a-ap)
 	(modify ?suspect (cash (- ?suspect-cash ?tmp)))
-	(printout t "DUPA_3" crlf)
+	(printout t ?a-id " put ticket for invalid id for " ?n-id " at " ?tmp " $" crlf)
 )
 
 (defrule tt_forester_CatchPoacher
@@ -112,7 +112,6 @@
 	)
 	=>
 	(retract ?nf)
-	(bind ?tmp (* ?a-ap 4))
-	(modify ?suspect (cash (- ?suspect-cash ?tmp)))
-	(printout t "DUPA_1" crlf)
+	(modify ?suspect (isAlive ?*false*) (cash -1))
+	(printout t ?a-id " caught poacher " ?n-id crlf)
 )

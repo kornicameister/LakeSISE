@@ -3,12 +3,14 @@ package org.kornicameister.sise.lake.types.actors;
 import CLIPSJNI.PrimitiveValue;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
+import org.kornicameister.sise.lake.clisp.InitMode;
 import org.kornicameister.sise.lake.types.*;
 import org.kornicameister.util.StatField;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * Basic fact, ready to be used to serve
@@ -59,7 +61,83 @@ public abstract class DefaultActor
     }
 
     @Override
-    protected final void resolveProperties(final Properties properties) {
+    protected final void resolveProperties(final Properties properties, final InitMode initMode) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Initializing %s by mode %s", this.getClass().getSimpleName(), initMode));
+        }
+        this.targetHit = false;
+        this.type = this.setType();
+        this.target = null;
+        this.isMoveChanged = false;
+
+        switch (initMode) {
+            case NORMAL:
+                this.doNormalInit(properties);
+                break;
+            case RANDOM:
+                this.doRandomInit(properties);
+                break;
+        }
+
+        this.isAlive = this.hp > 0;
+
+        WorldHelper.registerActor(this);
+    }
+
+    protected void doRandomInit(final Properties properties) {
+        final Random seed = new Random(properties.hashCode());
+        // by type
+        switch (this.getType()) {
+            case HERBIVORE_FISH:
+            case PREDATOR_FISH:
+                this.canSwim = true;
+                this.canFly = false;
+                this.cash = 1;
+                break;
+            case BIRD:
+                this.canSwim = false;
+                this.canFly = true;
+                this.cash = 1;
+                break;
+            case ANGLER:
+            case POACHER:
+            case FORESTER:
+                this.canFly = false;
+                this.canSwim = false;
+                this.cash = DefaultActor.getRandomInt(1, 10000, seed);
+        }
+        // from properties
+        this.aggressive = Boolean.valueOf(properties.getProperty("actor.aggressive", DEFAULT_VALUE_FALSE));
+        this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
+
+        // by random
+        this.hp = DefaultActor.getRandomInt(50, 150, seed);
+        this.moveRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.visionRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.attackRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.attackPower = DefaultActor.getRandomInt(10, 15, seed);
+        this.hunger = DefaultActor.getRandomInt(5, 20, seed);
+        this.canAttack = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
+        this.validId = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
+        this.weight = DefaultActor.getRandomInt(1, 100, seed);
+        this.corruptionThreshold = DefaultActor.getRandomInt(1, this.cash, seed);
+    }
+
+    private static Integer getRandomInt(int lower, int higher, final Random seed) {
+        return seed.nextInt(higher) - lower;
+    }
+
+    public LakeActors getType() {
+        return type;
+    }
+
+    public void setType(final LakeActors type) {
+        this.type = type;
+    }
+
+    protected abstract LakeActors setType();
+
+    protected void doNormalInit(final Properties properties) {
         this.hp = Integer.valueOf(properties.getProperty("actor.hp", DEFAULT_VALUE));
         this.moveRange = Integer.valueOf(properties.getProperty("actor.move.range", DEFAULT_VALUE));
         this.visionRange = Integer.valueOf(properties.getProperty("actor.vision.range", DEFAULT_VALUE));
@@ -75,16 +153,7 @@ public abstract class DefaultActor
         this.weight = Integer.valueOf(properties.getProperty("actor.weight", DEFAULT_VALUE));
         this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold", DEFAULT_VALUE));
         this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
-        this.targetHit = false;
-        this.type = this.setType();
-        this.target = null;
-        this.isAlive = this.hp > 0;
-        this.isMoveChanged = false;
-
-        WorldHelper.registerActor(this);
     }
-
-    protected abstract LakeActors setType();
 
     /**
      * This method must not be overridden.
@@ -148,16 +217,8 @@ public abstract class DefaultActor
         this.setHowManyFishes(value.getFactSlot("howManyFises").intValue());
     }
 
-	protected String appendExtraDataToFact() {
+    protected String appendExtraDataToFact() {
         return EMPTY_STRING;
-    }
-
-    public LakeActors getType() {
-        return type;
-    }
-
-    public void setType(final LakeActors type) {
-        this.type = type;
     }
 
     public Boolean getCanAttack() {
@@ -320,21 +381,21 @@ public abstract class DefaultActor
     public void setTarget(final DefaultActor target) {
         this.target = target;
     }
-    
-    public int getWeight()
-    {
-    	return this.weight;
-    }
-    public void setWeight(final int weight)
-    {
-    	this.weight = weight;
-    }
+
     public WorldField getAtField() {
         return atField;
     }
 
     public void setAtField(final WorldField atField) {
         this.atField = atField;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
+
+    public void setWeight(final int weight) {
+        this.weight = weight;
     }
 
     public Boolean getAggressive() {

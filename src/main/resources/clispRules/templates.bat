@@ -371,9 +371,9 @@
         (defrule doBeforeLogic
             ?actor <- (actor (id ?a-id) (logicDone 0))
             =>
-            (modify ?actor (logicDone 1))
             (assert (doBeforeMove (actor ?a-id)))
-            ;(printout t "doBeforeLogic, actor-id=" ?a-id  crlf)
+            (modify ?actor (logicDone 1))
+            (printout t "doBeforeLogic, actor-id=" ?a-id  crlf)
         )
         (defrule doAfterLogic
             (declare (salience ?*LOW-PRIORITY*))

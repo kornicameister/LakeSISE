@@ -5,6 +5,7 @@ import com.google.common.base.Objects;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
+import org.kornicameister.sise.lake.clisp.InitMode;
 import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
@@ -95,7 +96,7 @@ public class LakeWorld extends DefaultWorld {
     }
 
     @Override
-    protected void resolveProperties(final Properties properties) {
+    protected void resolveProperties(final Properties properties, InitMode initMode) {
         this.width = Integer.valueOf(properties.getProperty("lake.world.width"));
         this.height = Integer.valueOf(properties.getProperty("lake.world.height"));
         this.lakeX = Integer.valueOf(properties.getProperty("lake.lake.x"));

@@ -1,6 +1,7 @@
 package org.kornicameister.sise.lake.types;
 
 import CLIPSJNI.Environment;
+import org.kornicameister.sise.lake.clisp.InitMode;
 
 import java.util.List;
 import java.util.Properties;
@@ -18,10 +19,11 @@ public interface ClispType {
      *
      * @param properties
      * @param environment
+     * @param initMode
      */
     void initType(final Properties properties,
                   final Environment environment,
-                  List<String> clpPaths);
+                  List<String> clpPaths, InitMode initMode);
 
     void run();
 

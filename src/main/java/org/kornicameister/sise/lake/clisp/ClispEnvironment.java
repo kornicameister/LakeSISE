@@ -41,11 +41,14 @@ public class ClispEnvironment {
         try {
             properties.load(new BufferedReader(new FileReader(new File(this.propertiesPath))));
 
+            final String initModeProperty = properties.getProperty("lake.init", "normal");
+            final InitMode initMode = InitMode.valueOf(initModeProperty.toUpperCase());
+
             for (ClispBootstrapTypeDescriptor entry : ClispPropertiesSplitter.load(LAKE_TYPES, properties)) {
                 final Integer count = entry.getNumber();
                 for (int i = 0; i < count; i++) {
                     LOGGER.info(String.format("[%d]>>>Bootstrapping-> %s", i, entry.getClazz()));
-                    final ClispType value = this.bootstrapInternal(entry);
+                    final ClispType value = this.bootstrapInternal(entry, initMode);
                     LOGGER.info(String.format("[%d]>>>Bootstrapped -> %s to %s", i, entry.getClazz(), value.getFactName()));
                     this.clispTypes.add(value);
                 }
@@ -59,7 +62,7 @@ public class ClispEnvironment {
         return false;
     }
 
-    private ClispType bootstrapInternal(final ClispBootstrapTypeDescriptor entry) {
+    private ClispType bootstrapInternal(final ClispBootstrapTypeDescriptor entry, InitMode initMode) {
         try {
 
             if (LOGGER.isDebugEnabled()) {
@@ -72,7 +75,7 @@ public class ClispEnvironment {
 
             Class<?> clazz = Class.forName(entry.getClazz());
             ClispType clispType = (ClispType) clazz.newInstance();
-            clispType.initType(loadData, this.environment, entry.getClisp());
+            clispType.initType(loadData, this.environment, entry.getClisp(), initMode);
 
             return clispType;
 
