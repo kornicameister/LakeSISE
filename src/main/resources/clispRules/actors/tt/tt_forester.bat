@@ -83,12 +83,14 @@
 
 (defrule tt_forester_TicketForInvalidId
 	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
-	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
-	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type angler) (validId ?suspect-valid-id))
+	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type ?a-type))
+	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type ?s-type) (validId ?suspect-valid-id))
 	(test
         (and
-            ( < 0 (str-compare ?a-id "ForesterActorTT"))
-            ( eq ?suspect-valid-id no )
+            ( <     0 (str-compare ?a-id "ForesterActorTT"))
+            ( eq    ?suspect-valid-id no )
+            ( eq    ?a-type forester)
+            ( eq    ?s-type angler)
         )
 	)
 	=>
