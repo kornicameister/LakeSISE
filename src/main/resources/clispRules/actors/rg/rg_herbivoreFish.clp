@@ -7,6 +7,7 @@
 		(test (eq ?alive yes))
 		(test (> ?hp ?attackP))
 		(test (eq ?typ angler))
+		(test (eq (sub-string 1 20 ?actorTId) "HerbivoreFishActorRG"))
 
 	)
 	=>
@@ -20,6 +21,8 @@
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
 	(and
 		(test (< ?weight 5))
+		(test (eq (sub-string 1 20 ?actorTId) "HerbivoreFishActorRG"))
+		(test (eq ?alive yes))
 	)
 	=>
 	(modify ?actor (isAlive no))
@@ -31,6 +34,7 @@
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
 	(and
 		(test (eq ?alive no))
+		(test (eq (sub-string 1 20 ?actorTId) "HerbivoreFishActorRG"))
 		(test (> ?weight 0))
 	)
 	=>
@@ -39,23 +43,40 @@
 
 )
 
+(defrule check
+	?actor  <-(actor (id ?actor-id) (atField ?atField) (type ?actor-name)(moveRange ?move) (attackRange ?range)(isAlive ?isAlive)(weight 	?weight)(hp ?fhp))	
+
+	(and
+
+		(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorRG"))
+	
+	)
+	=>
+	(printout t ?actor-id "/" ?actor-name " TRUE" crlf crlf)
+	(if (eq ?isAlive no) then
+	(printout t ?actor-id "/" ?actor-name " is DEAD" crlf crlf)
+)
+
 
 
 (defrule eat;fish eat when hungry or hp is decreased
-       ?actor  <-(actor (id ?actor-id) (atField ?atField) (type ?actor-name)(moveRange ?move) (attackRange ?range)(isAlive ?isAlive)(weight ?weight))
-  	?fish	<-(actor (id ?fishId)(atField ?fishField)(type ?fishType)(isAlive ?fishAlive)(moveRange ?fmove)(weight ?fweight)(hp ?fhp))
+       ?actor  <-(actor (id ?actor-id) (atField ?atField) (type ?actor-name)(moveRange ?move) (attackRange ?range)(isAlive ?isAlive)(weight ?weight)(hp ?fhp))
+  	?fish	<-(actor (id ?fishId)(atField ?fishField)(type ?fishType)(isAlive ?fishAlive)(moveRange ?fmove)(weight ?fweight)(hp ?fshp))
 (and
 ?fi <- (field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes));from
-(test (= 1 (check_type_herbi ?actor-name)) )  ;check for attackers
+
+;(test (= 1 (check_type_herbi ?actor-name)) )  ;check for attackers
 (test (= ?atField ?ff-id))
 (test (eq yes ?isAlive))
-(test (< ?weight 5))
+(test (< ?weight 20))
+;(test ( < 0 (str-compare ?actor-id "HerbivoreFishRG")))
+(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorRG"))
 )
 => 
 (printout t ?actor-id "/" ?actor-name " eats now" crlf crlf crlf)
 
 (if (< ?fhp 90) then
-(modify ?fish (hp(+ ?fhp 30)))
+(modify ?actor (hp(+ ?fhp 30)))
 (printout t ?actor-id "/" ?actor-name " just restored 20 hp" crlf crlf crlf)
 )
 
