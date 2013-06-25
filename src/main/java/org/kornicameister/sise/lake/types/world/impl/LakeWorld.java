@@ -20,20 +20,19 @@ import java.util.*;
 
 public class LakeWorld extends DefaultWorld {
     private static final Logger LOGGER = Logger.getLogger(LakeWorld.class);
-    private static final Integer MAX_PRESSURE = 1260;
-    private static final Integer MIN_PRESSURE = 900;
     private static final String FIND_FACT_F_FIELD_F_ID_D = "(find-fact ((?f field)) (= ?f:id %d))";
     private static final String FIND_FACT_A_ACTOR_EQ_A_ID_S = "(find-fact ((?a actor)) (eq ?a:id \"%s\"))";
+    private static final String DO_WEATHER_RANDOM_S = "(doWeather (random %s) )";
     protected Integer lakeX;
     protected Integer lakeY;
     protected Integer lakeSize;
     private Integer iteration;
-    private List<Weather> weatherList;
+    private Set<Weather> weatherList;
 
     public LakeWorld() {
         super();
         this.iteration = 0;
-        this.weatherList = new ArrayList<>();
+        this.weatherList = new HashSet<>();
     }
 
     @Override
@@ -152,7 +151,7 @@ public class LakeWorld extends DefaultWorld {
             weatherSB.append(weather.toString().toLowerCase()).append(" ");
         }
         weatherSB.deleteCharAt(weatherSB.length() - 1);
-        this.environment.assertString(String.format("(doWeather (random %s) )", weatherSB.toString().trim()));
+        this.environment.assertString(String.format(DO_WEATHER_RANDOM_S, weatherSB.toString().trim()));
     }
 
     @Override
