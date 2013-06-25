@@ -1,17 +1,11 @@
 ; having fun with chasing
 
-(defglobal ?*tt_f_nf-id*        = -1)
-(defglobal ?*tt_f_min*          = -1)
-(defglobal ?*tt_ticket_poacher* = -1)
-(defglobal ?*tt_ticket_angler*  = -1)
-
 (defmethod nextFieldId (
             (?currentNextField-Id   INTEGER)
             (?actor-type            SYMBOL (eq ?actor-type forester))
             (?actor-id              STRING ( < 0 (str-compare ?actor-id "ForesterActorTT"))))
 
         ; > turns off
-
 
 	    (do-for-fact ( (?poacher actor) (?actor actor) (?field field) (?fieldActor field) )
             (and
@@ -22,14 +16,21 @@
             )
 
             (bind ?tmp 0)
-            (if (> ?field:id ?field2:id) then
-                (bind ?tmp (random ?field2:id ?field:id))
+            (if (> ?field:id ?fieldActor:id) then
+                (bind ?tmp (random ?fieldActor:id ?field:id))
             else then
-                (bind ?tmp (random ?field:id ?field2:id))
+                (bind ?tmp (random ?field:id ?fieldActor:id))
             )
-            (printout t "TT_F_NFI => " ?actor-id " => " ?tmp crlf)
-            (return ?tmp)
-
+            (do-for-fact ( (?foundField field) )
+                (and
+                    (eq ?foundField:id          ?tmp)
+                    (eq ?foundField:occupied    no)
+                    (eq ?foundField:water       no)
+                )
+                (printout t "TT_F_NFI => " ?actor-id " => " ?foundField:id crlf)
+                (return ?foundField:id)
+            )
+            (return (call-next-method))  ; no need to affect default behaviour
 	    )
 
         ;(printout t "TT_F::NFI no next field id=" -1 crlf)

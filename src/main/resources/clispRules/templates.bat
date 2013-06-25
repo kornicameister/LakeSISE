@@ -206,7 +206,7 @@
                 ;(printout t "NFI::RANDOM nextFieldId=" ?field:id crlf)
                 (return ?field:id)
             )
-        }
+        )
         (return ?nextField)
     )
 
@@ -334,38 +334,26 @@
             ?fromField  <-  (field  (id ?ff-id)
                                     (x ?ff-x)
                                     (y ?ff-y)
-                                    (occupied ?ff-o)
+                                    (occupied yes)
                             )
-            ?toField    <-  (field  (id ?tf-id)
-                                    (x ?tf-x)
-                                    (y ?tf-y)
-                                    (occupied ?tf-o)
-                            )
-
-            (test
-                (and
-                    ( eq    ?ff-o       yes)
-                    ( eq    ?tf-o       no)
-                    ( =     ?tf-id      (nextFieldId ?tf-id ?a-t ?a-id))
-                    ( =     1           (isActorInRangeByField ?ff-id ?tf-id ?a-mr))
-                    (<>     ?tf-id      ?a-wf)
-                )
-            )
-
             =>
-            (modify ?toField
-                (occupied ?*true*)
+            (bind ?tf-id (nextFieldId 0 ?a-t ?a-id))
+            (do-for-fact ( (?toField field) )
+                (eq ?toField:id ?tf-id)
+                (modify ?toField
+                    (occupied ?*true*)
+                )
+                (modify ?fromField
+                    (occupied ?*false*)
+                )
+                (modify ?actor
+                    (atField ?tf-id)
+                    (wasField ?ff-id)
+                    (logicDone 3)
+                    (isMoveChanged ?*true*)
+                )
+                (printout t ?a-id "/" ?a-t " moved from [" ?ff-id "=[" ?ff-x ":" ?ff-y "]] to [" ?tf-id "=[" ?toField:x ":" ?toField:y "]] with range " ?a-mr "." crlf)
             )
-            (modify ?fromField
-                (occupied ?*false*)
-            )
-            (modify ?actor
-                (atField ?tf-id)
-                (wasField ?ff-id)
-                (logicDone 3)
-                (isMoveChanged ?*true*)
-            )
-            (printout t ?a-id "/" ?a-t " moved from [" ?ff-id "=[" ?ff-x ":" ?ff-y "]] to [" ?tf-id "=[" ?tf-x ":" ?tf-y "]] with range " ?a-mr "." crlf)
         )
         ;------------------create-move-rule------------------;
 	;------------------move-rules-----------------------;
