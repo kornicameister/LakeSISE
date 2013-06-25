@@ -123,25 +123,7 @@
 )
 
 ;-------------kuku dla ludzi-------------------;
-(defrule troll
-(declare (salience 100)) 
-?actor <- (actor (id ?id) (attackRange ?ar) (atField ?paf) (type ?typ))
-?fieldp <- (field (id ?fid) (x ?x) (y ?y))
-?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (moveRange ?mr) (visionRange ?vr))
-?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
-(test (eq ?fid ?paf))
-(test (eq ?tfid ?taf))
-(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
-(or (test (eq ?type angler))
-	(test (eq ?type poacher))
-	(test (eq ?type forester))
-)
-(not (pooped ?tid))
-(test (eq ?typ bird))
-=>
-(modify ?target (moveRange (- ?mr 1)) (visionRange (- ?vr 1)))
-(assert (pooped ?tid))
-)
+
 
 
 ;----------------------pogoda a ruch------------------------;

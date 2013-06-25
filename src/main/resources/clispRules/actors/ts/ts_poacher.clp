@@ -1,7 +1,7 @@
 ;
 
 (defrule tryToCatchFishPoacherP
-	?poacherActor <- (actor (id ?poacherActorID)(atField ?poacherFID)(weight ?currentPoacherWeight)(attackRange ?poacherAR)(attackPower ?poacherAP)(howManyFises ?howMany)(targetId ?tarID))
+	?poacherActor <- (actor (id ?poacherActorID)(atField ?poacherFID)(weight ?currentPoacherWeight)(attackRange ?poacherAR)(attackPower ?poacherAP)(howManyFishes ?howMany)(targetId ?tarID))
 	?targetActor <- (actor (id ?TargetActorID)(type ?tarTyp)(atField ?targetFID)(weight ?targetWeight)(hp ?healthPts)(isAlive ?alive))
 	?poacherField <- (field (id ?PID)(x ?px)(y ?py))
 	?targetField <- (field (id ?TID)(x ?tx)(y ?ty))
@@ -19,11 +19,11 @@
 	=>
 	(assert (poacher tried to catch))
 	(modify ?targetActor (isAlive no))
-	(modify ?poacherActor (weight (+ ?currentPoacherWeight ?targetWeight))(howManyFises (+ ?howMany 1)))
+	(modify ?poacherActor (weight (+ ?currentPoacherWeight ?targetWeight))(howManyFishes (+ ?howMany 1)))
 )
 
 (defrule tooWeakToCatchP
-	?poacherActor <- (actor (id ?poacherActorID)(atField ?poacherFID)(weight ?currentPoacherWeight)(attackRange ?poacherAR)(attackPower ?poacherAP)(howManyFises ?howMany)(targetId ?tarID))
+	?poacherActor <- (actor (id ?poacherActorID)(atField ?poacherFID)(weight ?currentPoacherWeight)(attackRange ?poacherAR)(attackPower ?poacherAP)(howManyFishes ?howMany)(targetId ?tarID))
 	?targetActor <- (actor (id ?TargetActorID)(type ?tarTyp)(atField ?targetFID)(weight ?targetWeight)(hp ?healthPts)(isAlive ?alive))
 	?poacherField <- (field (id ?PID)(x ?px)(y ?py))
 	?targetField <- (field (id ?TID)(x ?tx)(y ?ty))

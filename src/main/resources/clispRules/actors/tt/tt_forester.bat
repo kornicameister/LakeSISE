@@ -1,66 +1,51 @@
 ; having fun with chasing
 
-(defglobal ?*tt_f_nf-id* = -1)
-(defglobal ?*tt_f_min* = -1)
+(defglobal ?*tt_f_nf-id*        = -1)
+(defglobal ?*tt_f_min*          = -1)
+(defglobal ?*tt_ticket_poacher* = -1)
+(defglobal ?*tt_ticket_angler*  = -1)
 
 (defmethod nextFieldId (
             (?currentNextField-Id   INTEGER)
             (?actor-type            SYMBOL (eq ?actor-type forester))
             (?actor-id              STRING ( < 0 (str-compare ?actor-id "ForesterActorTT"))))
 
-	    (do-for-fact ( (?actor actor) (?poacher actor) )
+        ; > turns off
+
+
+	    (do-for-fact ( (?poacher actor) (?actor actor) (?field field) (?fieldActor field) )
             (and
-                (eq     ?actor:id       ?actor-id)
                 (eq     ?poacher:type   poacher)
+                (eq     ?field:id       ?poacher:atField)
+                (eq     ?actor:id       ?actor-id)
+                (eq     ?fieldActor:id  ?actor:atField)
             )
-            (do-for-fact ((?field field) (?field2 field))
-                (and
-                    (eq     ?field:id   ?poacher:atField)
-                    (eq     ?field2:id  ?actor:atField)
-                    (neq    ?field2:id   ?currentNextField-Id)
-                )
 
-                (bind ?nX 0)
-                (bind ?nY 0)
-                (if (< ?field:x ?field2:x) then
-                    (bind ?nX (random ?field:x ?field2:x))
-                else then
-                    (bind ?nX (random ?field2:x ?field:x))
-                )
-                (if (< ?field:y ?field2:y) then
-                    (bind ?nY (random ?field:y ?field2:y))
-                else then
-                    (bind ?nY (random ?field2:y ?field:y))
-                )
-
-                (do-for-fact ((?field3 field))
-                    (and
-                        (eq ?field3:x ?nX)
-                        (eq ?field3:y ?nY)
-                        (eq ?field3:occupied ?*false*)
-                        (eq ?field3:water ?*false*)
-                    )
-                    ;(printout t "TT_F::NFI next field id=" ?field3:id crlf)
-                    (return ?field3:id)
-                )
+            (bind ?tmp 0)
+            (if (> ?field:id ?field2:id) then
+                (bind ?tmp (random ?field2:id ?field:id))
+            else then
+                (bind ?tmp (random ?field:id ?field2:id))
             )
+            (printout t "TT_F_NFI => " ?actor-id " => " ?tmp crlf)
+            (return ?tmp)
 
 	    )
 
-        (printout t "TT_F::NFI no next field id=" -1 crlf)
+        ;(printout t "TT_F::NFI no next field id=" -1 crlf)
         (return (call-next-method))  ; no need to affect default behaviour
 )
 ; having fun with chasing
 
 (defmethod affectRangeByWeather
     (
-        (?range INTEGER)
-        (?type SYMBOL)
-        (?id STRING ( < 0 (str-compare ?id "ForesterActorTT")) )
+        (?range     INTEGER)
+        (?type      SYMBOL ( eq ?type forester))
+        (?actor-id  STRING ( < 0 (str-compare ?actor-id "ForesterActorTT")))
     )
     (do-for-fact
         ((?ac actor))
-        (eq ?ac:id ?id)
+        (eq ?ac:id ?actor-id)
         (bind ?range ?ac:moveRange)
 
         (if (and (eq ?*rain* yes) (eq ?*storm* yes)) then
@@ -76,42 +61,74 @@
                 )
             )
         )
-        (printout t "ForesterActorTT_1 custom affectRangeByWeather, range=" ?range crlf)
+        (printout t ?actor-id " custom affectRangeByWeather, range=" ?range crlf)
         (return ?range)
     )
 )
 
 (defrule tt_forester_TicketForInvalidId
-	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
-	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type ?a-type))
-	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type ?s-type) (validId ?suspect-valid-id))
+	?forester 	<-	(actor  (id ?f-id)
+	                        (atField ?f-af)
+	                        (moveRange ?f-mr)
+	                        (attackPower ?f-ap)
+	                        (cash ?f-cash)
+	                        (corruptionThreshold ?f-ct)
+	                        (type forester)
+	                        (actionDone no)
+	                )
+	?suspect 	<-	(actor  (id ?s-id)
+	                        (atField ?s-af)
+	                        (cash ?s-cash)
+	                        (type angler)
+	                        (validId no)
+	                )
 	(test
-        (and
-            ( <     0 (str-compare ?a-id "ForesterActorTT"))
-            ( eq    ?suspect-valid-id no )
-            ( eq    ?a-type forester)
-            ( eq    ?s-type angler)
+	    (and
+            ( > 0 (str-compare ?f-id "ForesterActorTT"))
+            (= 1 (isActorInRangeByField ?f-af ?s-af ?f-mr))
         )
 	)
 	=>
-	(retract ?nf)
-	(bind ?tmp ?a-ap)
-	(modify ?suspect (cash (- ?suspect-cash ?tmp)))
-	(printout t ?a-id " put ticket for invalid id for " ?n-id " at " ?tmp " $" crlf)
+	(modify ?suspect
+	    (cash (- ?s-cash ?f-ap))
+	)
+	(modify ?forester
+	    (actionDone ?*true*)
+	)
+	(printout t ?f-id " has made the ticket for " ?s-id crlf)
 )
 
 (defrule tt_forester_CatchPoacher
-	?nf			<-	(actorNeighbour (actor ?a-id) (neighbour ?n-id) (field ?f-id))
-	?forester 	<-	(actor (id ?a-id) (attackPower ?a-ap) (cash ?a-cash) (corruptionThreshold ?a-ct) (type forester))
-	?suspect 	<-	(actor (id ?n-id) (cash ?suspect-cash) (type poacher) (validId ?suspect-valid-id))
+	?forester 	<-	(actor  (id ?f-id)
+	                        (cash ?f-cash)
+	                        (atField ?f-af)
+	                        (moveRange ?f-mr)
+	                        (attackPower ?f-ap)
+	                        (corruptionThreshold ?f-ct)
+	                        (type forester)
+	                        (actionDone no)
+	                )
+	?suspect 	<-	(actor  (id ?s-id)
+	                        (cash ?s-cash)
+	                        (atField ?s-af)
+	                        (type poacher)
+	                )
 	(test
         (and
-            ( < 0 (str-compare ?a-id "ForesterActorTT"))
-            ( <= ?suspect-cash ?a-ct)
+            ( <     0 (str-compare ?f-id "ForesterActorTT"))
+            ( <=    ?s-cash ?f-ct)
+            (= 1 (isActorInRangeByField ?f-af ?s-af ?f-mr))
         )
-	)
+    )
 	=>
-	(retract ?nf)
-	(modify ?suspect (isAlive ?*false*) (cash -1))
-	(printout t ?a-id " caught poacher " ?n-id crlf)
+	(bind ?tmp                  (* ?f-ap (random 5 15)))
+	(modify ?suspect
+	    (cash (- ?s-cash ?tmp))
+	    (actionDone ?*true*)
+	)
+	(modify ?forester
+	    (actionDone ?*true*)
+	)
+	(printout t ?f-id " has made the large ticket " ?tmp " for " ?s-id crlf)
 )
+

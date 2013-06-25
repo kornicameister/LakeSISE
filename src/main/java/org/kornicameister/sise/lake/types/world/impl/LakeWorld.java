@@ -46,13 +46,9 @@ public class LakeWorld extends DefaultWorld {
     public void run() {
         LOGGER.info(String.format("[%d] > world loop started", this.iteration));
         this.environment.reset();
-        {
-            this.assertFields();
-        }
-        {
-            this.assertActors();
-            this.environment.run();
-        }
+        this.assertFields();
+        this.assertActors();
+        this.environment.run();
         this.collectResults();
         LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
     }
@@ -187,6 +183,7 @@ public class LakeWorld extends DefaultWorld {
         final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
+            actor.clearFields();
             this.environment.assertString(actor.getFact());
         }
     }

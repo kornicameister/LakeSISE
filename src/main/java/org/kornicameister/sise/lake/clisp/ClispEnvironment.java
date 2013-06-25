@@ -42,7 +42,14 @@ public class ClispEnvironment {
             properties.load(new BufferedReader(new FileReader(new File(this.propertiesPath))));
 
             final String initModeProperty = properties.getProperty("lake.init", "normal");
+            final Boolean debug = Boolean.valueOf(properties.getProperty("lake.debug", "false"));
             final InitMode initMode = InitMode.valueOf(initModeProperty.toUpperCase());
+
+            if (debug) {
+                this.environment.watch("facts");
+                this.environment.watch("methods");
+                this.environment.watch("rules");
+            }
 
             for (ClispBootstrapTypeDescriptor entry : ClispPropertiesSplitter.load(LAKE_TYPES, properties)) {
                 final Integer count = entry.getNumber();

@@ -28,8 +28,6 @@ public abstract class DefaultActor
     private static final String DEFAULT_VALUE = String.valueOf(-1);
     private static final String DEFAULT_VALUE_FALSE = "false";
     private static final String CLISP_PREFIX = "actor";
-    private static final String ACTOR_NEIGHBOUR_ACTOR_D_NEIGHBOUR_D_FIELD_D =
-            "(actorNeighbour (actor \"%s\") (neighbour \"%s\") (field %d))";
     private static final String EMPTY_STRING = "";
     private static Integer ID = 0;
     protected final Integer id;
@@ -49,6 +47,7 @@ public abstract class DefaultActor
     protected Boolean aggressive;
     protected Integer cash;
     protected Integer corruptionThreshold;
+    protected Boolean tookBribe;
     protected Boolean validId;
     protected Integer attackPower;
     protected Integer weight;
@@ -65,10 +64,14 @@ public abstract class DefaultActor
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("Initializing %s by mode %s", this.getClass().getSimpleName(), initMode));
         }
+
         this.targetHit = false;
         this.type = this.setType();
         this.target = null;
         this.isMoveChanged = false;
+        this.tookBribe = false;
+        this.corruptionThreshold = -1;
+        this.cash = 1;
 
         switch (initMode) {
             case NORMAL:
@@ -83,59 +86,6 @@ public abstract class DefaultActor
 
         WorldHelper.registerActor(this);
     }
-
-    protected void doRandomInit(final Properties properties) {
-        final Random seed = new Random(properties.hashCode());
-        // by type
-        switch (this.getType()) {
-            case HERBIVORE_FISH:
-            case PREDATOR_FISH:
-                this.canSwim = true;
-                this.canFly = false;
-                this.cash = 1;
-                break;
-            case BIRD:
-                this.canSwim = false;
-                this.canFly = true;
-                this.cash = 1;
-                break;
-            case ANGLER:
-            case POACHER:
-            case FORESTER:
-                this.canFly = false;
-                this.canSwim = false;
-                this.cash = DefaultActor.getRandomInt(1, 10000, seed);
-        }
-        // from properties
-        this.aggressive = Boolean.valueOf(properties.getProperty("actor.aggressive", DEFAULT_VALUE_FALSE));
-        this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
-
-        // by random
-        this.hp = DefaultActor.getRandomInt(50, 150, seed);
-        this.moveRange = DefaultActor.getRandomInt(5, 10, seed);
-        this.visionRange = DefaultActor.getRandomInt(5, 10, seed);
-        this.attackRange = DefaultActor.getRandomInt(5, 10, seed);
-        this.attackPower = DefaultActor.getRandomInt(10, 15, seed);
-        this.hunger = DefaultActor.getRandomInt(5, 20, seed);
-        this.canAttack = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
-        this.validId = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
-        this.weight = DefaultActor.getRandomInt(1, 100, seed);
-        this.corruptionThreshold = DefaultActor.getRandomInt(1, this.cash, seed);
-    }
-
-    private static Integer getRandomInt(int lower, int higher, final Random seed) {
-        return seed.nextInt(higher) - lower;
-    }
-
-    public LakeActors getType() {
-        return type;
-    }
-
-    public void setType(final LakeActors type) {
-        this.type = type;
-    }
-
-    protected abstract LakeActors setType();
 
     protected void doNormalInit(final Properties properties) {
         this.hp = Integer.valueOf(properties.getProperty("actor.hp", DEFAULT_VALUE));
@@ -153,6 +103,68 @@ public abstract class DefaultActor
         this.weight = Integer.valueOf(properties.getProperty("actor.weight", DEFAULT_VALUE));
         this.corruptionThreshold = Integer.valueOf(properties.getProperty("actor.corruptionThreshold", DEFAULT_VALUE));
         this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
+    }
+
+    protected abstract LakeActors setType();
+
+    protected void doRandomInit(final Properties properties) {
+        final Random seed = new Random(System.nanoTime());
+        // by type
+        switch (this.getType()) {
+            case HERBIVORE_FISH:
+            case PREDATOR_FISH:
+                this.canSwim = true;
+                this.canFly = false;
+                break;
+            case BIRD:
+                this.canSwim = false;
+                this.canFly = true;
+                break;
+            case ANGLER:
+            case POACHER:
+                this.canFly = false;
+                this.canSwim = false;
+                this.cash = DefaultActor.getRandomInt(1, 5000, seed);
+                break;
+            case FORESTER:
+                this.canFly = false;
+                this.canSwim = false;
+                this.cash = DefaultActor.getRandomInt(1, 5000, seed);
+                this.corruptionThreshold = DefaultActor.getRandomInt(5, 50, seed);
+                break;
+        }
+
+        // from properties
+        this.aggressive = Boolean.valueOf(properties.getProperty("actor.aggressive", DEFAULT_VALUE_FALSE));
+        this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
+
+        // by random
+        this.hp = DefaultActor.getRandomInt(50, 150, seed);
+        this.moveRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.visionRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.attackRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.attackPower = DefaultActor.getRandomInt(10, 15, seed);
+        this.hunger = DefaultActor.getRandomInt(5, 20, seed);
+        this.canAttack = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
+        this.validId = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
+        this.weight = DefaultActor.getRandomInt(1, 100, seed);
+    }
+
+    public LakeActors getType() {
+        return type;
+    }
+
+    public void setType(final LakeActors type) {
+        this.type = type;
+    }
+
+    private static int getRandomInt(final int lower, final int higher, final Random seed) {
+        if (lower > higher) {
+            throw new IllegalArgumentException("Start cannot exceed End.");
+        }
+        final long range = (long) higher - (long) lower + 1;
+        final long fraction = (long) (range * seed.nextDouble());
+        return (int) (fraction + lower);
     }
 
     /**
@@ -176,7 +188,7 @@ public abstract class DefaultActor
                 .append(String.format("(canFly %s)\n", BooleanToSymbol.toSymbol(this.canFly)))
                 .append(String.format("(canSwim %s)\n", BooleanToSymbol.toSymbol(this.canSwim)))
                 .append(String.format("(weight %d)\n", this.weight))
-                .append(String.format("(howManyFises %d)\n", this.howManyFishes))
+                .append(String.format("(howManyFishes %d)\n", this.howManyFishes))
                 .append(String.format("(hp %d)\n", this.hp))
                 .append(String.format("(visionRange %d)\n", this.visionRange))
                 .append(String.format("(attackRange %d)\n", this.attackRange))
@@ -188,6 +200,7 @@ public abstract class DefaultActor
                 .append(String.format("(aggressive %s)\n", BooleanToSymbol.toSymbol(this.aggressive)))
                 .append(String.format("(cash %d)\n", this.cash))
                 .append(String.format("(corruptionThreshold %d)\n", this.corruptionThreshold))
+                .append(String.format("(tookBribe %s)\n", BooleanToSymbol.toSymbol(this.tookBribe)))
                 .append(String.format("(validId %s)\n", BooleanToSymbol.toSymbol(this.validId)))
                 .append(this.appendExtraDataToFact())
                 .append(" )");
@@ -195,13 +208,8 @@ public abstract class DefaultActor
         return builder.toString();
     }
 
-    @Override
-    public String getFactId() {
-        return String.format("%s_%d", this.getFactName(), this.getId());
-    }
-
-    public Integer getId() {
-        return id;
+    protected String appendExtraDataToFact() {
+        return EMPTY_STRING;
     }
 
     @Override
@@ -214,11 +222,18 @@ public abstract class DefaultActor
         this.setTargetHit(BooleanToSymbol.fromSymbol(value.getFactSlot("targetHit").symbolValue()));
         this.setHunger(value.getFactSlot("hunger").intValue());
         this.setWeight(value.getFactSlot("weight").intValue());
-        this.setHowManyFishes(value.getFactSlot("howManyFises").intValue());
+        this.setHowManyFishes(value.getFactSlot("howManyFishes").intValue());
+        this.setTookBribe(BooleanToSymbol.fromSymbol(value.getFactSlot("tookBribe").symbolValue()));
+        this.setCorruptionThreshold(value.getFactSlot("corruptionThreshold").intValue());
     }
 
-    protected String appendExtraDataToFact() {
-        return EMPTY_STRING;
+    @Override
+    public String getFactId() {
+        return String.format("%s_%d", this.getFactName(), this.getId());
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public Boolean getCanAttack() {
@@ -261,14 +276,6 @@ public abstract class DefaultActor
         this.visionRange = visionRange;
     }
 
-    public Integer getMoveRange() {
-        return moveRange;
-    }
-
-    public void setMoveRange(final Integer moveRange) {
-        this.moveRange = moveRange;
-    }
-
     public Boolean getValidId() {
         return validId;
     }
@@ -297,10 +304,15 @@ public abstract class DefaultActor
         sb.append("\n, aggressive=").append(aggressive);
         sb.append("\n, cash=").append(cash);
         sb.append("\n, corruptionThreshold=").append(corruptionThreshold);
+        sb.append("\n, tookBribe=").append(tookBribe);
         sb.append("\n, validId=").append(validId);
         sb.append("\n, attackPower=").append(attackPower);
         sb.append('}');
         return sb.toString();
+    }
+
+    public void clearFields() {
+        this.tookBribe = false;
     }
 
     public List<StatField> getStats() {
@@ -315,76 +327,31 @@ public abstract class DefaultActor
         stats.add(new StatField("TargetHit", this.getTargetHit()));
         stats.add(new StatField("Cash", this.getCash()));
         stats.add(new StatField("CorruptionT", this.getCorruptionThreshold()));
+        stats.add(new StatField("TookBribe", this.getTookBribe()));
         stats.add(new StatField("-------", ""));
         stats.add(new StatField("AttackPwr", this.getAttackPower()));
         stats.add(new StatField("AttackRg", this.getAttackRange()));
+        stats.add(new StatField("-------", ""));
+        stats.add(new StatField("MoveRange", this.getMoveRange()));
         stats.add(new StatField("-------", ""));
 
         return stats;
     }
 
-    public Integer getHunger() {
-        return hunger;
+    public Boolean getTookBribe() {
+        return tookBribe;
     }
 
-    public void setHunger(Integer hunger) {
-        this.hunger = hunger;
+    public void setTookBribe(Boolean tookBribe) {
+        this.tookBribe = tookBribe;
     }
 
-    public Integer getCorruptionThreshold() {
-        return corruptionThreshold;
+    public Integer getAttackRange() {
+        return attackRange;
     }
 
-    public void setCorruptionThreshold(final Integer corruptionThreshold) {
-        this.corruptionThreshold = corruptionThreshold;
-    }
-
-    public Integer getCash() {
-        return cash;
-    }
-
-    public void setCash(final Integer cash) {
-        this.cash = cash;
-    }
-
-    public Boolean getTargetHit() {
-        return targetHit;
-    }
-
-    public void setTargetHit(final Boolean targetHit) {
-        this.targetHit = targetHit;
-    }
-
-    public DefaultActor getTarget() {
-        return target;
-    }
-
-    public void setTarget(final DefaultActor target) {
-        this.target = target;
-    }
-
-    public WorldField getAtField() {
-        return atField;
-    }
-
-    public void setAtField(final WorldField atField) {
-        this.atField = atField;
-    }
-
-    public Integer getHowManyFishes() {
-        return this.howManyFishes;
-    }
-
-    public void setHowManyFishes(Integer howManyFishes) {
-        this.howManyFishes = howManyFishes;
-    }
-
-    public Boolean getAlive() {
-        return isAlive;
-    }
-
-    public void setAlive(Boolean alive) {
-        isAlive = alive;
+    public void setAttackRange(final Integer attackRange) {
+        this.attackRange = attackRange;
     }
 
     public Integer getAttackPower() {
@@ -395,12 +362,76 @@ public abstract class DefaultActor
         this.attackPower = attackPower;
     }
 
-    public Integer getAttackRange() {
-        return attackRange;
+    public Boolean getAlive() {
+        return isAlive;
     }
 
-    public void setAttackRange(final Integer attackRange) {
-        this.attackRange = attackRange;
+    public void setAlive(Boolean alive) {
+        isAlive = alive;
+    }
+
+    public Integer getHowManyFishes() {
+        return this.howManyFishes;
+    }
+
+    public void setHowManyFishes(Integer howManyFishes) {
+        this.howManyFishes = howManyFishes;
+    }
+
+    public WorldField getAtField() {
+        return atField;
+    }
+
+    public void setAtField(final WorldField atField) {
+        this.atField = atField;
+    }
+
+    public DefaultActor getTarget() {
+        return target;
+    }
+
+    public void setTarget(final DefaultActor target) {
+        this.target = target;
+    }
+
+    public Boolean getTargetHit() {
+        return targetHit;
+    }
+
+    public void setTargetHit(final Boolean targetHit) {
+        this.targetHit = targetHit;
+    }
+
+    public Integer getCash() {
+        return cash;
+    }
+
+    public void setCash(final Integer cash) {
+        this.cash = cash;
+    }
+
+    public Integer getCorruptionThreshold() {
+        return corruptionThreshold;
+    }
+
+    public void setCorruptionThreshold(final Integer corruptionThreshold) {
+        this.corruptionThreshold = corruptionThreshold;
+    }
+
+    public Integer getHunger() {
+        return hunger;
+    }
+
+    public void setHunger(Integer hunger) {
+        this.hunger = hunger;
+    }
+
+    public Integer getMoveRange() {
+        return moveRange;
+    }
+
+    public void setMoveRange(final Integer moveRange) {
+        this.moveRange = moveRange;
     }
 
     public int getWeight() {
