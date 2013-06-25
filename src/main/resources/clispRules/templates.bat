@@ -4,11 +4,7 @@
     ?*LOW-PRIORITY*             = -10000
     ?*HIGH-PRIORITY*            = 10000
 
-    ?*width*                    = 18
-    ?*height*                   = 11
-    ?*lakeX*                    = 0
-    ?*lakeY*                    = 0
-    ?*lakeSize*                 = 0
+    ?*sun*                      = no
     ?*rain*                     = no
     ?*storm*                    = no
     ?*pressure*                 = no
@@ -19,6 +15,17 @@
     ?*anglerPoacherRangeMod*    = 1
 
     ?*maxRange*                 = 6
+)
+
+(deftemplate doWeather
+    (slot done
+        (type SYMBOL)
+        (allowed-symbols yes no)
+        (default no))
+    (multislot random
+		(type SYMBOL)
+		(allowed-symbols sun storm rain pressure)
+		(default sun))
 )
 
 (deftemplate field
@@ -359,6 +366,35 @@
 	;------------------move-rules-----------------------;
 
     ;-----------------------main-loop--------------------;
+        (defrule doWeatherLogic
+            (declare (salience 7777))
+            ?dw   <-  (doWeather (random $?conditions))
+            =>
+            (bind ?max (length$ ?conditions))
+            (bind ?index (random 0 ?max))
+            (bind ?condition (nth$ ?index ?conditions))
+
+            ;reset
+            (bind ?*sun* ?*false*)
+            (bind ?*rain* ?*false*)
+            (bind ?*storm* ?*false*)
+            ;reset
+
+            (if (eq ?condition rain) then
+                (bind ?*rain* ?*true*)
+            )
+            (if (eq ?condition storm) then
+                (bind ?*storm* ?*true*)
+            )
+            (if (eq ?condition sun) then
+                (bind ?*sun* ?*true*)
+            )
+
+            (bind ?*pressure* (random 900 1400))
+
+            (retract ?dw)
+            (printout t "doWeatherLogic, condition=" ?condition crlf)
+        )
         (defrule doBeforeLogic
             (declare (salience 6666))
             ?actor <- (actor (id ?a-id) (logicDone 0))

@@ -2,9 +2,7 @@ package org.kornicameister.sise.lake.types.world.impl;
 
 import CLIPSJNI.PrimitiveValue;
 import com.google.common.base.Objects;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
-import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.clisp.InitMode;
 import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
@@ -12,10 +10,7 @@ import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
 import org.kornicameister.util.StatField;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author kornicameister
@@ -32,20 +27,20 @@ public class LakeWorld extends DefaultWorld {
     protected Integer lakeX;
     protected Integer lakeY;
     protected Integer lakeSize;
-    protected Boolean rain;
-    protected Boolean storm;
-    protected Integer pressureLevel;
     private Integer iteration;
+    private List<Weather> weatherList;
 
     public LakeWorld() {
         super();
         this.iteration = 0;
+        this.weatherList = new ArrayList<>();
     }
 
     @Override
     public void run() {
         LOGGER.info(String.format("[%d] > world loop started", this.iteration));
         this.environment.reset();
+        this.assertWeather();
         this.assertFields();
         this.assertActors();
         this.environment.run();
@@ -98,10 +93,11 @@ public class LakeWorld extends DefaultWorld {
         this.lakeX = Integer.valueOf(properties.getProperty("lake.lake.x"));
         this.lakeY = Integer.valueOf(properties.getProperty("lake.lake.y"));
         this.lakeSize = Integer.valueOf(properties.getProperty("lake.lake.size"));
-        this.rain = Boolean.valueOf(properties.getProperty("lake.world.rain", "false"));
-        this.storm = Boolean.valueOf(properties.getProperty("lake.world.storm", "false"));
-        this.pressureLevel = Integer.valueOf(properties.getProperty("lake.world.pressure", String.valueOf(new Random()
-                .nextInt() * (MAX_PRESSURE - MIN_PRESSURE) + MIN_PRESSURE)));
+
+        final String[] conditions = properties.getProperty("lake.world.conditions").split(",");
+        for (String str : conditions) {
+            this.weatherList.add(Weather.valueOf(str.toUpperCase()));
+        }
 
         this.registerFields();
         this.applyLakeRules();
@@ -116,32 +112,25 @@ public class LakeWorld extends DefaultWorld {
         boolean inLake;
         while (fieldsIterator.hasNext()) {
             worldField = fieldsIterator.next();
-            inLake = worldField.getX() >= this.lakeX && worldField.getX() <= this.lakeX + lakeSize;
-            inLake = inLake && worldField.getY() >= this.lakeY && worldField.getY() <= this.lakeY + lakeSize;
+            inLake = this.isInLakeArea(worldField);
             worldField.setWater(inLake);
             if (LOGGER.isDebugEnabled() && inLake) {
                 LOGGER.debug(String.format("WorldField %s in lake", worldField));
             }
         }
-        this.applyStateToEnvironment();
         LOGGER.info("Applied Lake-World rules");
     }
 
-    public void modifyWorld(Pair<LakeProperty, Object>... propertyObjectPair) {
-        for (Pair<LakeProperty, Object> lakeProperty : propertyObjectPair) {
-            switch (lakeProperty.getKey()) {
-                case PRESSURE:
-                    this.pressureLevel = (Integer) lakeProperty.getValue();
-                    break;
-                case RAIN:
-                    this.rain = (Boolean) lakeProperty.getValue();
-                    break;
-                case STORM:
-                    this.storm = (Boolean) lakeProperty.getValue();
-                    break;
-            }
-        }
-        this.applyStateToEnvironment();
+    private boolean isInLakeArea(WorldField worldField) {
+        boolean inLake;
+        inLake = worldField.getX() >= this.lakeX && worldField.getX() <= this.lakeX + lakeSize;
+        inLake = inLake && worldField.getY() >= this.lakeY && worldField.getY() <= this.lakeY + lakeSize;
+        return inLake;
+    }
+
+    public void applyWeather(Weather... conditions) {
+        this.weatherList.clear();
+        Collections.addAll(this.weatherList, conditions);
     }
 
     @Override
@@ -151,23 +140,19 @@ public class LakeWorld extends DefaultWorld {
                 .add("lakeX", lakeX)
                 .add("lakeY", lakeY)
                 .add("lakeSize", lakeSize)
-                .add("rain", rain)
-                .add("storm", storm)
-                .add("pressureLevel", pressureLevel)
                 .add("iteration", iteration)
+                .add("weatherList", weatherList)
                 .toString();
     }
 
     @Override
-    protected void applyStateToEnvironment() {
-        this.environment.eval(String.format("(bind ?*rain* %s)", BooleanToSymbol.toSymbol(this.rain)));
-        this.environment.eval(String.format("(bind ?*storm* %s)", BooleanToSymbol.toSymbol(this.storm)));
-        this.environment.eval(String.format("(bind ?*pressure* %d)", this.pressureLevel));
-        this.environment.eval(String.format("(bind ?*width* %d)", this.width));
-        this.environment.eval(String.format("(bind ?*height* %d)", this.height));
-        this.environment.eval(String.format("(bind ?*lakeX* %d)", this.lakeX));
-        this.environment.eval(String.format("(bind ?*lakeY* %d)", this.lakeY));
-        this.environment.eval(String.format("(bind ?*lakeSize* %d)", this.lakeSize));
+    protected void assertWeather() {
+        final StringBuilder weatherSB = new StringBuilder();
+        for (Weather weather : this.weatherList) {
+            weatherSB.append(weather.toString().toLowerCase()).append(" ");
+        }
+        weatherSB.deleteCharAt(weatherSB.length() - 1);
+        this.environment.assertString(String.format("(doWeather (random %s) )", weatherSB.toString().trim()));
     }
 
     @Override
@@ -188,9 +173,7 @@ public class LakeWorld extends DefaultWorld {
         }
     }
 
-    public enum LakeProperty {
-        RAIN,
-        STORM,
-        PRESSURE
+    public enum Weather {
+        RAIN, STORM, SUN
     }
 }

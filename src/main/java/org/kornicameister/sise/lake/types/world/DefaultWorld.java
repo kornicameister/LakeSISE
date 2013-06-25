@@ -54,6 +54,11 @@ abstract public class DefaultWorld
     }
 
     protected WorldField getWorldFieldToActor(DefaultActor actor) {
+        final List<WorldField> freeFields = this.getWorldFieldsByActorType(actor);
+        return this.getRandomWorldField(freeFields);
+    }
+
+    private List<WorldField> getWorldFieldsByActorType(DefaultActor actor) {
         List<WorldField> freeFields = null;
         switch (actor.getType()) {
             case HERBIVORE_FISH:
@@ -67,6 +72,10 @@ abstract public class DefaultWorld
                 freeFields = WorldHelper.getField(WorldHelper.FieldPredicate.FREE_LAND_FIELD);
                 break;
         }
+        return freeFields;
+    }
+
+    private WorldField getRandomWorldField(List<WorldField> freeFields) {
         if (freeFields.size() == 1) {
             return freeFields.get(0);
         }
@@ -81,20 +90,20 @@ abstract public class DefaultWorld
         }
     }
 
-    public Integer getHeight() {
-        return height;
-    }
-
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
-
     public Integer getWidth() {
         return width;
     }
 
     public void setWidth(Integer width) {
         this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
     }
 
     @Override
@@ -107,19 +116,9 @@ abstract public class DefaultWorld
         return sb.toString();
     }
 
-    protected abstract void applyStateToEnvironment();
-
-    @Override
-    public String getFactName() {
-        return DefaultWorld.class.getSimpleName();
-    }
+    protected abstract void assertWeather();
 
     protected abstract void assertFields();
-
-    @Override
-    public String getFactId() {
-        return String.format("%s_%d", this.getFactName(), 0);
-    }
 
     protected abstract void assertActors();
 
@@ -145,5 +144,15 @@ abstract public class DefaultWorld
         System.out.println(stringBuilder.toString());
     }
 
+    @Override
+    public String getFactName() {
+        return DefaultWorld.class.getSimpleName();
+    }
+
+
+    @Override
+    public String getFactId() {
+        return String.format("%s_%d", this.getFactName(), 0);
+    }
 
 }
