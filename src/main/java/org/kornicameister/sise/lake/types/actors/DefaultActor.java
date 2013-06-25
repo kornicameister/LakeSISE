@@ -124,12 +124,12 @@ public abstract class DefaultActor
             case POACHER:
                 this.canFly = false;
                 this.canSwim = false;
-                this.cash = DefaultActor.getRandomInt(1, 5000, seed);
+                this.cash = DefaultActor.getRandomInt(1, 50, seed);
                 break;
             case FORESTER:
                 this.canFly = false;
                 this.canSwim = false;
-                this.cash = DefaultActor.getRandomInt(1, 5000, seed);
+                this.cash = DefaultActor.getRandomInt(1, 50, seed);
                 this.corruptionThreshold = DefaultActor.getRandomInt(5, 50, seed);
                 break;
         }

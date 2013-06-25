@@ -17,24 +17,26 @@
         (and
             (   <   0 (str-compare ?p-id "PoacherActorTT"))
             (   >   ?p-cash ?a-ct)
+            (   >   ?p-cash ?a-cash)
+            (   >  ?a-ct   -1)
             (= 1 (isActorInRangeByField ?p-af ?f-af ?p-mr))
         )
 	)
 	=>
-	(bind ?tmp (- ?p-cash ?a-ct))
-
-    (modify ?forester
-        (cash                   (+ ?a-cash ?tmp))
-        (corruptionThreshold    -1)
-        (tookBribe              ?*true*)
-        (actionDone             ?*true*)
+	(bind ?tmp (- ?p-cash (* ?a-ct (random 1 3))))
+	(if (> ?tmp 0) then
+        (modify ?forester
+            (cash                   (+ ?a-cash ?tmp))
+            (corruptionThreshold    (- ?a-ct (random 1 5)))
+            (tookBribe              ?*true*)
+            (actionDone             ?*true*)
+        )
+        (modify ?poacher
+            (cash (- ?p-cash ?tmp))
+            (actionDone ?*true*)
+        )
+	    (printout t ?p-id " has bribed " ?a-id " with " ?tmp " $" crlf)
     )
-    (modify ?poacher
-        (cash (- ?p-cash ?tmp))
-        (actionDone ?*true*)
-    )
-
-	(printout t ?p-id " has bribed " ?a-id " with " ?tmp " $" crlf)
 )
 
 (defrule tt_poacher_CatchFish
