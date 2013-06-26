@@ -53,10 +53,11 @@ public abstract class DefaultActor
     protected Integer weight;
     protected Boolean isMoveChanged;
     protected Integer howManyFishes;
-    private List<WorldField> neighbourhood;
+    protected Integer roundsAlive;
 
     public DefaultActor() {
         this.id = DefaultActor.ID++;
+        this.roundsAlive = 0;
     }
 
     private static int getRandomInt(final int lower, final int higher, final Random seed) {
@@ -165,6 +166,14 @@ public abstract class DefaultActor
 
     public void setType(final LakeActors type) {
         this.type = type;
+    }
+
+    public Integer getRoundsAlive() {
+        return roundsAlive;
+    }
+
+    public void newRound() {
+        this.roundsAlive++;
     }
 
     /**
@@ -286,29 +295,7 @@ public abstract class DefaultActor
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DefaultActor{");
-        sb.append("id=").append(id);
-        sb.append("\n, type=").append(type);
-        sb.append("\n, atField=").append(atField);
-        sb.append("\n, canAttack=").append(canAttack);
-        sb.append("\n, canFly=").append(canFly);
-        sb.append("\n, canSwim=").append(canSwim);
-        sb.append("\n, hp=").append(hp);
-        sb.append("\n, isAlive=").append(isAlive);
-        sb.append("\n, visionRange=").append(visionRange);
-        sb.append("\n, attackRange=").append(attackRange);
-        sb.append("\n, moveRange=").append(moveRange);
-        sb.append("\n, hunger=").append(hunger);
-        sb.append("\n, target=").append(target);
-        sb.append("\n, targetHit=").append(targetHit);
-        sb.append("\n, aggressive=").append(aggressive);
-        sb.append("\n, cash=").append(cash);
-        sb.append("\n, corruptionThreshold=").append(corruptionThreshold);
-        sb.append("\n, tookBribe=").append(tookBribe);
-        sb.append("\n, validId=").append(validId);
-        sb.append("\n, attackPower=").append(attackPower);
-        sb.append('}');
-        return sb.toString();
+        return this.getStats().toString();
     }
 
     public void clearFields() {
@@ -316,14 +303,15 @@ public abstract class DefaultActor
     }
 
     public List<StatField> getStats() {
-        List<StatField> stats = new LinkedList<>();
+        final List<StatField> stats = new LinkedList<>();
 
         stats.add(new StatField("ID", this.getFactId()));
         stats.add(new StatField("Field", this.getAtField().getId()));
         stats.add(new StatField("-------", ""));
         stats.add(new StatField("HP", this.getHp()));
-        stats.add(new StatField("Alive", this.getAlive()));
+        stats.add(new StatField("Alive", this.isAlive()));
         stats.add(new StatField("Hunger", this.getHunger()));
+        stats.add(new StatField("Rounds", this.getRoundsAlive()));
         stats.add(new StatField("-------", ""));
         stats.add(new StatField("Fished", this.getHowManyFishes()));
         stats.add(new StatField("Target", this.getTarget() != null ? this.getTarget().getFactId() : "none"));
@@ -367,7 +355,7 @@ public abstract class DefaultActor
         this.attackPower = attackPower;
     }
 
-    public Boolean getAlive() {
+    public Boolean isAlive() {
         return isAlive;
     }
 

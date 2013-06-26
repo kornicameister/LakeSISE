@@ -53,26 +53,12 @@ public class LakeWorld extends DefaultWorld {
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
             //collect results and update fields status and actors status
-            try {
-
-                final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
-                PrimitiveValue value = this.environment.eval(findActorFactStr);
-                if (value.size() != 0) {
-
-                    final List<StatField> before = actor.getStats();
-                    actor.applyFact(value.get(0));
-                    final List<StatField> after = actor.getStats();
-
-                    this.printComparison(before, after);
-                } else {
-                    defaultActorIterator.remove();
-                    System.out.println(String.format("\t%s is no longer alive", actor.getFactId()));
-                }
-
-
-            } catch (Exception exception) {
-                LOGGER.fatal(String.format("Failed to update actor %s", actor.getFactId()), exception);
+            if (actor.isAlive()) {
+                this.collectResultFromActor(actor);
+            } else {
+                this.printDeath(actor);
             }
+            //collect results and update fields status and actors status
         }
         while (worldFieldIterator.hasNext()) {
             final WorldField field = worldFieldIterator.next();
@@ -82,6 +68,27 @@ public class LakeWorld extends DefaultWorld {
             } catch (Exception exception) {
                 LOGGER.fatal(String.format("Failed to update field %s", field.getId()), exception);
             }
+        }
+    }
+
+    private void collectResultFromActor(final DefaultActor actor) {
+        try {
+            final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
+            PrimitiveValue value = this.environment.eval(findActorFactStr);
+            if (value.size() != 0) {
+
+                final List<StatField> before = actor.getStats();
+                actor.newRound();
+                actor.applyFact(value.get(0));
+                final List<StatField> after = actor.getStats();
+
+                this.printComparison(before, after);
+            } else {
+                actor.setAlive(false);
+                System.out.println(String.format("\t%s is no longer alive", actor.getFactId()));
+            }
+        } catch (Exception exception) {
+            LOGGER.fatal(String.format("Failed to update actor %s", actor.getFactId()), exception);
         }
     }
 
@@ -167,8 +174,14 @@ public class LakeWorld extends DefaultWorld {
         final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
-            actor.clearFields();
-            this.environment.assertString(actor.getFact());
+            if (actor.isAlive()) {
+                actor.clearFields();
+                this.environment.assertString(actor.getFact());
+            } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(String.format("Actor %s is no longer alive and wont participat in the round", actor.getFactId()));
+                }
+            }
         }
     }
 

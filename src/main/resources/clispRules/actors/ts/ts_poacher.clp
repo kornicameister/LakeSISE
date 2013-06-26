@@ -114,7 +114,7 @@
 		)
 	(test (neq ?ad yes))
 	=>
-	(modify ?targetActor (hp 0))
+	(modify ?targetActor (hp 0)(isAlive no))
 	(modify ?poacherActor (weight (+ ?currentPoacherWeight ?targetWeight))(howManyFishes (+ ?howMany 1))(actionDone yes))
 	;(printout t "Poacher tried to catch a fish and succeded" crlf)
 )

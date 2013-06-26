@@ -122,7 +122,7 @@
         )
     )
 	=>
-	(bind ?tmp                  (* ?f-ap (random 5 15)))
+	(bind ?tmp                  (* ?f-ap (random 3 6)))
 	(modify ?suspect
 	    (cash (- ?s-cash ?tmp))
 	    (actionDone ?*true*)

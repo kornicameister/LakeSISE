@@ -52,9 +52,8 @@
 		)
 	(test (neq ?ad yes))
 	=>
-	(modify ?anglerActor (actionDone yes))
-	(modify ?targetActor (hp 0))
-	(modify ?anglerActor (weight (+ ?currentAnglerWeight ?targetWeight))(howManyFishes (+ ?howMany 1)))
+	(modify ?targetActor (hp 0)(isAlive no))
+	(modify ?anglerActor (weight (+ ?currentAnglerWeight ?targetWeight))(howManyFishes (+ ?howMany 1))(actionDone yes))
 	;(printout t ?AnglerActorID " caught a fish" crlf)
 )
 

@@ -5,6 +5,8 @@ import org.kornicameister.sise.lake.clisp.ClispEnvironment;
 import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.impl.kg.ForesterActorKG;
+import org.kornicameister.sise.lake.types.world.DefaultWorld;
+import org.kornicameister.sise.lake.types.world.impl.LakeWorld;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -40,7 +42,6 @@ public class WorldUI extends JFrame implements ActionListener {
 
     public WorldUI(String worldProp, String propFile) {
         this.environment = ClispEnvironment.getInstance(worldProp);
-        ;
         //test
         maxFieldsHorizontally = WorldHelper.getWorld().getWidth();
         maxFieldsVertically = WorldHelper.getWorld().getHeight();
@@ -128,6 +129,13 @@ public class WorldUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JButton) {
             if (environment.isBootstrapped()) {
+                DefaultWorld world = WorldHelper.getWorld();
+                if (world instanceof LakeWorld) {
+                    if (enableStorm.isSelected()) {
+                        ((LakeWorld) world).applyWeather(LakeWorld.Weather.RAIN, LakeWorld.Weather.STORM, LakeWorld.Weather.SUN);
+                    } else
+                        ((LakeWorld) world).applyWeather(LakeWorld.Weather.RAIN, LakeWorld.Weather.SUN);
+                }
                 environment.mainLoop();
                 System.out.print("Next tour -> \t");
                 this.generateWorld();
@@ -147,16 +155,16 @@ public class WorldUI extends JFrame implements ActionListener {
     }
 
     private void generateWorld() {
-        for (int i = 0; i < fields.size(); i++) {
-            int x = fields.get(i).getLabel().getX() /
-                    fields.get(i).getLabel().getIcon().getIconHeight();
-            int y = fields.get(i).getLabel().getY() /
-                    fields.get(i).getLabel().getIcon().getIconWidth();
+        for (Field field : fields) {
+            int x = field.getLabel().getX() /
+                    field.getLabel().getIcon().getIconHeight();
+            int y = field.getLabel().getY() /
+                    field.getLabel().getIcon().getIconWidth();
             WorldField next = WorldHelper.getField(x, y);
             if (next.isFree())
-                this.fields.get(i).setWater(next.isWater());
+                field.setWater(next.isWater());
             else {
-                fields.get(i).setActor(WorldHelper.getActor(next));
+                field.setActor(WorldHelper.getActor(next));
             }
         }
     }
