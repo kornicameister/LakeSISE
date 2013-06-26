@@ -345,22 +345,31 @@
                             )
             =>
             (bind ?tf-id (nextFieldId 0 ?a-t ?a-id))
-            (do-for-fact ( (?toField field) )
-                (eq ?toField:id ?tf-id)
-                (modify ?toField
-                    (occupied ?*true*)
+            (if (> ?tf-id 0) then
+                (do-for-fact ( (?toField field) )
+                    (eq ?toField:id ?tf-id)
+                    (modify ?toField
+                        (occupied ?*true*)
+                    )
+                    (modify ?fromField
+                        (occupied ?*false*)
+                    )
+                    (modify ?actor
+                        (atField ?tf-id)
+                        (wasField ?ff-id)
+                        (logicDone 3)
+                        (isMoveChanged ?*true*)
+                    )
+                    (printout t ?a-id "/" ?a-t " moved from [" ?ff-id "=[" ?ff-x ":" ?ff-y "]] to [" ?tf-id "=[" ?toField:x ":" ?toField:y "]] with range " ?a-mr "." crlf)
                 )
-                (modify ?fromField
-                    (occupied ?*false*)
-                )
+            else then
                 (modify ?actor
-                    (atField ?tf-id)
-                    (wasField ?ff-id)
                     (logicDone 3)
                     (isMoveChanged ?*true*)
                 )
-                (printout t ?a-id "/" ?a-t " moved from [" ?ff-id "=[" ?ff-x ":" ?ff-y "]] to [" ?tf-id "=[" ?toField:x ":" ?toField:y "]] with range " ?a-mr "." crlf)
+                (printout t ?a-id "/" ?a-t " not moved, no available field" crlf)
             )
+
         )
         ;------------------create-move-rule------------------;
 	;------------------move-rules-----------------------;
