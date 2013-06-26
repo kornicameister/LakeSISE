@@ -5,6 +5,8 @@ import org.kornicameister.sise.lake.clisp.ClispEnvironment;
 import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.impl.kg.ForesterActorKG;
+import org.kornicameister.sise.lake.types.world.DefaultWorld;
+import org.kornicameister.sise.lake.types.world.impl.LakeWorld;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -127,8 +129,12 @@ public class WorldUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JButton) {
             if (environment.isBootstrapped()) {
-                if (enableStorm.isSelected()) {
-
+                DefaultWorld world = WorldHelper.getWorld();
+                if (world instanceof LakeWorld) {
+                    if (enableStorm.isSelected()) {
+                        ((LakeWorld) world).applyWeather(LakeWorld.Weather.RAIN, LakeWorld.Weather.STORM, LakeWorld.Weather.SUN);
+                    } else
+                        ((LakeWorld) world).applyWeather(LakeWorld.Weather.RAIN, LakeWorld.Weather.SUN);
                 }
                 environment.mainLoop();
                 System.out.print("Next tour -> \t");
