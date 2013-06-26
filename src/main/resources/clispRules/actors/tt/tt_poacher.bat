@@ -156,13 +156,15 @@
 	                )
 	(test
 	    (and
-	        (or
-                (eq ?f-type herbivore_fish)
-                (eq ?f-type predator_fish)
-            )
             (   <   0 (str-compare ?p-id "PoacherActorTT"))
             (= 1 (isActorInRangeByField ?p-af ?f-af ?p-ar))
 	    )
+	)
+	(test
+        (or
+            (eq ?f-type herbivore_fish)
+            (eq ?f-type predator_fish)
+        )
 	)
 	=>
     (if (>= ?p-ap ?f-hp) then
