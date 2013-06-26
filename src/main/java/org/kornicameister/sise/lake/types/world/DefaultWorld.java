@@ -108,12 +108,7 @@ abstract public class DefaultWorld
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DefaultWorld{");
-        sb.append("width=").append(getWidth());
-        sb.append(", height=").append(getHeight());
-        sb.append(", environment=").append(environment);
-        sb.append('}');
-        return sb.toString();
+        return String.format("width=%d, height=%d, environment=%s}", getWidth(), getHeight(), environment);
     }
 
     protected abstract void assertWeather();
@@ -148,7 +143,6 @@ abstract public class DefaultWorld
     public String getFactName() {
         return DefaultWorld.class.getSimpleName();
     }
-
 
     @Override
     public String getFactId() {

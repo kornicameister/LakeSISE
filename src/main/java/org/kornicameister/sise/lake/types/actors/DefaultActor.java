@@ -59,6 +59,15 @@ public abstract class DefaultActor
         this.id = DefaultActor.ID++;
     }
 
+    private static int getRandomInt(final int lower, final int higher, final Random seed) {
+        if (lower > higher) {
+            throw new IllegalArgumentException("Start cannot exceed End.");
+        }
+        final long range = (long) higher - (long) lower + 1;
+        final long fraction = (long) (range * seed.nextDouble());
+        return (int) (fraction + lower);
+    }
+
     @Override
     protected final void resolveProperties(final Properties properties, final InitMode initMode) {
         if (LOGGER.isDebugEnabled()) {
@@ -156,15 +165,6 @@ public abstract class DefaultActor
 
     public void setType(final LakeActors type) {
         this.type = type;
-    }
-
-    private static int getRandomInt(final int lower, final int higher, final Random seed) {
-        if (lower > higher) {
-            throw new IllegalArgumentException("Start cannot exceed End.");
-        }
-        final long range = (long) higher - (long) lower + 1;
-        final long fraction = (long) (range * seed.nextDouble());
-        return (int) (fraction + lower);
     }
 
     /**
@@ -320,11 +320,15 @@ public abstract class DefaultActor
 
         stats.add(new StatField("ID", this.getFactId()));
         stats.add(new StatField("Field", this.getAtField().getId()));
+        stats.add(new StatField("-------", ""));
+        stats.add(new StatField("HP", this.getHp()));
         stats.add(new StatField("Alive", this.getAlive()));
         stats.add(new StatField("Hunger", this.getHunger()));
+        stats.add(new StatField("-------", ""));
         stats.add(new StatField("Fished", this.getHowManyFishes()));
         stats.add(new StatField("Target", this.getTarget() != null ? this.getTarget().getFactId() : "none"));
         stats.add(new StatField("TargetHit", this.getTargetHit()));
+        stats.add(new StatField("-------", ""));
         stats.add(new StatField("Cash", this.getCash()));
         stats.add(new StatField("CorruptionT", this.getCorruptionThreshold()));
         stats.add(new StatField("TookBribe", this.getTookBribe()));
@@ -333,6 +337,7 @@ public abstract class DefaultActor
         stats.add(new StatField("AttackRg", this.getAttackRange()));
         stats.add(new StatField("-------", ""));
         stats.add(new StatField("MoveRange", this.getMoveRange()));
+        stats.add(new StatField("VisionRange", this.getVisionRange()));
         stats.add(new StatField("-------", ""));
 
         return stats;
