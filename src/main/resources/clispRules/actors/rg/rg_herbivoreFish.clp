@@ -3,14 +3,19 @@
 (defrule tryToBreakFree ; if fish hp is greater than angler attack, fish can break free but loses it's hp 
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
 	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS))
-	(and
+	?anglerField <- (field (id ?AF)(x ?ax)(y ?ay))
+	?actorField <- (field (id ?VF)(x ?vx)(y ?vy))
+
+		(test (eq ?AF ?curField))
+		(test (eq ?VF ?curTField))
+		(test (>= ?attackR (sqrt (+ (abs (- ?ax ?vx)) (abs (- ?ay ?vy))))))
 		(test (eq ?alive yes))
 		(test (> ?hp ?attackP))
 		(test (eq ?typ angler))
 		(test (eq (sub-string 1 20 ?actorTId) "HerbivoreFishActorRG"))
 
-	)
 	=>
+	(assert (angler tried to catch))
 	(modify ?actor (hp (- ?hp ?attackP)))
 	(modify ?actor (hp (- ?weight 25)))
 )

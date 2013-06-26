@@ -5,6 +5,7 @@
 (test (< 11 ?hunger))
 (test (eq no ?aggressive))
 (test (eq ?type bird))
+(test (eq (sub-string 1 11 ?id) "BirdActorMB"))
 =>
 (modify ?actor (aggressive yes) (moveRange (- ?mr 2)) (visionRange (+ ?vr 1))))
 
@@ -15,7 +16,7 @@
 (test (< 30 ?hunger))
 (test (eq yes ?aggressive))
 (test (eq ?type bird))
-
+(test (eq (sub-string 1 11 ?id) "BirdActorMB"))
 =>
 (modify ?actor (aggressive no) (moveRange (+ ?mr 2)) (visionRange (- ?vr 1))))
 
@@ -23,68 +24,23 @@
 ;----------------glodowka=smierc-----------------------;
 ;-------------part1 bo inaczej petli sie---------------;
 (defrule starvingb
-(declare (salience -1)) 
 ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (type ?type))
 (test (> 11 ?hunger))
 (test (eq ?type bird))
-(check-hungerb)
+(not (checked-hungerb ?id))
+(test (eq (sub-string 1 11 ?id) "BirdActorMB"))
 =>
-(assert (starving yes ?id)))
-
-;-------------part 2 -----------------;
-(defrule starvingb1
-(declare (salience -2)) 
-?actor <- (actor (id ?id) (hp ?hp))
-?starve <- (starving ?a ?b)
-(test (eq ?b ?id))
-(test (eq ?a yes))
-=>
-(assert (remove_hp ?id))
-)
-
-;------------part3 bo logical nie chce dzialac-------------;
-(defrule starvingb2
-(declare (salience -3)) 
-?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (type ?type))
-?remove <- (remove_hp ?a)
-(test (eq ?a ?id))
-(not (removing done))
-=>
+(assert (checked-hungerb ?id))
 (modify ?actor (hp (- ?hp 4)))
-(assert (removing done))
 )
 
-(defrule starvingb3
-(declare (salience -4)) 
-?removing <- (removing done)
-?starving <- (starving ?c ?d)
-?remove <- (remove_hp ?a)
-?startf <- (check-hungerb)
-(removing done)
-=>
-(retract ?removing)
-(retract ?starving)
-(retract ?remove)
-(retract ?startf)
-)
 
-(defrule starving-check
-(declare (salience 1)) 
-(test (= 1 1))
-=>
-(assert (check-hungerb)))
 
-(defrule clear-starve
-(declare (salience -999))
-?retf <- (check-hungerb)
-(test (= 1 1))
-=>
-(retract ?retf))
 
 ;------------------agresywny+cel w zasiegu = omnomnom---------;
 (defrule attackb
 (declare (salience 101)) 
-?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (aggressive ?ag) (hunger ?hunger) (type ?typ))
+?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (aggressive ?ag) (hunger ?hunger) (type ?typ) (howManyFishes ?num))
 ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
 ?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive ?alive))
 ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
@@ -96,10 +52,12 @@
 (not (test (eq ?id ?tid)))
 (test (eq ?typ bird))
 (test (eq yes ?alive))
-
+(not (attacked ?id ?tid))
+(test (eq (sub-string 1 11 ?id) "BirdActorMB"))
 =>
 (modify ?target (hp (- ?hp 100)))
-(modify ?actor (hunger (+ ?hunger 20)))
+(modify ?actor (hunger (+ ?hunger 20)) (howManyFishes (+ ?num 1)))
+(assert (attacked ?id ?tid))
 )
 
 
@@ -107,53 +65,35 @@
 ;---------------czas = glod -----------------------;
 (defrule growinghungerb
 ?actor <- (actor (id ?id) (hunger ?hunger) (type ?type))
-?startf <- (growing-hunger)
-(growing-hunger)
+(not (hunger-increasedb ?id))
 (test (eq ?type bird))
+(test (eq (sub-string 1 11 ?id) "BirdActorMB"))
 =>
+(assert (hunger-increasedb ?id))
 (modify ?actor (hunger (- ?hunger 1)))
-(retract ?startf)
 )
 
-(defrule hungerdec
-(declare (salience 1)) 
-(test (= 1 1))
-=>
-(assert (growing-hunger))
-)
 
 ;-------------kuku dla ludzi-------------------;
-
-
-
-;----------------------pogoda a ruch------------------------;
-(defmethod affectRangeByWeatherB
-    (
-        (?range INTEGER)
-        (?type SYMBOL)
-        (?id STRING (eq ?id "BirdActorMB_1"))
-    )
-    (do-for-fact
-        ((?ac actor))
-        (eq ?ac:id "BirdActorMB_1")
-        (bind ?range ?ac:moveRange)
-
-        (if (and (eq ?*rain* yes) (eq ?*storm* yes)) then
-            (bind ?range 1)
-        else then
-            (if (and (eq ?*storm* yes) (eq ?*rain* no)) then
-                (bind ?range 2)
-            else then
-                (if (and (eq ?*storm* no) (eq ?*rain* yes)) then
-                    (bind ?range 3)
-                else then
-                    (bind ?range 5)
-                )
-            )
-        )
-        (printout t "BirdActorMB_1 custom affectRangeByWeather, range=" ?range crlf)
-        (return ?range)
-    )
+(defrule troll
+(declare (salience 100)) 
+?actor <- (actor (id ?id) (attackRange ?ar) (atField ?paf) (type ?typ))
+?fieldp <- (field (id ?fid) (x ?x) (y ?y))
+?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (moveRange ?mr) (visionRange ?vr))
+?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
+(test (eq ?fid ?paf))
+(test (eq ?tfid ?taf))
+(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
+(or (test (eq ?type angler))
+	(test (eq ?type poacher))
+	(test (eq ?type forester))
+)
+(not (pooped ?id ?tid))
+(test (eq ?typ bird))
+(test (eq (sub-string 1 11 ?id) "BirdActorMB"))
+=>
+(modify ?target (moveRange (- ?mr 1)) (visionRange (- ?vr 1)))
+(assert (pooped ?id ?tid))
 )
 
 

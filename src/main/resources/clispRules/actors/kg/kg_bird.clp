@@ -22,36 +22,35 @@
     )
 )
 (defrule starving
-?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (type ?type))
-(test (< ?hunger 0))
-=>
-(modify ?actor (hp (- ?hp 6)))
+    ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (type ?type))
+    (test (< ?hunger 0))
+    =>
+    (modify ?actor (hp (- ?hp 6)))
 )
 (defrule attack
-?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (hunger ?hunger) (type ?typ))
-?fieldp <- (field (id ?fid) (x ?x) (y ?y))
-?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive ?alive) (weight ?weight))
-?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
-(test (eq ?fid ?paf))
-(test (eq ?tfid ?taf))
-(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
-(test (eq yes ?alive))
-(test (eq ?type herbivore_fish))
-(not (test (eq ?id ?tid)))
-(test (eq ?typ bird))
-(test (eq yes ?alive))
-=>
-(modify ?target (hp (- ?hp ?ap)))
-(bind ?tmp (/ ?weight 2))
-(modify ?actor (hunger (+ ?hunger ?tmp)))
+    ?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (hunger ?hunger) (howManyFishes ?hmf) (type bird) (actionDone no))
+    ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
+    ?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive yes) (weight ?weight))
+    ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
+    (test (eq ?fid ?paf))
+    (test (eq ?tfid ?taf))
+    (test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
+    (test (or (eq ?type herbivore_fish) (eq ?type predator_fish)) )
+    (test (neq ?id ?tid))
+    (test ( > 0 (str-compare ?id "BirdActorKG")))
+    =>
+    (modify ?target (hp (- ?hp ?ap)))
+    (if(< ?hp 0) then
+        (modify ?actor (howManyFishes (+ ?hmf 1)))
+    )
+    (modify ?actor (hunger (+ ?hunger ?weight)))
+    (modify ?actor (actionDone ?*true*))
 )
 
 (defrule growinghunger
-?actor <- (actor (id ?id) (hunger ?hunger) (type ?type))
-?startf <- (growing-hunger)
-(growing-hunger)
-(test (eq ?type bird))
-=>
-(modify ?actor (hunger (- ?hunger 3)))
-(retract ?startf)
+    ?actor <- (actor (id ?id) (hunger ?hunger) (type bird) (actionDone no))
+    (test ( > 0 (str-compare ?id "BirdActorKG")))
+    =>
+    (modify ?actor (hunger (- ?hunger 3)))
+    (modify ?actor (actionDone ?*true*))
 )
