@@ -117,7 +117,7 @@ abstract public class DefaultWorld
 
     protected abstract void assertActors();
 
-    protected void printComparison(List<StatField> before, List<StatField> after) {
+    protected void printComparison(final List<StatField> before, final List<StatField> after) {
         Preconditions.checkArgument(before.size() == after.size());
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -137,6 +137,10 @@ abstract public class DefaultWorld
             }
         }
         System.out.println(stringBuilder.toString());
+    }
+
+    protected void printDeath(final DefaultActor actor) {
+        System.out.println(String.format("Actor %s is death, been alive for %d rounds", actor.getFactId(), actor.getRoundsAlive()));
     }
 
     @Override
