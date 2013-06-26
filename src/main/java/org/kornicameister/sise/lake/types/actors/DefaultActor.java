@@ -285,7 +285,7 @@ public abstract class DefaultActor
         this.visionRange = visionRange;
     }
 
-    public Boolean getValidId() {
+    public Boolean isIdValid() {
         return validId;
     }
 
@@ -318,6 +318,7 @@ public abstract class DefaultActor
         stats.add(new StatField("TargetHit", this.getTargetHit()));
         stats.add(new StatField("-------", ""));
         stats.add(new StatField("Cash", this.getCash()));
+        stats.add(new StatField("ValidId", this.isIdValid()));
         stats.add(new StatField("CorruptionT", this.getCorruptionThreshold()));
         stats.add(new StatField("TookBribe", this.getTookBribe()));
         stats.add(new StatField("-------", ""));
