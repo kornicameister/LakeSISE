@@ -1,14 +1,3 @@
-;-------------------funkcja zwraca wartosc gdzi ma byc roslinozerca---------;
-(deffunction getval_rosl(?x ?tx ?rangeMove)
-       		(if(< ?x ?tx) then
-			(bind ?tmp (- ?x ?rangeMove))
-       			(return ?tmp)
-			else
-			(bind ?tmp (+ ?x ?rangeMove))
-       			(return ?tmp)
-				)
-       		
-       	)
 ;----------------regula ryba roslinozerna usieka przed drapieznikiem-------------;
 
 (defrule uciekaj
@@ -24,11 +13,13 @@
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
-	(test (< 13 ?rangeMove))
-	)
+	;(test (= 3(random 1 20)))
+	(not (herbivore_ucieka ?actor-id))
+		)
+
 	=> 
-	;(modify ?fi (occupied no))
-	(printout t ?actor-id "/" ?actor-name " ucieka " ?actor-id-sec "/" ?actor-name-sec ?x " " ?y " " ?tX " " ?tY " "crlf crlf)
+	(assert (herbivore_ucieka ?actor-id))
+	(printout t ?actor-id "/" ?actor-name " ryba ucieka " ?actor-id-sec "/" ?actor-name-sec ?x " " ?y " " ?tX " " ?tY " "crlf crlf)
 	;(bind ?tmpx (getval_rosl ?x ?tX ?rangeMove))
 	;(bind ?tmpy (getval_rosl ?y ?tY ?rangeMove))	
 	;(bind ?id-pola (findFieldByXY ?tmpx ?tmpy))
@@ -37,30 +28,44 @@
 	;---------------------wychacza sie jak modyfikuje pole-------------------------------;
 	;(modify ?actor (atField ?id-pola))
 )
-
 ;-----------------------------rola jedz------------------------------------;
 ;rola sprawdza okolice roslinozernej nastepnie zjada pokarm; 
 ;Ryba traci predkosc poniewaz jest  coraz ciezsza
 ;nie ma pokarmu!!!!!;
 
-(defrule zjedz ;sprawdza okolice i zjada pokarm
-        ?actor 	<-(actor (id ?actor-id) (atField ?atField) (type ?actor-name)(moveRange ?move) (attackRange ?range)(isAlive ?isAlive)(weight ?waga))
+(defrule zjedz_herbi_lr ;sprawdza okolice i zjada pokarm
+        ?actor 	<-(actor (id ?actor-id) (atField ?atField) (type ?actor-name)(moveRange ?move) (attackRange ?range)(isAlive ?isAlive)(weight ?waga)
+		(hunger  ?hunger)(hp  ?hp))
   	
 	(and
 	?fi <- (field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes));from
-	(test (= 1 (check_type_herbi ?actor-name)) )  ;spr czy atakujacy jest drapierzny
+	(test (= 1 (check_type_herbi ?actor-name)) )  ;spr czy atakujacy jest roslinozerny
 	(test (= ?atField ?ff-id))
 	(test (eq yes ?isAlive))
-	(test (= 4 (random 1 10)))
+	(test (= 2 (random 1 4)))
+	(not (herbivore_jedz ?actor-id))
+		)
 
-	)
 	=> 
-(printout t ?actor-id "/" ?actor-name " zjada pokarm" crlf crlf crlf)
-	(modify ?fi (occupied no))
+	(assert (herbivore_jedz ?actor-id))
+    (printout t ?actor-id "/" ?actor-name " zjada pokarm" crlf crlf crlf)
 	(bind ?tmp(+ ?waga 10))
 	(bind ?tmpSpeed(- ?move 2))
-	(modify ?actor (weight ?tmp)(moveRange ?tmpSpeed))
+	(modify ?actor (weight ?tmp)(moveRange ?tmpSpeed)(hunger (+ ?hunger 10))(hp (+ ?hp 30)))
 )
+
+;-------------------funkcja zwraca wartosc gdzi ma byc roslinozerca---------;
+(deffunction getval_rosl(?x ?tx ?rangeMove)
+       		(if(< ?x ?tx) then
+			(bind ?tmp (- ?x ?rangeMove))
+       			(return ?tmp)
+			else
+			(bind ?tmp (+ ?x ?rangeMove))
+       			(return ?tmp)
+				)
+       		
+       	)
+
 
 ;---------------------------------- wspolna f-cja dla ryb-------------------------;
 (defmethod affectRangeByWeather
