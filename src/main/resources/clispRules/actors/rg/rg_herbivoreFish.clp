@@ -1,6 +1,21 @@
 ;Herbivore fish is an actor, who live only in lake, trying to avoid predator fishes and anglers fishing rodes
 
 
+
+(defrule stormchck ;Fish storm
+	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
+	(and
+		(test (eq ?*storm* yes))
+		(test (eq (sub-string 1 20 ?actorTId) "HerbivoreFishActorRG"))
+		(not (strmchck ?actorTId))
+	)
+	=>
+		(assert (strmchck ?actorTId))
+		(printout t ?actorTId ": STORM IS NOW!!!" crlf crlf)
+
+)
+
+
 ;(defrule dyingTime ;Fish dies when weight depleates
 ;	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
 ;	(and
@@ -30,14 +45,3 @@
 ;)
 ;
 ;
-;
-;(defrule stormchck ;Fish storm
-;	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
-;	(and
-;		(test (neq ?*storm* no))
-;		
-;	)
-;	=>
-;		(printout t ?actorTId ": STORM IS NOW!!!" crlf crlf)
-;
-;)

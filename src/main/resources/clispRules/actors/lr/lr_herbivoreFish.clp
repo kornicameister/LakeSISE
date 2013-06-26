@@ -13,6 +13,10 @@
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
+	(or
+		(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
+		(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
+	)
 	;(test (= 3(random 1 20)))
 	(not (herbivore_ucieka ?actor-id))
 		)
@@ -43,6 +47,10 @@
 	(test (= ?atField ?ff-id))
 	(test (eq yes ?isAlive))
 	(test (= 2 (random 1 4)))
+	(or
+		(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
+		(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
+	)
 	(not (herbivore_jedz ?actor-id))
 		)
 
@@ -51,7 +59,9 @@
     (printout t ?actor-id "/" ?actor-name " zjada pokarm" crlf crlf crlf)
 	(bind ?tmp(+ ?waga 10))
 	(bind ?tmpSpeed(- ?move 2))
-	(modify ?actor (weight ?tmp)(moveRange ?tmpSpeed)(hunger (+ ?hunger 10))(hp (+ ?hp 30)))
+	(bind ?tmp_hun(+ ?hunger 60))
+	(bind ?tmp_hp(+ ?hp ?tmp))    
+	(modify ?actor (weight ?tmp)(moveRange ?tmpSpeed)(hunger ?tmp_hun)(hp ?tmp_hp))
 )
 
 ;-------------------funkcja zwraca wartosc gdzi ma byc roslinozerca---------;

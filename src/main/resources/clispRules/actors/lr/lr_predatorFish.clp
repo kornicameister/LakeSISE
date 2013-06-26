@@ -36,6 +36,10 @@
 	(test (or(!= ?tX ?x) (!= ?tY ?y)))     ;czy niejest to samo zwierze
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
+	(or
+		(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
+		(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
+	)
 	;(test (!= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)));jezeli drapieznik moze juz zaatakowac to nie przesuwa
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
 	(not (predator_gon ?actor-id))
@@ -49,7 +53,8 @@
 	;(bind ?id-pola (findFieldByXY ?tmpx ?tmpy))
 	;(modify ?actor (atField ?id-pola))
 	;---------------------wychacza sie jak modyfikuje pole-------------------------------;
-	;(modify ?actor (visionRange (+ 1 ?rangeVision)))
+	(bind ?tmp (+ 1 ?rangeVision))
+	(modify ?actor (visionRange ?tmp))
 	
 )
 
@@ -58,9 +63,7 @@
 ;Ryba traci predkosc poniewaz jest  coraz ciezsza
 
 (defrule zjedz_lr ;sprawdza okolice i zjada ryby 
-   ?actor 	    <-  (actor
-                        (id ?actor-id)
-                        (atField ?atField)
+   ?actor 	    <-  (actor(id ?actor-id)(atField ?atField)
                         (type ?actor-name)
                         (visionRange ?rangeVision)
                         (moveRange ?rangeMove)
@@ -86,6 +89,10 @@
                 (= 1 (check_type_herbi ?actor-name-sec))
             )
         )
+		(or
+			(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
+			(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
+		)
         (test (= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)))       ;czy ofiara jest w polu ataku
         (test (or(!= ?tX ?x) (!= ?tX ?x)))
         (test (= ?atField ?ff-id))
@@ -102,17 +109,33 @@
         (printout t ?actor-id "/" ?actor-name " zjada rybe " ?actor-id-sec "/"?actor-name-sec crlf crlf)
         (bind ?tmp(+ ?waga ?waga-sec))
         (bind ?tmpSpeed(- ?rangeMove(div ?rangeMove (div ?waga ?waga-sec))))
-        (modify ?actor (atField ?tf-id)(weight ?tmp)(moveRange ?tmpSpeed) (hunger (+ ?hunger 60))(hp (+ ?hp ?tmp)))
-        (modify ?actorSec (isAlive ?*false*)(hp 0))
+		(bind ?tmp_hun(+ ?hunger 60))
+		(bind ?tmp_hp(+ ?hp ?tmp))    
+		(modify ?actor (weight ?tmp)(moveRange ?tmpSpeed) (hunger ?tmp_hun)(hp ?tmp_hp))
+        (modify ?actorSec (isAlive no)(hp 0))
 )
+(defrule dead 
+ ?actorSec <- (actor(id ?actor-id-sec)(type ?actor-name-sec) (atField ?atField-sec)(isAlive ?isAlive-sec)(hp ?hp)) 
+ (not (zabij ?actor-id-sec))
+ (or
+	(test (eq (sub-string 1 20 ?actor-id-sec) "HerbivoreFishActorLR"))
+	(test (eq (sub-string 1 19 ?actor-id-sec) "PredatorFishActorLR"))
+	)
+ (test (= ?hp 0))
+	=> 
+		(assert (zabij ?actor-id-sec))
+		(modify ?actorSec (isAlive ?*false*))
+ (printout t crlf  " zabijam!! " ?actor-id-sec crlf)
+)
+
 (defrule przeglad 
- ?actorSec <- (actor(id ?actor-id-sec)(type ?actor-name-sec) (atField ?atField-sec)(isAlive ?isAlive-sec)) 
+ ?actorSec <- (actor(id ?actor-id-sec)(type ?actor-name-sec) (atField ?atField-sec)(isAlive ?isAlive-sec)(hp ?hp)) 
  (not (przeg ?actor-id-sec))
 		
 
 	=> 
 		(assert (przeg ?actor-id-sec)) 
- (printout t crlf  " aktor" ?actor-id-sec " czy zyje " ?isAlive-sec crlf crlf crlf)
+ (printout t crlf  " aktor" ?actor-id-sec " czy zyje " ?isAlive-sec " hp= " ?hp crlf)
 )
 
 
