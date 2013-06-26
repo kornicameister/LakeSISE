@@ -14,7 +14,7 @@
 	;(printout t "Attack range modified by rain/storm for " ?PoacherActorID)
 )
 
-(defrule PoacherAffectAttackByRainOrStorm "Poacher attack ability decreases with storm or rain (if it is lower than 5)"
+(defrule PoacherAffectAttackBySun "Poacher attack ability decreases with storm or rain (if it is lower than 5)"
 	?poacherActor <- (actor 	(id ?PoacherActorID)(attackRange ?aar))
 	(test (eq (sub-string 1 14 ?PoacherActorID) "PoacherActorTS"))
 	(test (eq ?*sun* yes))
