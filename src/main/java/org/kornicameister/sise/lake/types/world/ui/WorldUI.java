@@ -40,7 +40,6 @@ public class WorldUI extends JFrame implements ActionListener {
 
     public WorldUI(String worldProp, String propFile) {
         this.environment = ClispEnvironment.getInstance(worldProp);
-        ;
         //test
         maxFieldsHorizontally = WorldHelper.getWorld().getWidth();
         maxFieldsVertically = WorldHelper.getWorld().getHeight();
@@ -128,6 +127,9 @@ public class WorldUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JButton) {
             if (environment.isBootstrapped()) {
+                if (enableStorm.isSelected()) {
+
+                }
                 environment.mainLoop();
                 System.out.print("Next tour -> \t");
                 this.generateWorld();
@@ -147,16 +149,16 @@ public class WorldUI extends JFrame implements ActionListener {
     }
 
     private void generateWorld() {
-        for (int i = 0; i < fields.size(); i++) {
-            int x = fields.get(i).getLabel().getX() /
-                    fields.get(i).getLabel().getIcon().getIconHeight();
-            int y = fields.get(i).getLabel().getY() /
-                    fields.get(i).getLabel().getIcon().getIconWidth();
+        for (Field field : fields) {
+            int x = field.getLabel().getX() /
+                    field.getLabel().getIcon().getIconHeight();
+            int y = field.getLabel().getY() /
+                    field.getLabel().getIcon().getIconWidth();
             WorldField next = WorldHelper.getField(x, y);
             if (next.isFree())
-                this.fields.get(i).setWater(next.isWater());
+                field.setWater(next.isWater());
             else {
-                fields.get(i).setActor(WorldHelper.getActor(next));
+                field.setActor(WorldHelper.getActor(next));
             }
         }
     }
