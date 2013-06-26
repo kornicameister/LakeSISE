@@ -31,12 +31,16 @@ import java.util.Properties;
  */
 public class WorldUI extends JFrame implements ActionListener {
     private final Logger LOGGER = Logger.getLogger(WorldUI.class);
+    private final Integer SPINNER_MIN_VALUE = 1;
+    private final Integer SPINNER_MAX_VALUE = 100;
+    private final Integer SPINNER_STEP_VALUE = 1;
+    private final Integer SPINNER_INIT_VALUE = 1;
     private int maxFieldsHorizontally;
     private int maxFieldsVertically;
     private JPanel panel = null;
     private List<Field> fields = null;
     private JButton nextRound;
-    private JCheckBox autoNextRound;
+    private JSpinner numberAutoNextRound;
     private JCheckBox enableStorm;
     private ClispEnvironment environment;
 
@@ -58,14 +62,15 @@ public class WorldUI extends JFrame implements ActionListener {
         this.nextRound.addActionListener(this);
         this.nextRound.setVisible(true);
         this.panel.add(nextRound);
-        this.autoNextRound = new JCheckBox("Auto round");
-        this.autoNextRound.setBounds((int) this.nextRound.getBounds().getX(), ((int) (this.nextRound.getBounds().getHeight() * 1.2)), 100, 20);
-        this.autoNextRound.addActionListener(this);
-        this.autoNextRound.setVisible(true);
-        this.panel.add(autoNextRound);
+        SpinnerModel model = new SpinnerNumberModel(SPINNER_INIT_VALUE, SPINNER_MIN_VALUE, SPINNER_MAX_VALUE, SPINNER_STEP_VALUE);
+        this.numberAutoNextRound = new JSpinner(model);
+        this.numberAutoNextRound.setBounds((int) this.nextRound.getBounds().getX(), ((int) (this.nextRound.getBounds().getHeight() * 1.2)), 100, 20);
+        //this.numberAutoNextRound.addActionListener(this);
+        this.numberAutoNextRound.setVisible(true);
+        this.panel.add(numberAutoNextRound);
         this.enableStorm = new JCheckBox("Storm");
         this.enableStorm.setBounds((int) this.nextRound.getBounds().getX(),
-                ((int) ((this.autoNextRound.getBounds().getY() + this.autoNextRound.getBounds().getHeight()) * 1.2)), 100, 20);
+                ((int) ((this.numberAutoNextRound.getBounds().getY() + this.numberAutoNextRound.getBounds().getHeight()) * 1.2)), 100, 20);
         this.enableStorm.setVisible(true);
         this.panel.add(enableStorm);
         panel.setSize(
@@ -136,20 +141,12 @@ public class WorldUI extends JFrame implements ActionListener {
                     } else
                         ((LakeWorld) world).applyWeather(LakeWorld.Weather.RAIN, LakeWorld.Weather.SUN);
                 }
-                environment.mainLoop();
-                System.out.print("Next tour -> \t");
-                this.generateWorld();
-            }
-        } else if (e.getSource() instanceof JCheckBox) {
-            while (((JCheckBox) (e.getSource())).isSelected()) {
-                environment.mainLoop();
-                System.out.print("Next tour -> \t");
-                this.generateWorld();
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e1) {
-//                   //LOGGER.fatal("Thread was interaped",e1);
-//                }
+                for (int i = 0; i < (Integer) this.numberAutoNextRound.getValue(); i++) {
+                    environment.mainLoop();
+                    System.out.print("Next tour -> \t");
+                    this.generateWorld();
+                }
+                numberAutoNextRound.setValue(SPINNER_INIT_VALUE);
             }
         }
     }
