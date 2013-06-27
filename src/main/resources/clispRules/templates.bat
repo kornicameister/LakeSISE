@@ -322,14 +322,31 @@
                             )
             =>
             (retract ?dbm)
-
-            (bind   ?rangeMod       (applyRangeMod ?a-mr (affectRangeByWeather ?a-mr ?a-t ?a-id)))
-            (modify ?vActor         (moveRange ?rangeMod) (logicDone 2))
+            (if (<> ?a-mr 0) then
+                (bind   ?rangeMod       (applyRangeMod ?a-mr (affectRangeByWeather ?a-mr ?a-t ?a-id)))
+                (modify ?vActor         (moveRange ?rangeMod) (logicDone 2))
+            else then
+                (modify ?vActor (logicDone 2))
+            )
 
             ;(printout t "doMove_step1, actor-id=" ?a-id  crlf)
         )
-        (defrule doMove_step2
+        (defrule doMove_step2_zeroRange
             (declare (salience 6664))
+            ?actor      <-  (actor  (id ?a-id)
+                                    (logicDone 2)
+                                    (isMoveChanged no)
+                            )
+            (test (= ?a-mr 0))
+            =>
+            (modify ?actor
+                (logicDone 3)
+                (isMoveChanged ?*true*)
+            )
+            (printout t ?a-id "/" ?a-t " not moved, has 0 move range" crlf)
+        )
+        (defrule doMove_step2
+            (declare (salience 6663))
             ?actor      <-  (actor  (id ?a-id)
                                     (atField ?ff-id)
                                     (wasField ?a-wf)
@@ -343,6 +360,7 @@
                                     (y ?ff-y)
                                     (occupied yes)
                             )
+            (test (<> ?a-mr 0))
             =>
             (bind ?tf-id (nextFieldId 0 ?a-t ?a-id))
             (if (> ?tf-id 0) then

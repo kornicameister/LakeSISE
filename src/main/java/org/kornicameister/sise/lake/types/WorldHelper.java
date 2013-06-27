@@ -18,7 +18,7 @@ import java.util.*;
 
 public abstract class WorldHelper {
     private static final Logger LOGGER = Logger.getLogger(WorldHelper.class);
-    private static final Predicate<WorldField> FREE_FIELD = new Predicate<WorldField>() {
+    private static final Predicate<WorldField> FREE_FIELD_PREDICATE = new Predicate<WorldField>() {
         @Override
         public boolean apply(@Nullable WorldField input) {
             assert input != null;
@@ -37,6 +37,27 @@ public abstract class WorldHelper {
         public boolean apply(@Nullable WorldField input) {
             assert input != null;
             return !input.isWater();
+        }
+    };
+    private static final Predicate<WorldField> NEXT_TO_WATER_PREDICATE = new Predicate<WorldField>() {
+        @Override
+        public boolean apply(@Nullable WorldField input) {
+            assert input != null;
+            final Integer x = input.getX();
+            final Integer y = input.getY();
+
+            for (int modX = -1; modX <= 1; modX += 2) {
+                for (int modY = -1; modY <= 1; modY += 2) {
+                    final WorldField checkField = WorldHelper.getField(x + modX, y + modY);
+                    if (checkField != null) {
+                        if (checkField.isWater()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     };
     private static Map<Integer, WorldField> fields = new HashMap<>();
@@ -63,20 +84,20 @@ public abstract class WorldHelper {
         Collection<WorldField> free = new ArrayList<>(fields.values());
         switch (predicate) {
             case FREE_FIELD:
-                free = Collections2.filter(free, FREE_FIELD);
+                free = Collections2.filter(free, FREE_FIELD_PREDICATE);
                 break;
             case FREE_WATER_FIELD:
                 free = FluentIterable
                         .from(free)
                         .filter(WATER_FIELD_PREDICATE)
-                        .filter(FREE_FIELD)
+                        .filter(FREE_FIELD_PREDICATE)
                         .toList();
                 break;
             case FREE_LAND_FIELD:
                 free = FluentIterable
                         .from(free)
                         .filter(LAND_FIELD_PREDICATE)
-                        .filter(FREE_FIELD)
+                        .filter(FREE_FIELD_PREDICATE)
                         .toList();
                 break;
             case LAND_FIELD:
@@ -84,6 +105,14 @@ public abstract class WorldHelper {
                 break;
             case WATER_FIELD:
                 free = Collections2.filter(free, WATER_FIELD_PREDICATE);
+                break;
+            case LAND_FIELD_NEXT_TO_WATER_FIELD:
+                free = FluentIterable
+                        .from(free)
+                        .filter(LAND_FIELD_PREDICATE)
+                        .filter(FREE_FIELD_PREDICATE)
+                        .filter(NEXT_TO_WATER_PREDICATE)
+                        .toList();
                 break;
         }
         if (LOGGER.isDebugEnabled()) {
@@ -205,6 +234,7 @@ public abstract class WorldHelper {
         FREE_FIELD,
         FREE_LAND_FIELD,
         FREE_WATER_FIELD,
+        LAND_FIELD_NEXT_TO_WATER_FIELD,
         IN_RANGE
     }
 }

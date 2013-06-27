@@ -3,7 +3,7 @@
 (defmethod nextFieldId (
             (?currentNextField-Id   INTEGER)
             (?actor-type            SYMBOL (eq ?actor-type forester))
-            (?actor-id              STRING ( > 0 (str-compare ?actor-id "ForesterActorTT"))))
+            (?actor-id              STRING ( eq (sub-string 1 15 ?actor-id) "ForesterActorTT"))
 
         ; > turns off
 
@@ -42,7 +42,7 @@
     (
         (?range     INTEGER)
         (?type      SYMBOL ( eq ?type forester))
-        (?actor-id  STRING ( > 0 (str-compare ?actor-id "ForesterActorTT")))
+        (?actor-id  STRING ( eq (sub-string 1 15 ?actor-id) "ForesterActorTT"))
     )
     (do-for-fact
         ((?ac actor))
@@ -85,7 +85,7 @@
 	                )
 	(test
 	    (and
-            ( > 0 (str-compare ?f-id "ForesterActorTT"))
+            ( eq (sub-string 1 15 ?actor-id) "ForesterActorTT")
             (= 1 (isActorInRangeByField ?f-af ?s-af ?f-mr))
         )
 	)
@@ -116,7 +116,7 @@
 	                )
 	(test
         (and
-            ( >     0 (str-compare ?f-id "ForesterActorTT"))
+            ( eq (sub-string 1 15 ?actor-id) "ForesterActorTT")
             ( <=    ?s-cash ?f-ct)
             (= 1 (isActorInRangeByField ?f-af ?s-af ?f-mr))
         )

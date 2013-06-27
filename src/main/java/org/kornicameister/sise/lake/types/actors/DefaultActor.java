@@ -1,6 +1,7 @@
 package org.kornicameister.sise.lake.types.actors;
 
 import CLIPSJNI.PrimitiveValue;
+import com.google.common.base.Objects;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.clisp.InitMode;
@@ -82,6 +83,9 @@ public abstract class DefaultActor
         this.tookBribe = false;
         this.corruptionThreshold = -1;
         this.cash = 1;
+        this.canSwim = false;
+        this.canFly = false;
+        this.canAttack = false;
 
         switch (initMode) {
             case NORMAL:
@@ -119,26 +123,45 @@ public abstract class DefaultActor
 
     protected void doRandomInit(final Properties properties) {
         final Random seed = new Random(System.nanoTime());
-        // by type
+
+        // by random
+        this.hp = DefaultActor.getRandomInt(30, 80, seed);
+        this.moveRange = DefaultActor.getRandomInt(4, 6, seed);
+        this.visionRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.attackRange = DefaultActor.getRandomInt(5, 10, seed);
+        this.attackPower = DefaultActor.getRandomInt(10, 15, seed);
+        this.hunger = DefaultActor.getRandomInt(5, 20, seed);
+        this.canAttack = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
+        this.validId = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
+        this.weight = DefaultActor.getRandomInt(1, 100, seed);
+
+        // by type  - global
         switch (this.getType()) {
             case HERBIVORE_FISH:
+                this.canSwim = true;
+                this.moveRange = DefaultActor.getRandomInt(3, 4, seed);
+                this.visionRange = this.moveRange;
+                this.attackRange = 0;
+                break;
             case PREDATOR_FISH:
                 this.canSwim = true;
-                this.canFly = false;
+                this.moveRange = DefaultActor.getRandomInt(2, 3, seed);
+                this.visionRange = 3;
+                this.attackRange = 1;
                 break;
             case BIRD:
-                this.canSwim = false;
                 this.canFly = true;
                 break;
             case ANGLER:
+                this.moveRange = 0;
+                this.visionRange = DefaultActor.getRandomInt(2, 3, seed);
+                this.attackRange = DefaultActor.getRandomInt(2, 3, seed);
+                this.cash = DefaultActor.getRandomInt(1, 50, seed);
+                break;
             case POACHER:
-                this.canFly = false;
-                this.canSwim = false;
                 this.cash = DefaultActor.getRandomInt(1, 50, seed);
                 break;
             case FORESTER:
-                this.canFly = false;
-                this.canSwim = false;
                 this.cash = DefaultActor.getRandomInt(1, 50, seed);
                 this.corruptionThreshold = DefaultActor.getRandomInt(5, 50, seed);
                 break;
@@ -147,17 +170,6 @@ public abstract class DefaultActor
         // from properties
         this.aggressive = Boolean.valueOf(properties.getProperty("actor.aggressive", DEFAULT_VALUE_FALSE));
         this.howManyFishes = Integer.valueOf(properties.getProperty("actor.howManyFishes", DEFAULT_VALUE));
-
-        // by random
-        this.hp = DefaultActor.getRandomInt(50, 150, seed);
-        this.moveRange = DefaultActor.getRandomInt(5, 10, seed);
-        this.visionRange = DefaultActor.getRandomInt(5, 10, seed);
-        this.attackRange = DefaultActor.getRandomInt(5, 10, seed);
-        this.attackPower = DefaultActor.getRandomInt(10, 15, seed);
-        this.hunger = DefaultActor.getRandomInt(5, 20, seed);
-        this.canAttack = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
-        this.validId = DefaultActor.getRandomInt(1, 100, seed) % 3 == 0;
-        this.weight = DefaultActor.getRandomInt(1, 100, seed);
     }
 
     public LakeActors getType() {
@@ -295,7 +307,32 @@ public abstract class DefaultActor
 
     @Override
     public String toString() {
-        return this.getStats().toString();
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .add("type", type)
+                .add("atField", atField)
+                .add("canAttack", canAttack)
+                .add("canFly", canFly)
+                .add("canSwim", canSwim)
+                .add("isAlive", isAlive)
+                .add("hp", hp)
+                .add("visionRange", visionRange)
+                .add("attackRange", attackRange)
+                .add("moveRange", moveRange)
+                .add("hunger", hunger)
+                .add("target", target)
+                .add("targetHit", targetHit)
+                .add("aggressive", aggressive)
+                .add("cash", cash)
+                .add("corruptionThreshold", corruptionThreshold)
+                .add("tookBribe", tookBribe)
+                .add("validId", validId)
+                .add("attackPower", attackPower)
+                .add("weight", weight)
+                .add("isMoveChanged", isMoveChanged)
+                .add("howManyFishes", howManyFishes)
+                .add("roundsAlive", roundsAlive)
+                .toString();
     }
 
     public void clearFields() {

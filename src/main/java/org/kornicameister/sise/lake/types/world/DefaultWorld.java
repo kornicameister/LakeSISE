@@ -65,9 +65,11 @@ abstract public class DefaultWorld
             case PREDATOR_FISH:
                 freeFields = WorldHelper.getField(WorldHelper.FieldPredicate.FREE_WATER_FIELD);
                 break;
+            case ANGLER:
+                freeFields = WorldHelper.getField(WorldHelper.FieldPredicate.LAND_FIELD_NEXT_TO_WATER_FIELD);
+                break;
             case FORESTER:
             case POACHER:
-            case ANGLER:
             case BIRD:
                 freeFields = WorldHelper.getField(WorldHelper.FieldPredicate.FREE_LAND_FIELD);
                 break;

@@ -19,6 +19,9 @@ public class BooleanToSymbol implements Adapter<Boolean, String> {
 
     @Override
     public String adaptOut(Boolean value) {
+        if(value == null){
+            return "no";
+        }
         return value ? "yes" : "no";
     }
 
