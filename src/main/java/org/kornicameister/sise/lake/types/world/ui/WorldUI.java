@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.clisp.ClispEnvironment;
 import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
+import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.actors.impl.kg.ForesterActorKG;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
 import org.kornicameister.sise.lake.types.world.impl.LakeWorld;
@@ -161,7 +162,9 @@ public class WorldUI extends JFrame implements ActionListener {
             if (next.isFree())
                 field.setWater(next.isWater());
             else {
-                field.setActor(WorldHelper.getActor(next));
+                DefaultActor actor = WorldHelper.getActor(next);
+                if (actor.isAlive() != null && actor.isAlive())
+                    field.setActor(actor);
             }
         }
     }
