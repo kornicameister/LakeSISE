@@ -1,9 +1,10 @@
-
 1) uruchomić dla 1 tur + policzyć miary aktorów
 2) urochmić dla 10 tur i również policzyć miary aktorów
 3) podobne testy z włączonym czynnikiem losowym
 
-4) przyspieszyć
-5) żeby reguły działały
+4) wymyśleć brakujące reguły efektywności
+5) aktorzy powinni sprawdzać czy udało im się wykonać swoją akcją -> dla miar efektywności
+6) wszystkie czynniki pogodowe są wybierane przez checkboxy
+7) poprawić gui
 
-DEADLINE -> następny czwartek albo czapa ;-)
+8) skończyć sprawko
