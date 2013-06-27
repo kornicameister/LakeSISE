@@ -24,6 +24,7 @@
 (defrule starving
     ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (type ?type))
     (test (< ?hunger 0))
+    (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
     =>
     (modify ?actor (hp (- ?hp 6)))
 )
@@ -37,7 +38,7 @@
     (test (= 1 (isActorInRange ?x ?y ?tX ?tY ?ar)))
     (test (or (eq ?type herbivore_fish) (eq ?type predator_fish)) )
     (test (neq ?id ?tid))
-    (test ( > 0 (str-compare ?id "BirdActorKG")))
+    (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
     =>
     (modify ?target (hp (- ?hp ?ap)))
     (if(< ?hp 0) then
@@ -49,7 +50,7 @@
 
 (defrule growinghunger
     ?actor <- (actor (id ?id) (hunger ?hunger) (type bird) (actionDone no))
-    (test ( > 0 (str-compare ?id "BirdActorKG")))
+    (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
     =>
     (modify ?actor (hunger (- ?hunger 3)))
     (modify ?actor (actionDone ?*true*))

@@ -7,6 +7,7 @@
     (do-for-fact
         ((?ac actor))
         (eq ?ac:id ?actor-id)
+
         (bind ?range ?ac:moveRange)
 
         (if (eq ?*storm* yes) then
@@ -37,7 +38,7 @@
                     )
     (test
         (and
-            ( > 0 (str-compare ?f-id "ForesterActorKG"))
+            (eq (sub-string 1 17 ?f-id) "ForesterActorKG")
             (= 1 (isActorInRangeByField ?foresterField ?equivocalField ?foresterMoveRange))
         )
     )

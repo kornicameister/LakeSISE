@@ -36,19 +36,16 @@
 	(test (or(!= ?tX ?x) (!= ?tY ?y)))     ;czy niejest to samo zwierze
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
-<<<<<<< HEAD
 	;(or
 	;	(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
 	;	(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
 	;)
 	(test (!= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)));jezeli drapieznik moze juz zaatakowac to nie przesuwa
-=======
 	(or
 		(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
 		(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
 	)
 	;(test (!= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)));jezeli drapieznik moze juz zaatakowac to nie przesuwa
->>>>>>> 968e1229ae0e397741fa94a11ad86e4681caf53f
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
 	(not (predator_gon ?actor-id))
 		)
