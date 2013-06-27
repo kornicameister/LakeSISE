@@ -1,11 +1,11 @@
 ; having fun with chasing
 
-(defmethod nextFieldId (
+(defmethod nextFieldId
+        (
             (?currentNextField-Id   INTEGER)
             (?actor-type            SYMBOL (eq ?actor-type forester))
             (?actor-id              STRING ( eq (sub-string 1 15 ?actor-id) "ForesterActorTT"))
-
-        ; > turns off
+        )
 
 	    (do-for-fact ( (?poacher actor) (?actor actor) (?field field) (?fieldActor field) )
             (and
@@ -85,7 +85,7 @@
 	                )
 	(test
 	    (and
-            ( eq (sub-string 1 15 ?actor-id) "ForesterActorTT")
+            ( eq (sub-string 1 15 ?f-id) "ForesterActorTT")
             (= 1 (isActorInRangeByField ?f-af ?s-af ?f-mr))
         )
 	)
@@ -116,7 +116,7 @@
 	                )
 	(test
         (and
-            ( eq (sub-string 1 15 ?actor-id) "ForesterActorTT")
+            ( eq (sub-string 1 15 ?f-id) "ForesterActorTT")
             ( <=    ?s-cash ?f-ct)
             (= 1 (isActorInRangeByField ?f-af ?s-af ?f-mr))
         )

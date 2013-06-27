@@ -334,8 +334,17 @@
         (defrule doMove_step2_zeroRange
             (declare (salience 6664))
             ?actor      <-  (actor  (id ?a-id)
+                                    (atField ?ff-id)
+                                    (wasField ?a-wf)
+                                    (moveRange ?a-mr)
+                                    (type ?a-t)
                                     (logicDone 2)
                                     (isMoveChanged no)
+                            )
+            ?fromField  <-  (field  (id ?ff-id)
+                                    (x ?ff-x)
+                                    (y ?ff-y)
+                                    (occupied yes)
                             )
             (test (= ?a-mr 0))
             =>

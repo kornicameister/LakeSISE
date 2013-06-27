@@ -60,10 +60,12 @@
      (return -1)
 )
 
-(defmethod nextFieldId (
+(defmethod nextFieldId
+        (
             (?currentNextField-Id   INTEGER)
             (?actor-type            SYMBOL (eq ?actor-type poacher))
-            (?p-id                  STRING ( eq (sub-string 1 14 ?actor-id) "PoacherActorTT"))
+            (?p-id                  STRING ( eq (sub-string 1 14 ?p-id) "PoacherActorTT"))
+        )
 
         ; > turns off
 
@@ -115,7 +117,7 @@
 	                )
 	(test
         (and
-            (   eq (sub-string 1 14 ?actor-id) "PoacherActorTT")
+            (   eq (sub-string 1 14 ?p-id) "PoacherActorTT")
             (   >   ?p-cash ?a-ct)
             (   >   ?p-cash ?a-cash)
             (   >  ?a-ct   -1)
@@ -156,7 +158,7 @@
 	                )
 	(test
 	    (and
-            ( eq (sub-string 1 14 ?actor-id) "PoacherActorTT")
+            ( eq (sub-string 1 14 ?p-id) "PoacherActorTT")
             (= 1 (isActorInRangeByField ?p-af ?f-af ?p-ar))
 	    )
 	)
