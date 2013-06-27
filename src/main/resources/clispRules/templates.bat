@@ -425,6 +425,10 @@
             (if (eq ?condition sun) then
                 (bind ?*sun* ?*true*)
             )
+            (if (eq ?condition nil) then
+                (bind ?*sun* ?*true*)
+                (bind ?condition sun)
+            )
 
             (bind ?*pressure* (random 900 1400))
 
