@@ -18,7 +18,7 @@
                 (bind ?range 5)
             )
         )
-        (printout t ?actor-id " new move range=" ?range crlf)
+        (printout t ?id " new move range=" ?range crlf)
         (return ?range)
     )
 )
