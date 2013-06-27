@@ -173,7 +173,7 @@ public abstract class DefaultActor
     }
 
     public void newRound() {
-        this.roundsAlive++;
+        this.roundsAlive = this.roundsAlive + 1;
     }
 
     /**
