@@ -287,7 +287,7 @@
     ;------------------kill-rules------------------------;
     (defrule kill
         (declare (salience ?*HIGH-PRIORITY*))
-    	?actor <- (actor (id ?a-id) (type ?a-type) (hp ?hp) (isAlive ?isAlive) (cash ?cash))
+    	?actor <- (actor (id ?a-id) (atField ?a-af) (type ?a-type) (hp ?hp) (isAlive ?isAlive) (cash ?cash))
     	(test
             (or
                 (< ?hp 0)
@@ -296,6 +296,10 @@
     	)
     	=>
     	(retract ?actor)
+    	(do-for-fact ((?field field))
+    	    (eq ?field:id ?a-af)
+    	    (modify ?field (occupied ?*false*))
+    	)
 		(printout t ?a-id "/" ?a-type " is no longer alive..." crlf)
     )
     (defrule killByBribe
