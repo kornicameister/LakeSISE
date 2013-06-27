@@ -159,13 +159,10 @@ public class WorldUI extends JFrame implements ActionListener {
             int y = field.getLabel().getY() /
                     field.getLabel().getIcon().getIconWidth();
             WorldField next = WorldHelper.getField(x, y);
-            if (next.isFree())
-                field.setWater(next.isWater());
-            else {
-                DefaultActor actor = WorldHelper.getActor(next);
-                if (actor.isAlive() != null && actor.isAlive())
-                    field.setActor(actor);
-            }
+            field.setWater(next.isWater());
+            DefaultActor actor = WorldHelper.getActor(next);
+            if (actor.isAlive() != null && actor.isAlive())
+                field.setActor(actor);
         }
     }
 }
