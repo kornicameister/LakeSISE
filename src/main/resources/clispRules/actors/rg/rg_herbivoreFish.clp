@@ -28,7 +28,7 @@
 	;(assert (deadd ?actorTId))
 	(bind ?tmpd no)
 	(printout t ?actorTId " is no longer, alive - "?alive " " ?weight crlf crlf)
-	(modify ?actor (isAlive ?tmpd)(hp 0))
+	(modify ?actor (isAlive ?tmpd)(hp -1))
 	;(printout t ?actorTId " is no longer, alive - "?alive crlf crlf)
 	;(modify ?actor (hp 0))
 

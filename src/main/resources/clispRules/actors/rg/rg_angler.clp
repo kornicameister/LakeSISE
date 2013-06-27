@@ -73,7 +73,7 @@
 	else then    
 		(bind ?tmpf (+ ?fishes 1))
 	)
- 	(modify ?actor (hp 0)(isAlive no))
+ 	(modify ?actor (hp -1)(isAlive no))
 	(modify ?attacker (weight (+ ?weight ?weightS))(howManyFishes ?tmpf))
 	;(printout t ?actorId" attack dist: "?attackR crlf crlf)
 	(printout t ?actorId " caught "?tmpf" fishes, right now caught "?actorTId crlf crlf)
