@@ -15,7 +15,7 @@
         else then
             (bind ?range 2)
         )
-        (printout t ?actor-id " custom affectRangeByWeather, range=" ?range crlf)
+        (printout t ?actor-id " new move range=" ?range crlf)
         (return ?range)
     )
 )

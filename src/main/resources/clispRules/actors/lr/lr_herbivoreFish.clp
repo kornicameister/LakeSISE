@@ -13,17 +13,10 @@
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
-<<<<<<< HEAD
 	;(or
 	;	(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
 	;	(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
 	;)
-=======
-	(or
-		(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
-		(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
-	)
->>>>>>> 968e1229ae0e397741fa94a11ad86e4681caf53f
 	;(test (= 3(random 1 20)))
 	(not (herbivore_ucieka ?actor-id))
 		)
@@ -54,17 +47,10 @@
 	(test (= ?atField ?ff-id))
 	(test (eq yes ?isAlive))
 	(test (= 2 (random 1 4)))
-<<<<<<< HEAD
 	;(or
 	;	(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
 	;	(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
 	;)
-=======
-	(or
-		(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
-		(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
-	)
->>>>>>> 968e1229ae0e397741fa94a11ad86e4681caf53f
 	(not (herbivore_jedz ?actor-id))
 		)
 
