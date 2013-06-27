@@ -2,7 +2,7 @@
     (
         (?range INTEGER)
         (?type SYMBOL)
-		 (?id STRING ( < 0 (str-compare ?id "BirdActorKG")) )
+		 (?id STRING ( eq (sub-string 1 11 ?id) "BirdActorKG"))
     )
     (do-for-fact
         ((?ac actor))
