@@ -196,7 +196,7 @@ public abstract class DefaultActor
         final Set<Effectiveness> effectivenessSet = this.getType().getEffectiveness();
         for (final Effectiveness effectiveness : effectivenessSet) {
             try {
-                PrimitiveValue primitiveValue = null;
+                PrimitiveValue primitiveValue;
                 if ((primitiveValue = value.getFactSlot(effectiveness.getEffectiveness())) != null) {
                     EffectivenessHelper
                             .storeEffectiveness(this.getClass(),
