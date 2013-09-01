@@ -1,10 +1,10 @@
 
 ;-------------------------funkcja szukajaca idpola------------------------;
-(deffunction findFieldByXY (?x ?y)
-(do-for-fact ((?field field)) (and (eq ?field:x :x) (eq ?field:y ?y))
- (return ?field:id)
-) 
-)
+;(deffunction findFieldByXY (?x ?y)
+;(do-for-fact ((?field field)) (and (eq ?field:x :x) (eq ?field:y ?y))
+; (return ?field:id)
+;) 
+;)
 ;----------------------funkcja przesuwajaca----------------------------;
 ;(defmethod nextFieldId((?currentNextField-Id INTEGER) (?actor-id STRING (eq ?actor-id “HerbivoreFishLR_3”))) 
  ;        (return 2) 
@@ -49,9 +49,10 @@
 	=> 
 	(assert (predator_gon ?actor-id))
 	(printout t ?actor-id "/" ?actor-name " goni rybe!!!!!!!!!!!!!!!  " ?actor-id-sec "/" ?actor-name-sec "  " crlf crlf)
-	;(bind ?tmpx (getval ?x ?y ?tX ?tY ?rangeMove))
-	;(bind ?tmpy (getval ?y ?x ?tY ?tX ?rangeMove))	
-	;(bind ?id-pola (findFieldByXY ?tmpx ?tmpy))
+	(bind ?tmpx (getval ?x ?y ?tX ?tY ?rangeMove))
+	(bind ?tmpy (getval ?y ?x ?tY ?tX ?rangeMove))	
+	(bind ?id-pola (findFieldByXY ?tmpx ?tmpy))
+	(printout t ?actor-id "/" ?actor-name " "  ?x ?y "    "?tX ?tY " na pole " ?tmpx ?tmpy " id pola " ?id-pola crlf crlf)
 	;(modify ?actor (atField ?id-pola))
 	;---------------------wychacza sie jak modyfikuje pole-------------------------------;
 	(bind ?tmp (+ 1 ?rangeVision))
