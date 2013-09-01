@@ -18,16 +18,17 @@ import java.util.*;
  * @since 0.0.1
  */
 
-public class LakeWorld extends DefaultWorld {
-    private static final Logger LOGGER = Logger.getLogger(LakeWorld.class);
+public class LakeWorld
+        extends DefaultWorld {
+    private static final Logger LOGGER                   = Logger.getLogger(LakeWorld.class);
     private static final String FIND_FACT_F_FIELD_F_ID_D = "(find-fact ((?f field)) (= ?f:id %d))";
     private static final String FIND_FACT_A_ACTOR_EQ_A_ID_S = "(find-fact ((?a actor)) (eq ?a:id \"%s\"))";
-    private static final String DO_WEATHER_RANDOM_S = "(doWeather (random %s) )";
-    protected Integer lakeX;
-    protected Integer lakeY;
-    protected Integer lakeSize;
-    private Integer iteration;
-    private Set<Weather> weatherList;
+    private static final String DO_WEATHER_RANDOM_S      = "(doWeather (random %s) )";
+    protected Integer      lakeX;
+    protected Integer      lakeY;
+    protected Integer      lakeSize;
+    private   Integer      iteration;
+    private   Set<Weather> weatherList;
 
     public LakeWorld() {
         super();
@@ -76,10 +77,14 @@ public class LakeWorld extends DefaultWorld {
             final String findActorFactStr = String.format(FIND_FACT_A_ACTOR_EQ_A_ID_S, actor.getFactId());
             PrimitiveValue value = this.environment.eval(findActorFactStr);
             if (value.size() != 0) {
+                final PrimitiveValue primitiveValue = value.get(0);
 
                 final List<StatField> before = actor.getStats();
+
                 actor.newRound();
-                actor.applyFact(value.get(0));
+                actor.applyFact(primitiveValue);
+                actor.applyEffectiveness(primitiveValue);
+
                 final List<StatField> after = actor.getStats();
 
                 this.printComparison(before, after);
@@ -142,13 +147,13 @@ public class LakeWorld extends DefaultWorld {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("super", super.toString())
-                .add("lakeX", lakeX)
-                .add("lakeY", lakeY)
-                .add("lakeSize", lakeSize)
-                .add("iteration", iteration)
-                .add("weatherList", weatherList)
-                .toString();
+                      .add("super", super.toString())
+                      .add("lakeX", lakeX)
+                      .add("lakeY", lakeY)
+                      .add("lakeSize", lakeSize)
+                      .add("iteration", iteration)
+                      .add("weatherList", weatherList)
+                      .toString();
     }
 
     @Override
@@ -179,13 +184,16 @@ public class LakeWorld extends DefaultWorld {
                 this.environment.assertString(actor.getFact());
             } else {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug(String.format("Actor %s is no longer alive and wont participat in the round", actor.getFactId()));
+                    LOGGER.debug(String
+                            .format("Actor %s is no longer alive and wont participat in the round", actor.getFactId()));
                 }
             }
         }
     }
 
     public enum Weather {
-        RAIN, STORM, SUN
+        RAIN,
+        STORM,
+        SUN
     }
 }
