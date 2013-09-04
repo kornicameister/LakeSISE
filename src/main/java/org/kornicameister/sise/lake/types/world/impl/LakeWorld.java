@@ -40,6 +40,7 @@ public class LakeWorld
     public void run() {
         LOGGER.info(String.format("[%d] > world loop started", this.iteration));
         this.environment.reset();
+        this.assertLake();
         this.assertWeather();
         this.assertFields();
         this.assertActors();
@@ -184,6 +185,11 @@ public class LakeWorld
         }
         weatherSB.deleteCharAt(weatherSB.length() - 1);
         this.environment.assertString(String.format(DO_WEATHER_RANDOM_S, weatherSB.toString().trim()));
+    }
+
+    protected void assertLake() {
+        this.environment.assertString(String.format("(bind ?*lakeWidth* %s)", this.getWidth().toString()));
+        this.environment.assertString(String.format("(bind ?*lakeHeight* %s)", this.getHeight().toString()));
     }
 
     @Override
