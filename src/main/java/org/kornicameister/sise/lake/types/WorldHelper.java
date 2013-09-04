@@ -2,7 +2,9 @@ package org.kornicameister.sise.lake.types;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
@@ -17,37 +19,37 @@ import java.util.*;
  */
 
 public abstract class WorldHelper {
-    private static final Logger LOGGER = Logger.getLogger(WorldHelper.class);
-    private static final Predicate<WorldField> FREE_FIELD_PREDICATE = new Predicate<WorldField>() {
+    private static final Logger                     LOGGER                  = Logger.getLogger(WorldHelper.class);
+    private static final Predicate<WorldField>      FREE_FIELD_PREDICATE    = new Predicate<WorldField>() {
         @Override
         public boolean apply(@Nullable WorldField input) {
             assert input != null;
             return input.isFree();
         }
     };
-    private static final Predicate<WorldField> WATER_FIELD_PREDICATE = new Predicate<WorldField>() {
+    private static final Predicate<WorldField>      WATER_FIELD_PREDICATE   = new Predicate<WorldField>() {
         @Override
         public boolean apply(@Nullable WorldField input) {
             assert input != null;
             return input.isWater();
         }
     };
-    private static final Predicate<WorldField> LAND_FIELD_PREDICATE = new Predicate<WorldField>() {
+    private static final Predicate<WorldField>      LAND_FIELD_PREDICATE    = new Predicate<WorldField>() {
         @Override
         public boolean apply(@Nullable WorldField input) {
             assert input != null;
             return !input.isWater();
         }
     };
-    private static final Predicate<WorldField> NEXT_TO_WATER_PREDICATE = new Predicate<WorldField>() {
+    private static final Predicate<WorldField>      NEXT_TO_WATER_PREDICATE = new Predicate<WorldField>() {
         @Override
         public boolean apply(@Nullable WorldField input) {
             assert input != null;
             final Integer x = input.getX();
             final Integer y = input.getY();
 
-            for (int modX = -1; modX <= 1; modX += 2) {
-                for (int modY = -1; modY <= 1; modY += 2) {
+            for (int modX = -1 ; modX <= 1 ; modX += 2) {
+                for (int modY = -1 ; modY <= 1 ; modY += 2) {
                     final WorldField checkField = WorldHelper.getField(x + modX, y + modY);
                     if (checkField != null) {
                         if (checkField.isWater()) {
@@ -60,8 +62,8 @@ public abstract class WorldHelper {
             return false;
         }
     };
-    private static Map<Integer, WorldField> fields = new HashMap<>();
-    private static Map<Integer, DefaultActor> actors = new HashMap<>();
+    private static       Map<Integer, WorldField>   fields                  = new HashMap<>();
+    private static       Map<Integer, DefaultActor> actors                  = new HashMap<>();
     private static DefaultWorld world;
 
     public static WorldField getField(final int x, final int y) {
@@ -194,8 +196,27 @@ public abstract class WorldHelper {
         return WorldHelper.actors.put(actor.getId(), actor);
     }
 
+    /**
+     * @return {@link java.util.Iterator} of {@link org.kornicameister.sise.lake.types.actors.DefaultActor} sorted in
+     * the following order:
+     * <ol>
+     * <li>actors that are no longer alive</li>
+     * <li>ascending by {@link org.kornicameister.sise.lake.types.actors.DefaultActor#getId()}</li>
+     * </ol>
+     */
     public static Iterator<DefaultActor> actorIterator() {
-        return WorldHelper.actors.values().iterator();
+        final Collection<DefaultActor> values = Lists.newArrayList(WorldHelper.actors.values());
+        Collections.sort((List<DefaultActor>) values, new Comparator<DefaultActor>() {
+            @Override
+            public int compare(final DefaultActor o1, final DefaultActor o2) {
+                return ComparisonChain
+                        .start()
+                        .compare(o1.isAlive(), o2.isAlive())
+                        .compare(o1.getId(), o2.getId())
+                        .result();
+            }
+        });
+        return values.iterator();
     }
 
     public static void moveActorToField(DefaultActor actor, Integer x, Integer y) {
