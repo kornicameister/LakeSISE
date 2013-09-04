@@ -197,6 +197,9 @@ public abstract class WorldHelper {
     }
 
     /**
+     * @param random
+     *         if true actors will be returned in random order
+     *
      * @return {@link java.util.Iterator} of {@link org.kornicameister.sise.lake.types.actors.DefaultActor} sorted in
      * the following order:
      * <ol>
@@ -204,18 +207,22 @@ public abstract class WorldHelper {
      * <li>ascending by {@link org.kornicameister.sise.lake.types.actors.DefaultActor#getId()}</li>
      * </ol>
      */
-    public static Iterator<DefaultActor> actorIterator() {
-        final Collection<DefaultActor> values = Lists.newArrayList(WorldHelper.actors.values());
-        Collections.sort((List<DefaultActor>) values, new Comparator<DefaultActor>() {
-            @Override
-            public int compare(final DefaultActor o1, final DefaultActor o2) {
-                return ComparisonChain
-                        .start()
-                        .compare(o1.isAlive(), o2.isAlive())
-                        .compare(o1.getId(), o2.getId())
-                        .result();
-            }
-        });
+    public static Iterator<DefaultActor> actorIterator(final boolean random) {
+        final List<DefaultActor> values = Lists.newArrayList(WorldHelper.actors.values());
+        if (!random) {
+            Collections.sort(values, new Comparator<DefaultActor>() {
+                @Override
+                public int compare(final DefaultActor o1, final DefaultActor o2) {
+                    return ComparisonChain
+                            .start()
+                            .compare(o1.isAlive(), o2.isAlive())
+                            .compare(o1.getId(), o2.getId())
+                            .result();
+                }
+            });
+        } else {
+            Collections.shuffle(values);
+        }
         return values.iterator();
     }
 

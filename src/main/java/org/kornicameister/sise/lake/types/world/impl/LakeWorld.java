@@ -49,7 +49,7 @@ public class LakeWorld
 
     @Override
     protected void assertActors() {
-        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator(true);
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
 
@@ -69,7 +69,7 @@ public class LakeWorld
     }
 
     private void collectResults() {
-        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator(false);
         final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
