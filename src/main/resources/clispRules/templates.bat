@@ -135,6 +135,12 @@
 	    (allowed-symbols yes no)
 	    (default no))
     ;-----------------corruption-properties-----------;
+    ;---------------------effectivity-----------------;
+    (slot effectivity_1
+        (type FLOAT))
+    (slot effectivity_2
+        (type FLOAT))
+    ;---------------------effectivity-----------------;
 )
 
 ;----------------------functions------------------------;
@@ -159,6 +165,7 @@
             (bind ?tmp ?rm)
         else then
             (if (< ?rm 0) then
+
                 (bind ?tmp 0)
             else then
                 (bind ?tmp ?rm)

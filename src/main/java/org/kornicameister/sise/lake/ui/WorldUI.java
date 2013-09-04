@@ -31,12 +31,14 @@ import java.util.Properties;
  * Time: 00:22
  * To change this template use File | Settings | File Templates.
  */
-public class WorldUI extends JFrame implements ActionListener {
+public class WorldUI
+        extends JFrame
+        implements ActionListener {
 
     private final Logger LOGGER = Logger.getLogger(WorldUI.class);
 
-    private final Integer SPINNER_MIN_VALUE = 1;
-    private final Integer SPINNER_MAX_VALUE = 100;
+    private final Integer SPINNER_MIN_VALUE  = 1;
+    private final Integer SPINNER_MAX_VALUE  = 100;
     private final Integer SPINNER_STEP_VALUE = 1;
     private final Integer SPINNER_INIT_VALUE = 1;
 
@@ -44,9 +46,9 @@ public class WorldUI extends JFrame implements ActionListener {
     private int maxFieldsVertically;
 
     private JPanel panel = null;
-    private JButton nextRound;
-    private JButton generateReport;
-    private JSpinner numberAutoNextRound;
+    private JButton   nextRound;
+    private JButton   generateReport;
+    private JSpinner  numberAutoNextRound;
     private JCheckBox enableStorm;
 
     private List<Field> fields = null;
@@ -84,7 +86,7 @@ public class WorldUI extends JFrame implements ActionListener {
         this.generateReport.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EffectivenessHelper.saveToFile();
+                EffectivenessHelper.storeToFile();
             }
         });
         this.panel.add(generateReport);
@@ -151,9 +153,9 @@ public class WorldUI extends JFrame implements ActionListener {
     }
 
     public void addFields() {
-        for (int i = 0; i < maxFieldsVertically; i++) {
+        for (int i = 0 ; i < maxFieldsVertically ; i++) {
 
-            for (int j = 0; j < maxFieldsHorizontally; j++) {
+            for (int j = 0 ; j < maxFieldsHorizontally ; j++) {
 
                 // System.out.println(i + " " + j);
                 this.fields.add(0, new Field(new JLabel(Integer.toString(i + j)), new ForesterActorKG()));
@@ -184,12 +186,13 @@ public class WorldUI extends JFrame implements ActionListener {
                     if (enableStorm.isSelected()) {
                         ((LakeWorld) world).applyWeather(LakeWorld.Weather.RAIN, LakeWorld.Weather.STORM,
                                 LakeWorld.Weather.SUN);
-                    } else
+                    } else {
                         ((LakeWorld) world).applyWeather(LakeWorld.Weather.RAIN, LakeWorld.Weather.SUN);
+                    }
 
                 }
 
-                for (int i = 0; i < (Integer) this.numberAutoNextRound.getValue(); i++) {
+                for (int i = 0 ; i < (Integer) this.numberAutoNextRound.getValue() ; i++) {
                     environment.mainLoop();
 
                     LOGGER.info("Next tour -> \t");
@@ -215,17 +218,19 @@ public class WorldUI extends JFrame implements ActionListener {
 
             WorldField next = WorldHelper.getField(x, y);
 
-            if (next.isFree())
+            if (next.isFree()) {
                 field.setWater(next.isWater());
-            else {
+            } else {
 
                 DefaultActor actor = WorldHelper.getActor(next);
 
                 if (actor != null) {
-                    if (actor.isAlive())
+                    if (actor.isAlive()) {
                         field.setActor(actor);
-                } else
+                    }
+                } else {
                     field.setWater(next.isWater());
+                }
             }
         }
 

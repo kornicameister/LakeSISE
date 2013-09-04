@@ -207,7 +207,7 @@ public abstract class WorldHelper {
      * <li>ascending by {@link org.kornicameister.sise.lake.types.actors.DefaultActor#getId()}</li>
      * </ol>
      */
-    public static Iterator<DefaultActor> actorIterator(final boolean random) {
+    public static Iterator<DefaultActor> getActorIterator(final boolean random) {
         final List<DefaultActor> values = Lists.newArrayList(WorldHelper.actors.values());
         if (!random) {
             Collections.sort(values, new Comparator<DefaultActor>() {

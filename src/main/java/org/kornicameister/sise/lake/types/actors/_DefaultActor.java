@@ -45,6 +45,8 @@ public abstract class _DefaultActor
     protected       Boolean      isMoveChanged;
     protected       Integer      howManyFishes;
     protected       Integer      roundsAlive;
+    protected Double effectiveness1;
+    protected Double effectiveness2;
 
     protected _DefaultActor() {
         this.id = _DefaultActor.ID++;
@@ -126,36 +128,6 @@ public abstract class _DefaultActor
 
     public void setValidId(final Boolean validId) {
         this.validId = validId;
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                      .add("id", id)
-                      .add("type", type)
-                      .add("atField", atField)
-                      .add("canAttack", canAttack)
-                      .add("canFly", canFly)
-                      .add("canSwim", canSwim)
-                      .add("isAlive", isAlive)
-                      .add("hp", hp)
-                      .add("visionRange", visionRange)
-                      .add("attackRange", attackRange)
-                      .add("moveRange", moveRange)
-                      .add("hunger", hunger)
-                      .add("target", target)
-                      .add("targetHit", targetHit)
-                      .add("aggressive", aggressive)
-                      .add("cash", cash)
-                      .add("corruptionThreshold", corruptionThreshold)
-                      .add("tookBribe", tookBribe)
-                      .add("validId", validId)
-                      .add("attackPower", attackPower)
-                      .add("weight", weight)
-                      .add("isMoveChanged", isMoveChanged)
-                      .add("howManyFishes", howManyFishes)
-                      .add("roundsAlive", roundsAlive)
-                      .toString();
     }
 
     public void clearFields() {
@@ -304,14 +276,53 @@ public abstract class _DefaultActor
         this.aggressive = aggressive;
     }
 
+    public Integer getRoundsAlive() {
+        return roundsAlive;
+    }
+
+    public Double getEffectiveness1() {
+        return effectiveness1;
+    }
+
+    public Double getEffectiveness2() {
+        return effectiveness2;
+    }
+
     protected abstract LakeActors setType();
 
     protected abstract void doNormalInit(final Properties properties);
 
     protected abstract void doRandomInit(final Properties properties);
 
-    public Integer getRoundsAlive() {
-        return roundsAlive;
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                      .add("id", id)
+                      .add("type", type)
+                      .add("atField", atField)
+                      .add("canAttack", canAttack)
+                      .add("canFly", canFly)
+                      .add("canSwim", canSwim)
+                      .add("isAlive", isAlive)
+                      .add("hp", hp)
+                      .add("visionRange", visionRange)
+                      .add("attackRange", attackRange)
+                      .add("moveRange", moveRange)
+                      .add("hunger", hunger)
+                      .add("target", target)
+                      .add("targetHit", targetHit)
+                      .add("aggressive", aggressive)
+                      .add("cash", cash)
+                      .add("corruptionThreshold", corruptionThreshold)
+                      .add("tookBribe", tookBribe)
+                      .add("validId", validId)
+                      .add("attackPower", attackPower)
+                      .add("weight", weight)
+                      .add("isMoveChanged", isMoveChanged)
+                      .add("howManyFishes", howManyFishes)
+                      .add("roundsAlive", roundsAlive)
+                      .add("effectiveness1", effectiveness1)
+                      .add("effectiveness2", effectiveness2)
+                      .toString();
     }
-
 }

@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.clisp.InitMode;
 import org.kornicameister.sise.lake.types.WorldHelper;
-import org.kornicameister.sise.lake.types.effectiveness.Effectiveness;
-import org.kornicameister.sise.lake.types.effectiveness.EffectivenessHelper;
 import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
 
 import java.util.Properties;
@@ -193,22 +191,18 @@ public abstract class DefaultActor
 
     @Override
     public void applyEffectiveness(final PrimitiveValue value) throws Exception {
-        final Set<Effectiveness> effectivenessSet = this.getType().getEffectiveness();
-        for (final Effectiveness effectiveness : effectivenessSet) {
-            try {
-                PrimitiveValue primitiveValue;
-                if ((primitiveValue = value.getFactSlot(effectiveness.getEffectiveness())) != null) {
-                    EffectivenessHelper
-                            .storeEffectiveness(this.getClass(),
-                                    new EffectivenessResult(effectiveness, primitiveValue
-                                            .getValue()
-                                            .toString())
-                            );
-                }
-            } catch (Exception exception) {
-                LOGGER.warn(String.format("Error occurred when resolving effectiveness=%s", effectiveness), exception);
-            }
+        try {
+            this.effectiveness1 = value.getFactSlot("effectiveness_1").doubleValue();
+            this.effectiveness2 = value.getFactSlot("effectiveness_2").doubleValue();
+        } catch (Exception exception) {
+            LOGGER.warn(String
+                    .format("Error occurred when resolving effectiveness from primitive_value = %s", value), exception);
         }
+    }
+
+    @Override
+    public Set<EffectivenessResult> getEffectiveness() {
+        return null;
     }
 
     @Override

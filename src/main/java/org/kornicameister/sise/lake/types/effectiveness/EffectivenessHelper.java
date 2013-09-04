@@ -3,10 +3,13 @@ package org.kornicameister.sise.lake.types.effectiveness;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.log4j.Logger;
+import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 
 import java.io.*;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author kornicameister
@@ -14,32 +17,19 @@ import java.util.Collection;
  * @since 0.0.1
  */
 public class EffectivenessHelper {
-    private static final String                                PATH           = "effectiveness";
-    private static final Multimap<String, EffectivenessResult> TYPE_TO_RESULT = HashMultimap.create();
-    private static final Logger                                LOGGER         = Logger
+    private static final String PATH   = "effectiveness";
+    private static final Logger LOGGER = Logger
             .getLogger(EffectivenessHelper.class);
 
-    public static void storeEffectiveness(final Class<? extends DefaultActor> from, final EffectivenessResult result) {
-        TYPE_TO_RESULT.put(from.getSimpleName(), result);
-    }
+    public static void storeToFile() {
 
-    public static void saveToFile() {
+        final Multimap<String, EffectivenessResult> typeToResult = EffectivenessHelper.collectEffectivenessFromActors();
+        final File rootFolder = EffectivenessHelper.getEffectivenessRootFolder();
 
-        final File dir = new File(String.format("%s_%s", PATH, System.currentTimeMillis()));
-        if (!dir.exists()) {
-            final boolean dirCreated = dir.mkdir();
-            LOGGER.debug(String.format("Created=%s dir for path=%s", dirCreated, dir));
-        }
+        for (final String entry : typeToResult.keySet()) {
 
-        for (final String entry : TYPE_TO_RESULT.keySet()) {
-
-            final File actorDir = new File(String.format("%s/%s", dir.getPath(), entry));
-            if (!actorDir.exists()) {
-                boolean actorDirCreated = actorDir.mkdir();
-                LOGGER.debug(String.format("Created=%s dir for path=%s", actorDirCreated, actorDir));
-            }
-
-            final Collection<EffectivenessResult> effectivenessResults = TYPE_TO_RESULT.get(entry);
+            final File actorDir = EffectivenessHelper.getActorFolder(rootFolder.getPath(), entry);
+            final Collection<EffectivenessResult> effectivenessResults = typeToResult.get(entry);
             final Multimap<String, EffectivenessResult> byName = EffectivenessHelper.getByName(effectivenessResults);
 
             for (final String key : byName.keySet()) {
@@ -47,29 +37,9 @@ public class EffectivenessHelper {
 
                     final File targetFile = new File(String
                             .format("%s/%s.eff", actorDir.getPath(), key));
-                    int counter = 1;
+                    int counter = EffectivenessHelper.getLastCounter(targetFile);
 
-                    // read last logged effectiveness counter
-                    if (targetFile.exists()) {
-                        final String tail = EffectivenessHelper.tail(targetFile);
-                        try {
-                            counter = Integer.parseInt(tail.split(" ")[0]);
-                        } catch (NumberFormatException nfe) {
-                            LOGGER.warn("Could not read last counter", nfe);
-                        }
-                    }
-
-                    final PrintWriter writer = new PrintWriter(targetFile);
-                    for (final EffectivenessResult result : byName.get(key)) {
-                        writer.print(counter--);
-                        writer.print(" ");
-                        writer.print(result.getEffectiveness());
-                        writer.print(" ");
-                        writer.print(result.getResult());
-                        writer.println();
-                    }
-                    writer.flush();
-                    writer.close();
+                    EffectivenessHelper.saveToFile(byName.get(key), targetFile, counter);
 
                 } catch (FileNotFoundException e) {
                     LOGGER.error("Could not write to the file", e);
@@ -79,10 +49,72 @@ public class EffectivenessHelper {
         }
     }
 
+    private static void saveToFile(final Collection<EffectivenessResult> byName, final File targetFile, int counter) throws
+            FileNotFoundException {
+        final PrintWriter writer = new PrintWriter(targetFile);
+        for (final EffectivenessResult result : byName) {
+            writer.print(counter--);
+            writer.print(" ");
+            writer.print(result.getName());
+            writer.print(" ");
+            writer.print(result.getResult());
+            writer.println();
+        }
+        writer.flush();
+        writer.close();
+    }
+
+    private static int getLastCounter(final File targetFile) {
+        int counter = 1;
+        if (targetFile.exists()) {
+            final String tail = EffectivenessHelper.tail(targetFile);
+            try {
+                counter = Integer.parseInt(tail.split(" ")[0]);
+            } catch (NumberFormatException nfe) {
+                LOGGER.warn("Could not read last counter", nfe);
+                counter = 1;
+            }
+        }
+        return counter;
+    }
+
+    private static File getActorFolder(final String rootFolder, final String entry) {
+        final File actorDir = new File(String.format("%s/%s", rootFolder, entry));
+        if (!actorDir.exists()) {
+            boolean actorDirCreated = actorDir.mkdir();
+            LOGGER.debug(String.format("Created=%s dir for path=%s", actorDirCreated, actorDir));
+        }
+        return actorDir;
+    }
+
+    private static File getEffectivenessRootFolder() {
+        final File dir = new File(String.format("%s_%s", PATH, System.currentTimeMillis()));
+        if (!dir.exists()) {
+            final boolean dirCreated = dir.mkdir();
+            LOGGER.debug(String.format("Created=%s dir for path=%s", dirCreated, dir));
+        }
+        return dir;
+    }
+
+    private static Multimap<String, EffectivenessResult> collectEffectivenessFromActors() {
+        final Iterator<DefaultActor> actorIterator = WorldHelper.getActorIterator(false);
+        final Multimap<String, EffectivenessResult> typeToResult = HashMultimap.create();
+
+        while (actorIterator.hasNext()) {
+            final DefaultActor actor = actorIterator.next();
+            final Set<EffectivenessResult> effectiveness = actor.getEffectiveness();
+            for (final EffectivenessResult result : effectiveness) {
+                typeToResult.put(actor.getClass().getSimpleName(), result);
+            }
+        }
+
+        return typeToResult;
+    }
+
     private static Multimap<String, EffectivenessResult> getByName(final Collection<EffectivenessResult> entry) {
         final Multimap<String, EffectivenessResult> resultMultiMap = HashMultimap.create();
         for (final EffectivenessResult result : entry) {
-            resultMultiMap.put(result.getEffectiveness(), result);
+            resultMultiMap.put(result.getName(), result);
         }
         return resultMultiMap;
     }

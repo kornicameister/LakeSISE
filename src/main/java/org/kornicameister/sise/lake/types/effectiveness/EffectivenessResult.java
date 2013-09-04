@@ -7,14 +7,18 @@ import com.google.common.base.Objects;
  * @version 0.0.1
  * @since 0.0.1
  */
-public class EffectivenessResult
-        extends Effectiveness {
+public class EffectivenessResult {
 
+    private final String name;
     private final String result;
 
-    public EffectivenessResult(final Effectiveness effectiveness, final String value) {
-        super(effectiveness.getEffectiveness());
-        this.result = value;
+    public EffectivenessResult(final String name, final String result) {
+        this.name = name;
+        this.result = result;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getResult() {
@@ -32,20 +36,20 @@ public class EffectivenessResult
 
         EffectivenessResult that = (EffectivenessResult) o;
 
-        return Objects.equal(this.result, that.result) &&
-                Objects.equal(this.effectiveness, that.effectiveness);
+        return Objects.equal(this.name, that.name) &&
+                Objects.equal(this.result, that.result);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(result, effectiveness);
+        return Objects.hashCode(name, result);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
+                      .addValue(name)
                       .addValue(result)
-                      .addValue(effectiveness)
                       .toString();
     }
 }
