@@ -1,4 +1,4 @@
-package org.kornicameister.sise.lake.types;
+package org.kornicameister.sise.lake.types.effectiveness;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
