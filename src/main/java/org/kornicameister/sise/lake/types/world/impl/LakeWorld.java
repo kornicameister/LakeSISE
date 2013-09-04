@@ -20,10 +20,10 @@ import java.util.*;
 
 public class LakeWorld
         extends DefaultWorld {
-    private static final Logger LOGGER                   = Logger.getLogger(LakeWorld.class);
-    private static final String FIND_FACT_F_FIELD_F_ID_D = "(find-fact ((?f field)) (= ?f:id %d))";
+    private static final Logger LOGGER                      = Logger.getLogger(LakeWorld.class);
+    private static final String FIND_FACT_F_FIELD_F_ID_D    = "(find-fact ((?f field)) (= ?f:id %d))";
     private static final String FIND_FACT_A_ACTOR_EQ_A_ID_S = "(find-fact ((?a actor)) (eq ?a:id \"%s\"))";
-    private static final String DO_WEATHER_RANDOM_S      = "(doWeather (random %s) )";
+    private static final String DO_WEATHER_RANDOM_S         = "(doWeather (random %s) )";
     protected Integer      lakeX;
     protected Integer      lakeY;
     protected Integer      lakeSize;
@@ -40,16 +40,37 @@ public class LakeWorld
     public void run() {
         LOGGER.info(String.format("[%d] > world loop started", this.iteration));
         this.environment.reset();
+        this.assertLake();
         this.assertWeather();
         this.assertFields();
         this.assertActors();
-        this.environment.run();
         this.collectResults();
         LOGGER.info(String.format("[%d] > world loop finished", this.iteration++));
     }
 
+    @Override
+    protected void assertActors() {
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator(true);
+        while (defaultActorIterator.hasNext()) {
+            final DefaultActor actor = defaultActorIterator.next();
+
+            if (actor.isAlive()) {
+                actor.clearFields();
+                this.environment.assertString(actor.getFact());
+                LOGGER.info(String.format("Asserting actor=%s", actor.getFactId()));
+                this.environment.run();
+            } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(String
+                            .format("Actor %s is no longer alive and wont participat in the round", actor.getFactId()));
+                }
+            }
+
+        }
+    }
+
     private void collectResults() {
-        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator(false);
         final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
         while (defaultActorIterator.hasNext()) {
             final DefaultActor actor = defaultActorIterator.next();
@@ -166,28 +187,16 @@ public class LakeWorld
         this.environment.assertString(String.format(DO_WEATHER_RANDOM_S, weatherSB.toString().trim()));
     }
 
+    protected void assertLake() {
+        this.environment.assertString(String.format("(bind ?*lakeWidth* %s)", this.getWidth().toString()));
+        this.environment.assertString(String.format("(bind ?*lakeHeight* %s)", this.getHeight().toString()));
+    }
+
     @Override
     protected void assertFields() {
         final Iterator<WorldField> worldFieldIterator = WorldHelper.fieldIterator();
         while (worldFieldIterator.hasNext()) {
             this.environment.assertString(worldFieldIterator.next().getFact());
-        }
-    }
-
-    @Override
-    protected void assertActors() {
-        final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
-        while (defaultActorIterator.hasNext()) {
-            final DefaultActor actor = defaultActorIterator.next();
-            if (actor.isAlive()) {
-                actor.clearFields();
-                this.environment.assertString(actor.getFact());
-            } else {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug(String
-                            .format("Actor %s is no longer alive and wont participat in the round", actor.getFactId()));
-                }
-            }
         }
     }
 

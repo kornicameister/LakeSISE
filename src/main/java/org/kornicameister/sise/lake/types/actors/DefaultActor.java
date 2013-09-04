@@ -4,10 +4,10 @@ import CLIPSJNI.PrimitiveValue;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.clisp.InitMode;
-import org.kornicameister.sise.lake.types.Effectiveness;
-import org.kornicameister.sise.lake.types.EffectivenessHelper;
-import org.kornicameister.sise.lake.types.EffectivenessResult;
 import org.kornicameister.sise.lake.types.WorldHelper;
+import org.kornicameister.sise.lake.types.effectiveness.Effectiveness;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessHelper;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
 
 import java.util.Properties;
 import java.util.Random;

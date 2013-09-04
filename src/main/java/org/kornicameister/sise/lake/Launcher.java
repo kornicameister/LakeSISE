@@ -1,6 +1,6 @@
 package org.kornicameister.sise.lake;
 
-import org.kornicameister.sise.lake.types.world.ui.WorldUI;
+import org.kornicameister.sise.lake.ui.WorldUI;
 
 import java.awt.*;
 

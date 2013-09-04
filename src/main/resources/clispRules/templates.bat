@@ -15,6 +15,8 @@
     ?*anglerPoacherRangeMod*    = 1
 
     ?*maxRange*                 = 6
+    ?*lakeWidth*                = 0
+    ?*lakeHeight*               = 0
 )
 
 (deftemplate doWeather

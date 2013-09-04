@@ -1,4 +1,4 @@
-package org.kornicameister.sise.lake.types.world.ui;
+package org.kornicameister.sise.lake.ui;
 
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 

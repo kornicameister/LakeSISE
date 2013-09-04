@@ -1,7 +1,7 @@
 package org.kornicameister.sise.lake.types.actors;
 
 import org.apache.log4j.Logger;
-import org.kornicameister.sise.lake.types.Effectiveness;
+import org.kornicameister.sise.lake.types.effectiveness.Effectiveness;
 
 import java.io.IOException;
 import java.io.InputStream;
