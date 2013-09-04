@@ -6,6 +6,7 @@ import org.kornicameister.sise.lake.types.WorldField;
 import org.kornicameister.sise.lake.types.WorldHelper;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.actors.impl.kg.ForesterActorKG;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessHelper;
 import org.kornicameister.sise.lake.types.world.DefaultWorld;
 import org.kornicameister.sise.lake.types.world.impl.LakeWorld;
 
@@ -80,6 +81,12 @@ public class WorldUI extends JFrame implements ActionListener {
         this.generateReport.setBounds((int) this.nextRound.getBounds().getX(),
                 (int) (this.nextRound.getBounds().getHeight() * 1.2), 100, 40);
         this.generateReport.setVisible(true);
+        this.generateReport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EffectivenessHelper.saveToFile();
+            }
+        });
         this.panel.add(generateReport);
 
         SpinnerModel model = new SpinnerNumberModel(SPINNER_INIT_VALUE, SPINNER_MIN_VALUE,
