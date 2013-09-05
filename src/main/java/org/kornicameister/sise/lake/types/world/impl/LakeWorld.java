@@ -55,7 +55,6 @@ public class LakeWorld
             final DefaultActor actor = defaultActorIterator.next();
 
             if (actor.isAlive()) {
-                actor.clearFields();
                 this.environment.assertString(actor.getFact());
                 LOGGER.info(String.format("Asserting actor=%s", actor.getFactId()));
                 this.environment.run();
@@ -104,6 +103,7 @@ public class LakeWorld
                     actor.newRound();
                     actor.applyFact(primitiveValue);
                     actor.applyEffectiveness(primitiveValue);
+                    actor.clear();
                 }
                 final List<StatField> after = actor.getStats();
 

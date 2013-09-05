@@ -74,7 +74,8 @@
         (default -1))
 	(slot isMoveChanged
 	    (type SYMBOL)
-	    (allowed-symbols yes no))
+	    (allowed-symbols yes no)
+	    (default no))
     ;-----------------location----------------------;
 
     ;-----------------generic-abilities--------------;

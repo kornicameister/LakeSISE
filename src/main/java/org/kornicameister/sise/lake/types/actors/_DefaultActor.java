@@ -21,32 +21,52 @@ public abstract class _DefaultActor
                    EffectivenessReady {
     protected static final String  EMPTY_STRING = "";
     private static         Integer ID           = 0;
+    @ClispAsserted
     protected final Integer      id;
+    @ClispAsserted
     protected       LakeActors   type;
+    @ClispAsserted
     protected       WorldField   atField;
+    @ClispAsserted
     protected       Boolean      canAttack;
+    @ClispAsserted
     protected       Boolean      canFly;
+    @ClispAsserted
     protected       Boolean      canSwim;
-    protected       Boolean      isAlive;
-    protected       Integer      hp;
-    protected       Integer      visionRange;
-    protected       Integer      attackRange;
-    protected       Integer      moveRange;
-    protected       Integer      hunger;
-    protected       DefaultActor target;
-    protected       Boolean      targetHit;
-    protected       Boolean      aggressive;
-    protected       Integer      cash;
-    protected       Integer      corruptionThreshold;
-    protected       Boolean      tookBribe;
-    protected       Boolean      validId;
-    protected       Integer      attackPower;
+    @ClispAsserted
     protected       Integer      weight;
-    protected       Boolean      isMoveChanged;
+    @ClispAsserted
     protected       Integer      howManyFishes;
+    @ClispAsserted
+    protected       Integer      hp;
+    @ClispAsserted
+    protected       Integer      visionRange;
+    @ClispAsserted
+    protected       Integer      attackRange;
+    @ClispAsserted
+    protected       Integer      moveRange;
+    @ClispAsserted
+    protected       Integer      hunger;
+    @ClispAsserted
+    protected       DefaultActor target;
+    @ClispAsserted
+    protected       Boolean      aggressive;
+    @ClispAsserted
+    protected       Integer      cash;
+    @ClispAsserted
+    protected       Integer      corruptionThreshold;
+    @ClispAsserted
+    protected       Boolean      validId;
+    //no clips fields
+    protected       Boolean      targetHit;
+    protected       Boolean      tookBribe;
+    protected       Integer      attackPower;
+    protected       Boolean      isMoveChanged;
     protected       Integer      roundsAlive;
-    protected Double effectiveness1;
-    protected Double effectiveness2;
+    protected       Boolean      isAlive;
+    protected       Double       effectiveness1;
+    protected       Double       effectiveness2;
+    //no clips fields
 
     protected _DefaultActor() {
         this.id = _DefaultActor.ID++;
@@ -130,7 +150,10 @@ public abstract class _DefaultActor
         this.validId = validId;
     }
 
-    public void clearFields() {
+    /**
+     * Resets all required fields to their initial state
+     */
+    public void clear() {
         this.tookBribe = false;
     }
 
