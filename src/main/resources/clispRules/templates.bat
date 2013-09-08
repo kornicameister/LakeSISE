@@ -137,9 +137,9 @@
 	    (default no))
     ;-----------------corruption-properties-----------;
     ;---------------------effectivity-----------------;
-    (slot effectivity_1
+    (slot effectiveness_1
         (type FLOAT))
-    (slot effectivity_2
+    (slot effectiveness_2
         (type FLOAT))
     ;---------------------effectivity-----------------;
 )
