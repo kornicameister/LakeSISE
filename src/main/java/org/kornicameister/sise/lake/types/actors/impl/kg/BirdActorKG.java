@@ -2,6 +2,7 @@ package org.kornicameister.sise.lake.types.actors.impl.kg;
 
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.actors.LakeActors;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessConstants;
 import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
 
 import java.util.HashSet;
@@ -36,8 +37,8 @@ public class BirdActorKG extends DefaultActor {
     public Set<EffectivenessResult> getEffectiveness() {
         Set<EffectivenessResult> results = new HashSet<>();
 
-        results.add(new EffectivenessResult("a",Double.toString(this.effectivity_1)));
-        results.add(new EffectivenessResult("b",Integer.toString(this.howManyFishes)));
+        results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_LIVE,Double.toString(this.getRoundsAlive())));
+        results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_CAUGHT_FISHES,Integer.toString(this.getHowManyFishes())));
 
         return results;
     }
