@@ -1,6 +1,9 @@
 package org.kornicameister.sise.lake.types;
 
 import CLIPSJNI.PrimitiveValue;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
+
+import java.util.Set;
 
 /**
  * @author kornicameister
@@ -9,4 +12,6 @@ import CLIPSJNI.PrimitiveValue;
  */
 public interface EffectivenessReady {
     void applyEffectiveness(final PrimitiveValue value) throws Exception;
+
+    Set<EffectivenessResult> getEffectiveness();
 }

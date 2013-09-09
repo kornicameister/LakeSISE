@@ -36,7 +36,7 @@ abstract public class DefaultWorld
     public boolean initializeWorld() {
         try {
             if (!this.worldReady) {
-                final Iterator<DefaultActor> defaultActorIterator = WorldHelper.actorIterator();
+                final Iterator<DefaultActor> defaultActorIterator = WorldHelper.getActorIterator(false);
                 while (defaultActorIterator.hasNext()) {
                     this.randomizeField(defaultActorIterator.next());
                 }

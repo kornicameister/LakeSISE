@@ -4,10 +4,9 @@ import CLIPSJNI.PrimitiveValue;
 import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.clisp.InitMode;
-import org.kornicameister.sise.lake.types.Effectiveness;
-import org.kornicameister.sise.lake.types.EffectivenessHelper;
-import org.kornicameister.sise.lake.types.EffectivenessResult;
 import org.kornicameister.sise.lake.types.WorldHelper;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessConstants;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
 
 import java.util.Properties;
 import java.util.Random;
@@ -150,7 +149,6 @@ public abstract class DefaultActor
                .append(String.format("(id \"%s\")\n", this.getFactId()))
                .append(String.format("(type %s)\n", this.type.name().toLowerCase()))
                .append(String.format("(atField %d)\n", this.atField != null ? this.atField.getId() : -1))
-               .append(String.format("(isMoveChanged %s)\n", BooleanToSymbol.toSymbol(this.isMoveChanged)))
                .append(String.format("(isAlive %s)\n", BooleanToSymbol.toSymbol(this.isAlive)))
                .append(String.format("(canAttack %s)\n", BooleanToSymbol.toSymbol(this.canAttack)))
                .append(String.format("(canFly %s)\n", BooleanToSymbol.toSymbol(this.canFly)))
@@ -161,14 +159,12 @@ public abstract class DefaultActor
                .append(String.format("(visionRange %d)\n", this.visionRange))
                .append(String.format("(attackRange %d)\n", this.attackRange))
                .append(String.format("(attackPower %d)\n", this.attackPower))
-               .append(String.format("(hunger %d)\n", this.hunger))
                .append(String.format("(moveRange %d)\n", this.moveRange))
+               .append(String.format("(hunger %d)\n", this.hunger))
                .append(String.format("(targetId %d)\n", this.target == null ? -1 : this.target.id))
-               .append(String.format("(targetHit %s)\n", BooleanToSymbol.toSymbol(this.targetHit)))
                .append(String.format("(aggressive %s)\n", BooleanToSymbol.toSymbol(this.aggressive)))
                .append(String.format("(cash %d)\n", this.cash))
                .append(String.format("(corruptionThreshold %d)\n", this.corruptionThreshold))
-               .append(String.format("(tookBribe %s)\n", BooleanToSymbol.toSymbol(this.tookBribe)))
                .append(String.format("(validId %s)\n", BooleanToSymbol.toSymbol(this.validId)))
                .append(this.appendExtraDataToFact())
                .append(" )");
@@ -193,22 +189,18 @@ public abstract class DefaultActor
 
     @Override
     public void applyEffectiveness(final PrimitiveValue value) throws Exception {
-        final Set<Effectiveness> effectivenessSet = this.getType().getEffectiveness();
-        for (final Effectiveness effectiveness : effectivenessSet) {
-            try {
-                PrimitiveValue primitiveValue;
-                if ((primitiveValue = value.getFactSlot(effectiveness.getEffectiveness())) != null) {
-                    EffectivenessHelper
-                            .storeEffectiveness(this.getClass(),
-                                    new EffectivenessResult(effectiveness, primitiveValue
-                                            .getValue()
-                                            .toString())
-                            );
-                }
-            } catch (Exception exception) {
-                LOGGER.warn(String.format("Error occurred when resolving effectiveness=%s", effectiveness), exception);
-            }
+        try {
+            this.effectivity_1 = value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_1).doubleValue();
+            this.effectivity_2 = value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_2).doubleValue();
+        } catch (Exception exception) {
+            LOGGER.warn(String
+                    .format("Error occurred when resolving effectiveness from primitive_value = %s", value), exception);
         }
+    }
+
+    @Override
+    public Set<EffectivenessResult> getEffectiveness() {
+        return null;
     }
 
     @Override

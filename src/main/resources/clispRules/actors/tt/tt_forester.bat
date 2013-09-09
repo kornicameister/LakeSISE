@@ -108,11 +108,13 @@
 	                        (corruptionThreshold ?f-ct)
 	                        (type forester)
 	                        (actionDone no)
+	                        (effectivity_1 ?eff_f)
 	                )
 	?suspect 	<-	(actor  (id ?s-id)
 	                        (cash ?s-cash)
 	                        (atField ?s-af)
 	                        (type poacher)
+	                        (effectivity_1 ?eff_s)
 	                )
 	(test
         (and
@@ -126,9 +128,11 @@
 	(modify ?suspect
 	    (cash (- ?s-cash ?tmp))
 	    (actionDone ?*true*)
+	    (effectivity_1 (+ ?eff_s 1.0))
 	)
 	(modify ?forester
 	    (actionDone ?*true*)
+	    (effectivity_1 (+ ?eff_s 1.0))
 	)
 	(printout t ?f-id " has made the large ticket " ?tmp " for " ?s-id crlf)
 )

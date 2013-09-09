@@ -21,34 +21,58 @@ public abstract class _DefaultActor
                    EffectivenessReady {
     protected static final String  EMPTY_STRING = "";
     private static         Integer ID           = 0;
+    @ClispAsserted
     protected final Integer      id;
+    @ClispAsserted
     protected       LakeActors   type;
+    @ClispAsserted
     protected       WorldField   atField;
+    @ClispAsserted
     protected       Boolean      canAttack;
+    @ClispAsserted
     protected       Boolean      canFly;
+    @ClispAsserted
     protected       Boolean      canSwim;
-    protected       Boolean      isAlive;
-    protected       Integer      hp;
-    protected       Integer      visionRange;
-    protected       Integer      attackRange;
-    protected       Integer      moveRange;
-    protected       Integer      hunger;
-    protected       DefaultActor target;
-    protected       Boolean      targetHit;
-    protected       Boolean      aggressive;
-    protected       Integer      cash;
-    protected       Integer      corruptionThreshold;
-    protected       Boolean      tookBribe;
-    protected       Boolean      validId;
-    protected       Integer      attackPower;
+    @ClispAsserted
     protected       Integer      weight;
-    protected       Boolean      isMoveChanged;
+    @ClispAsserted
     protected       Integer      howManyFishes;
+    @ClispAsserted
+    protected       Integer      hp;
+    @ClispAsserted
+    protected       Integer      visionRange;
+    @ClispAsserted
+    protected       Integer      attackRange;
+    @ClispAsserted
+    protected       Integer      moveRange;
+    @ClispAsserted
+    protected       Integer      hunger;
+    @ClispAsserted
+    protected       DefaultActor target;
+    @ClispAsserted
+    protected       Boolean      aggressive;
+    @ClispAsserted
+    protected       Integer      cash;
+    @ClispAsserted
+    protected       Integer      corruptionThreshold;
+    @ClispAsserted
+    protected       Boolean      validId;
+    //no clips fields
+    protected       Boolean      targetHit;
+    protected       Boolean      tookBribe;
+    protected       Integer      attackPower;
+    protected       Boolean      isMoveChanged;
     protected       Integer      roundsAlive;
+    protected       Boolean      isAlive;
+    protected Double effectivity_1;
+    protected Double effectivity_2;
+    //no clips fields
 
     protected _DefaultActor() {
         this.id = _DefaultActor.ID++;
         this.roundsAlive = 0;
+        this.effectivity_1 = 0d;
+        this.effectivity_2 = 0d;
     }
 
     protected static int getRandomInt(final int lower, final int higher, final Random seed) {
@@ -128,38 +152,13 @@ public abstract class _DefaultActor
         this.validId = validId;
     }
 
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                      .add("id", id)
-                      .add("type", type)
-                      .add("atField", atField)
-                      .add("canAttack", canAttack)
-                      .add("canFly", canFly)
-                      .add("canSwim", canSwim)
-                      .add("isAlive", isAlive)
-                      .add("hp", hp)
-                      .add("visionRange", visionRange)
-                      .add("attackRange", attackRange)
-                      .add("moveRange", moveRange)
-                      .add("hunger", hunger)
-                      .add("target", target)
-                      .add("targetHit", targetHit)
-                      .add("aggressive", aggressive)
-                      .add("cash", cash)
-                      .add("corruptionThreshold", corruptionThreshold)
-                      .add("tookBribe", tookBribe)
-                      .add("validId", validId)
-                      .add("attackPower", attackPower)
-                      .add("weight", weight)
-                      .add("isMoveChanged", isMoveChanged)
-                      .add("howManyFishes", howManyFishes)
-                      .add("roundsAlive", roundsAlive)
-                      .toString();
-    }
-
-    public void clearFields() {
+    /**
+     * Resets all required fields to their initial state
+     */
+    public void clear() {
         this.tookBribe = false;
+        this.effectivity_1 = 0d;
+        this.effectivity_2 = 0d;
     }
 
     public List<StatField> getStats() {
@@ -304,14 +303,53 @@ public abstract class _DefaultActor
         this.aggressive = aggressive;
     }
 
+    public Integer getRoundsAlive() {
+        return roundsAlive;
+    }
+
+    public Double getEffectivity_1() {
+        return effectivity_1;
+    }
+
+    public Double getEffectivity_2() {
+        return effectivity_2;
+    }
+
     protected abstract LakeActors setType();
 
     protected abstract void doNormalInit(final Properties properties);
 
     protected abstract void doRandomInit(final Properties properties);
 
-    public Integer getRoundsAlive() {
-        return roundsAlive;
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                      .add("id", id)
+                      .add("type", type)
+                      .add("atField", atField)
+                      .add("canAttack", canAttack)
+                      .add("canFly", canFly)
+                      .add("canSwim", canSwim)
+                      .add("isAlive", isAlive)
+                      .add("hp", hp)
+                      .add("visionRange", visionRange)
+                      .add("attackRange", attackRange)
+                      .add("moveRange", moveRange)
+                      .add("hunger", hunger)
+                      .add("target", target)
+                      .add("targetHit", targetHit)
+                      .add("aggressive", aggressive)
+                      .add("cash", cash)
+                      .add("corruptionThreshold", corruptionThreshold)
+                      .add("tookBribe", tookBribe)
+                      .add("validId", validId)
+                      .add("attackPower", attackPower)
+                      .add("weight", weight)
+                      .add("isMoveChanged", isMoveChanged)
+                      .add("howManyFishes", howManyFishes)
+                      .add("roundsAlive", roundsAlive)
+                      .add("effectivity_1", effectivity_1)
+                      .add("effectivity_2", effectivity_2)
+                      .toString();
     }
-
 }

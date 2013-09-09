@@ -114,10 +114,11 @@
 	                        (cash ?a-cash)
 	                        (corruptionThreshold ?a-ct)
 	                        (type forester)
+	                        (effectivity_1 ?eff_f)
 	                )
 	(test
         (and
-            (   eq (sub-string 1 14 ?p-id) "PoacherActorTT")
+            (   = 1 (str-index "PoacherActorTT" ?p-id))
             (   >   ?p-cash ?a-ct)
             (   >   ?p-cash ?a-cash)
             (   >  ?a-ct   -1)
@@ -150,6 +151,7 @@
 	                        (attackRange ?p-ar)
 	                        (type poacher)
 	                        (actionDone no)
+	                        (effectivity_2 ?eff)
 	                )
 	?fish 	    <-	(actor  (id ?f-id)
 	                        (type ?f-type)
@@ -171,8 +173,9 @@
 	=>
     (if (>= ?p-ap ?f-hp) then
         (modify ?poacher
-            (actionDone ?*true*)
-            (howManyFishes (+ ?p-hmf 1))
+            (actionDone     ?*true*)
+            (howManyFishes  (+ ?p-hmf 1))
+            (effectivity_2  (+ ?eff 1.0))
         )
         (modify ?fish
             (hp (- ?f-hp ?p-ap))
