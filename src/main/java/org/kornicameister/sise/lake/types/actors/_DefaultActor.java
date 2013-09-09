@@ -64,8 +64,8 @@ public abstract class _DefaultActor
     protected       Boolean      isMoveChanged;
     protected       Integer      roundsAlive;
     protected       Boolean      isAlive;
-    protected Double effectivity_1;
-    protected Double effectivity_2;
+    protected       Double       effectivity_1;
+    protected       Double       effectivity_2;
     //no clips fields
 
     protected _DefaultActor() {
