@@ -10,8 +10,6 @@ public abstract class EffectivenessConstants {
         public static final String EFF_TOTAL_TICKETS     = "totalTicketsRatio";
         public static final String EFF_CAUGHT_FISHES     = "caughtFishesRatio";
         public static final String EFF_TICKETS_TO_BRIBES = "ticketsToBribesRatio";
-        public static final String EFF_TOTAL_BRIBES = "totalBribesRatio";
-        public static final String EFF_LIVE = "RoundsLiveRatio";
     }
 
     public static class FieldsNames {

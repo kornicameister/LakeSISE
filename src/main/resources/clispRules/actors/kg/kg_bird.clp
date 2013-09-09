@@ -23,11 +23,11 @@
     )
 )
 (defrule starvingKG
-    ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) )
+    ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (effectivity_1  ?ef))
     (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
     (test (< ?hunger 0))
     =>
-    (modify ?actor (hp (- ?hp 6)) (actionDone ?*true*))
+    (modify ?actor (hp (- ?hp 6))  (effectivity_1 (+ ?ef 1)) (actionDone ?*true*))
 )
 
 
@@ -44,13 +44,19 @@
     (test (neq ?id ?tid))
     =>
     (modify ?target (hp (- ?hp ?ap)))
-    (modify ?actor (howManyFishes (+ ?hmf 1)) (hunger (+ ?hunger ?weight)) (actionDone ?*true*))
+    (if(< ?hp 0) then
+        (modify ?actor (howManyFishes (+ ?hmf 1)))
+    )
+    (modify ?actor (hunger (+ ?hunger ?weight)) (actionDone ?*true*))
 )
 
 (defrule growinghungerKG
-     ?actor <- (actor (id ?id) (hunger ?hunger) (type bird) (actionDone no))
+     ?actor <- (actor (id ?id) (hunger ?hunger) (type bird) (effectivity_1  ?ef) (actionDone no))
      (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
      =>
+     ( if (> ?hunger 0) then
+     (modify ?actor (effectivity_1 (+ ?ef 1)))
+     )
      (modify ?actor (hunger (- ?hunger 3)) (actionDone ?*true*))
      (printout t "amem" crlf)
  )

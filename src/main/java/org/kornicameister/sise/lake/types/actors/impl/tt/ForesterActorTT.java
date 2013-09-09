@@ -55,8 +55,7 @@ public class ForesterActorTT
         final Set<EffectivenessResult> results = Sets.newHashSet();
 
         // TODO : one missing effectivity
-        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TICKETS_TO_BRIBES, this.effectivity_1));
-        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TOTAL_BRIBES,this.tookBribeCounter));
+        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TICKETS_TO_BRIBES, this.effectivity_1 / this.tookBribeCounter));
 
         return results;
     }
