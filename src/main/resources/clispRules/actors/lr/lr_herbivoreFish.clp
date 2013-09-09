@@ -61,7 +61,7 @@
 	(modify ?actor (moveRange ?tmp))
 	(printout t ?actor-id "/" ?actor-name " " ?x " " ?y  " ryba ucieka " ?actor-id-sec "/" ?actor-name-sec " " ?tX " " ?tY " tmp " ?tmpx " " ?tmpy " id pola " ?id-pola crlf crlf)
 	;---------------------wychacza sie jak modyfikuje pole-------------------------------;
-	(modify ?actor (atField ?id-pola))
+	;(modify ?actor (atField ?id-pola))
 )
 ;-----------------------------rola jedz------------------------------------;
 ;rola sprawdza okolice roslinozernej nastepnie zjada pokarm; 
