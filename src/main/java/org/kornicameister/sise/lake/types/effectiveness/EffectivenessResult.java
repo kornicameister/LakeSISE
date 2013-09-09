@@ -7,12 +7,12 @@ import com.google.common.base.Objects;
  * @version 0.0.1
  * @since 0.0.1
  */
-public class EffectivenessResult {
+public class EffectivenessResult<T> {
 
     private final String name;
-    private final String result;
+    private final T      result;
 
-    public EffectivenessResult(final String name, final String result) {
+    public EffectivenessResult(final String name, final T result) {
         this.name = name;
         this.result = result;
     }
@@ -21,7 +21,7 @@ public class EffectivenessResult {
         return name;
     }
 
-    public String getResult() {
+    public T getResult() {
         return result;
     }
 

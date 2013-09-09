@@ -39,11 +39,13 @@
 	(slot y	
 		(type INTEGER))
 	(slot occupied	
-		(type SYMBOL)	
-		(allowed-symbols yes no))
+		(type SYMBOL)
+		(allowed-symbols yes no)
+		(default no))
 	(slot water
 		(type SYMBOL)
-		(allowed-symbols yes no))
+		(allowed-symbols yes no)
+		(default no))
 )
 
 (deftemplate actor
@@ -138,9 +140,11 @@
     ;-----------------corruption-properties-----------;
     ;---------------------effectivity-----------------;
     (slot effectivity_1
-        (type FLOAT))
+        (type FLOAT)
+        (default 0.0))
     (slot effectivity_2
-        (type FLOAT))
+        (type FLOAT)
+        (default 0.0))
     ;---------------------effectivity-----------------;
 )
 
@@ -312,13 +316,13 @@
     	)
 		(printout t ?a-id "/" ?a-type " is no longer alive..." crlf)
     )
-    (defrule killByBribe
-        (declare (salience ?*HIGH-PRIORITY*))
-    	?actor <- (actor (id ?a-id) (type ?a-type) (hp ?hp) (cash ?cash) (isAlive yes) (tookBribe yes))
-    	=>
-        (modify ?actor (hp (- ?hp 10)) (tookBribe ?*false*))
-		(printout t ?a-id "/" ?a-type " has took bribe, decrementing his HP" crlf)
-    )
+    ;(defrule killByBribe
+    ;    (declare (salience ?*HIGH-PRIORITY*))
+    ;	?actor <- (actor (id ?a-id) (type ?a-type) (hp ?hp) (cash ?cash) (isAlive yes) (tookBribe yes))
+    ;	=>
+    ;    (modify ?actor (hp (- ?hp 10)))
+	;	(printout t ?a-id "/" ?a-type " has took bribe, decrementing his HP" crlf)
+    ;)
     ;------------------kill-rules------------------------;
 	;------------------move-rules------------------------;
         ;------------------create-move-rule------------------;
@@ -365,6 +369,7 @@
             (modify ?actor
                 (logicDone 3)
                 (isMoveChanged ?*true*)
+                (actionDone ?*true*)
             )
             (printout t ?a-id "/" ?a-t " not moved, has 0 move range" crlf)
         )
@@ -400,6 +405,7 @@
                         (wasField ?ff-id)
                         (logicDone 3)
                         (isMoveChanged ?*true*)
+                        (actionDone ?*true*)
                     )
                     (printout t ?a-id "/" ?a-t " moved from [" ?ff-id "=[" ?ff-x ":" ?ff-y "]] to [" ?tf-id "=[" ?toField:x ":" ?toField:y "]] with range " ?a-mr "." crlf)
                 )

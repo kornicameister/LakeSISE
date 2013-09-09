@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.kornicameister.sise.lake.adapters.BooleanToSymbol;
 import org.kornicameister.sise.lake.clisp.InitMode;
 import org.kornicameister.sise.lake.types.WorldHelper;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessConstants;
 import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
 
 import java.util.Properties;
@@ -189,8 +190,8 @@ public abstract class DefaultActor
     @Override
     public void applyEffectiveness(final PrimitiveValue value) throws Exception {
         try {
-            this.effectiveness1 = value.getFactSlot("effectiveness_1").doubleValue();
-            this.effectiveness2 = value.getFactSlot("effectiveness_2").doubleValue();
+            this.effectivity_1 = value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_1).doubleValue();
+            this.effectivity_2 = value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_2).doubleValue();
         } catch (Exception exception) {
             LOGGER.warn(String
                     .format("Error occurred when resolving effectiveness from primitive_value = %s", value), exception);

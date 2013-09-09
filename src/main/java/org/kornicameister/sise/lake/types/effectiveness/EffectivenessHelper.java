@@ -53,7 +53,7 @@ public class EffectivenessHelper {
             FileNotFoundException {
         final PrintWriter writer = new PrintWriter(targetFile);
         for (final EffectivenessResult result : byName) {
-            writer.print(counter--);
+            writer.print(counter++);
             writer.print(" ");
             writer.print(result.getName());
             writer.print(" ");
@@ -103,8 +103,12 @@ public class EffectivenessHelper {
         while (actorIterator.hasNext()) {
             final DefaultActor actor = actorIterator.next();
             final Set<EffectivenessResult> effectiveness = actor.getEffectiveness();
-            for (final EffectivenessResult result : effectiveness) {
-                typeToResult.put(actor.getClass().getSimpleName(), result);
+            if (effectiveness != null) {
+                for (final EffectivenessResult result : effectiveness) {
+                    typeToResult.put(actor.getClass().getSimpleName(), result);
+                }
+            } else {
+                LOGGER.error(String.format("Failed to read effectiveness from actor=%s", actor.getFactId()));
             }
         }
 

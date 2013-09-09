@@ -64,13 +64,15 @@ public abstract class _DefaultActor
     protected       Boolean      isMoveChanged;
     protected       Integer      roundsAlive;
     protected       Boolean      isAlive;
-    protected       Double       effectiveness1;
-    protected       Double       effectiveness2;
+    protected Double effectivity_1;
+    protected Double effectivity_2;
     //no clips fields
 
     protected _DefaultActor() {
         this.id = _DefaultActor.ID++;
         this.roundsAlive = 0;
+        this.effectivity_1 = 0d;
+        this.effectivity_2 = 0d;
     }
 
     protected static int getRandomInt(final int lower, final int higher, final Random seed) {
@@ -155,6 +157,8 @@ public abstract class _DefaultActor
      */
     public void clear() {
         this.tookBribe = false;
+        this.effectivity_1 = 0d;
+        this.effectivity_2 = 0d;
     }
 
     public List<StatField> getStats() {
@@ -303,12 +307,12 @@ public abstract class _DefaultActor
         return roundsAlive;
     }
 
-    public Double getEffectiveness1() {
-        return effectiveness1;
+    public Double getEffectivity_1() {
+        return effectivity_1;
     }
 
-    public Double getEffectiveness2() {
-        return effectiveness2;
+    public Double getEffectivity_2() {
+        return effectivity_2;
     }
 
     protected abstract LakeActors setType();
@@ -344,8 +348,8 @@ public abstract class _DefaultActor
                       .add("isMoveChanged", isMoveChanged)
                       .add("howManyFishes", howManyFishes)
                       .add("roundsAlive", roundsAlive)
-                      .add("effectiveness1", effectiveness1)
-                      .add("effectiveness2", effectiveness2)
+                      .add("effectivity_1", effectivity_1)
+                      .add("effectivity_2", effectivity_2)
                       .toString();
     }
 }
