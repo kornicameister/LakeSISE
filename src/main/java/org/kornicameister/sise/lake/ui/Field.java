@@ -93,5 +93,6 @@ public class Field {
         this.water = water;
         if (!isWater()) this.label.setIcon(new ImageIcon(LAND_IMAGE));
         else this.label.setIcon(new ImageIcon(WATER_IMAGE));
+        this.label.setToolTipText("");
     }
 }
