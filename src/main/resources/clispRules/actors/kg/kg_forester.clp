@@ -29,7 +29,7 @@
     	                        (corruptionThreshold ?f-ct)
     	                        (type forester)
     	                        (actionDone no)
-    	                        (effectiveness_1  ?ef)
+    	                        (effectivity_1  ?ef)
     	                )
     ?equivocal 	<-	(actor  (id ?equivocalId)
                             (atField ?equivocalField)
@@ -45,5 +45,5 @@
     )
     =>
 	(modify ?equivocal (cash (- ?equivocalCash ?foresterPower)))
-	(modify ?forester (actionDone ?*true*) (effectiveness_1  (+?ef 1)))
+	(modify ?forester (actionDone ?*true*) (effectivity_1  (+ ?ef 1)))
 )

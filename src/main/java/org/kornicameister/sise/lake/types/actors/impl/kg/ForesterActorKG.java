@@ -36,7 +36,7 @@ public class ForesterActorKG extends DefaultActor {
     public Set<EffectivenessResult> getEffectiveness() {
         Set<EffectivenessResult> results = new HashSet<>();
 
-        results.add(new EffectivenessResult("a",Double.toString(this.effectiveness1)));
+        results.add(new EffectivenessResult("a",Double.toString(this.effectivity_1)));
         results.add(new EffectivenessResult("b",Integer.toString(0)));
 
         return results;

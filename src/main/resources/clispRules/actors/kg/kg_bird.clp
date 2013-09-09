@@ -23,16 +23,16 @@
     )
 )
 (defrule starvingKG
-    ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (effectiveness_1  ?ef))
+    ?actor <- (actor (id ?id) (hp ?hp) (hunger ?hunger) (effectivity_1  ?ef))
     (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
     (test (< ?hunger 0))
     =>
-    (modify ?actor (hp (- ?hp 6))  (effectiveness_1 (+ ?ef 1)) (actionDone ?*true*))
+    (modify ?actor (hp (- ?hp 6))  (effectivity_1 (+ ?ef 1)) (actionDone ?*true*))
 )
 
 
 (defrule attackKG
-    ?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (hunger ?hunger) (howManyFishes ?hmf) (effectiveness_1  ?ef) (type bird)  (actionDone no))
+    ?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (hunger ?hunger) (howManyFishes ?hmf)(type bird)  (actionDone no))
     ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
     ?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive yes) (weight ?weight))
     ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
@@ -51,11 +51,11 @@
 )
 
 (defrule growinghungerKG
-     ?actor <- (actor (id ?id) (hunger ?hunger) (type bird) (effectiveness_1  ?ef) (actionDone no))
+     ?actor <- (actor (id ?id) (hunger ?hunger) (type bird) (effectivity_1  ?ef) (actionDone no))
      (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
      =>
      ( if (> ?hunger 0) then
-     (modify ?actor (effectiveness_1 (+ ?ef 1)))
+     (modify ?actor (effectivity_1 (+ ?ef 1)))
      )
      (modify ?actor (hunger (- ?hunger 3)) (actionDone ?*true*))
      (printout t "amem" crlf)
