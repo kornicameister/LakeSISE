@@ -76,6 +76,7 @@
 	                        (corruptionThreshold ?f-ct)
 	                        (type forester)
 	                        (actionDone no)
+	                        (effectivity_1 ?eff_f)
 	                )
 	?suspect 	<-	(actor  (id ?s-id)
 	                        (atField ?s-af)
@@ -95,6 +96,7 @@
 	)
 	(modify ?forester
 	    (actionDone ?*true*)
+	    (effectivity_1 (+ ?eff_s 1.0)
 	)
 	(printout t ?f-id " has made the ticket for " ?s-id crlf)
 )

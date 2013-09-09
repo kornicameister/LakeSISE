@@ -39,7 +39,7 @@ public class ForesterActorTT
     public void applyEffectiveness(final PrimitiveValue value) throws Exception {
         /*
         effectivity_1 - ticket / bribes made
-        effectivity_2 - ???
+        effectivity_2 - total bribes
          */
         try {
             this.effectivity_1 += value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_1).doubleValue();
@@ -55,7 +55,8 @@ public class ForesterActorTT
         final Set<EffectivenessResult> results = Sets.newHashSet();
 
         // TODO : one missing effectivity
-        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TICKETS_TO_BRIBES, this.effectivity_1 / this.tookBribeCounter));
+        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TICKETS_TO_BRIBES, this.effectivity_1 / this.tookBribeCounter == 0 ? 1 : this.tookBribeCounter));
+        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TOTAL_BRIBES, this.tookBribeCounter));
 
         return results;
     }
