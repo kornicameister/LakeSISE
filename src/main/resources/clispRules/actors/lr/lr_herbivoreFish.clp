@@ -15,7 +15,7 @@
 			;(return ?v))
 			;)
 			(bind ?v (- ?x ?tx))
-			(printout t "Tu!!!!!!!!!!!" ?v " x1 " ?x " x2 " ?tx crlf crlf crlf)
+			;(printout t "Tu!!!!!!!!!!!" ?v " x1 " ?x " x2 " ?tx crlf crlf crlf)
 			(if (and (< ?v 0)(> ?x 1)) then
 				(bind ?v (- ?x 1))
 			

@@ -33,7 +33,7 @@
 	(test (= 1 (check_type_pred ?actor-name)) )  ;spr czy atakujacy jest drapiezny
 	(test (= 1 (check_type_herbi ?actor-name-sec)))  ;spr czy ofiara jest roslinozerna
 	(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeVision))) ;czy ofiara jest w polu widzenia
-	(test (or(!= ?tX ?x) (!= ?tY ?y)))     ;czy niejest to samo zwierze
+	(test (or(!= ?tX ?x) (!= ?tY ?y)))     ;czy nie jest to samo zwierze
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
 	;(or
