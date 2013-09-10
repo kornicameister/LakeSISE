@@ -134,7 +134,7 @@
 	)
 	(modify ?forester
 	    (actionDone ?*true*)
-	    (effectivity_1 (+ ?eff_s 1.0))
+	    (effectivity_1 (+ ?eff_f 1.0))
 	)
 	(printout t ?f-id " has made the large ticket " ?tmp " for " ?s-id crlf)
 )
