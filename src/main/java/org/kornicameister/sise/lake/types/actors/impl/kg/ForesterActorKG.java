@@ -1,7 +1,9 @@
 package org.kornicameister.sise.lake.types.actors.impl.kg;
 
+import CLIPSJNI.PrimitiveValue;
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.actors.LakeActors;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessConstants;
 import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
 
 import java.util.HashSet;
@@ -33,11 +35,16 @@ public class ForesterActorKG extends DefaultActor {
     }
 
     @Override
+    public void applyEffectiveness(final PrimitiveValue value) throws Exception {
+        this.effectivity_1 += value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_1).doubleValue();
+    }
+
+    @Override
     public Set<EffectivenessResult> getEffectiveness() {
         Set<EffectivenessResult> results = new HashSet<>();
 
-        results.add(new EffectivenessResult("a",Double.toString(this.effectivity_1)));
-        results.add(new EffectivenessResult("b",Integer.toString(0)));
+        results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_TOTAL_TICKETS, this.effectivity_1));
+        results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_TOTAL_BRIBES, Integer.toString(0)));
 
         return results;
     }
