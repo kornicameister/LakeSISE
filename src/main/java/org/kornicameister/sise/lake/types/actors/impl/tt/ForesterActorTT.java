@@ -38,7 +38,7 @@ public class ForesterActorTT
     @Override
     public void applyEffectiveness(final PrimitiveValue value) throws Exception {
         /*
-        effectivity_1 - ticket / bribes made
+        effectivity_1 - tickets
         effectivity_2 - total bribes
          */
         try {
@@ -55,7 +55,7 @@ public class ForesterActorTT
         final Set<EffectivenessResult> results = Sets.newHashSet();
 
         // TODO : one missing effectivity
-        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TICKETS_TO_BRIBES, this.effectivity_1 / this.tookBribeCounter == 0 ? 1 : this.tookBribeCounter));
+        results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TOTAL_TICKETS, this.effectivity_1));
         results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_TOTAL_BRIBES, this.tookBribeCounter));
 
         return results;

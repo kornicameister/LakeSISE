@@ -25,21 +25,19 @@
 		;(printout t "tuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu " crlf crlf)
 ;----------------regula ryba drapiezna goni rybe roslinozerna-------------;
 (defrule gonRybe
-        ?actor 	<-(actor (id ?actor-id) (atField ?atField) (type ?actor-name)(visionRange ?rangeVision)(moveRange ?rangeMove)(attackRange ?rangeAttack)(isAlive ?isAlive))
-  	?actorSec <-(actor (id ?actor-id-sec)(type ?actor-name-sec) (atField ?atField-sec)(isAlive ?isAlive-sec))
+    ?actor 	<-(actor (id ?actor-id) (atField ?atField) (type ?actor-name)(visionRange ?rangeVision)(moveRange ?rangeMove)(effectivity_1 ?eff_1)
+	(attackRange ?rangeAttack)(isAlive ?isAlive))
+		;drapieznik
+  	?actorSec <-(actor (id ?actor-id-sec)(type ?actor-name-sec) (atField ?atField-sec)(isAlive ?isAlive-sec)) ;roslinozerna
 	(and
-	?fi <- (field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes));from
-	(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes));to
-	(test (= 1 (check_type_pred ?actor-name)) )  ;spr czy atakujacy jest drapiezny
-	(test (= 1 (check_type_herbi ?actor-name-sec)))  ;spr czy ofiara jest roslinozerna
+	?fi <- (field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes));pole drapieznika
+	(field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes));analogia
+	(test (eq (sub-string 1 15 ?actor-id-sec) "HerbivoreFishLR"))
+	(test (eq (sub-string 1 14 ?actor-id) "PredatorFishLR"))
 	(test (= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeVision))) ;czy ofiara jest w polu widzenia
 	(test (or(!= ?tX ?x) (!= ?tY ?y)))     ;czy nie jest to samo zwierze
 	(test (= ?atField ?ff-id))             ;1 aktor musi byc w poli
 	(test (= ?atField-sec ?tf-id))
-	;(or
-	;	(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
-	;	(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
-	;)
 	(test (!= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)));jezeli drapieznik moze juz zaatakowac to nie przesuwa
 
 	(test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))  ;czy zwierzaki zyja
@@ -49,15 +47,9 @@
 	=> 
 	(assert (predator_gon ?actor-id))
 	(printout t ?actor-id "/" ?actor-name " goni rybe!!!!!!!!!!!!!!!  " ?actor-id-sec "/" ?actor-name-sec "  " crlf crlf)
-	(bind ?tmpx (getval ?x ?y ?tX ?tY ?rangeMove))
-	(bind ?tmpy (getval ?y ?x ?tY ?tX ?rangeMove))	
-	(bind ?id-pola (findFieldByXY ?tmpx ?tmpy))
-	(printout t ?actor-id "/" ?actor-name " "  ?x ?y "    "?tX ?tY " na pole " ?tmpx ?tmpy " id pola " ?id-pola crlf crlf)
-	;(modify ?actor (atField ?id-pola))
-	;---------------------wychacza sie jak modyfikuje pole-------------------------------;
+	(bind ?tmp_eff1 (+ ?eff_1 1.0)) ;ilosc prob zlapania
 	(bind ?tmp (+ 1 ?rangeVision))
-	(modify ?actor (visionRange ?tmp))
-	
+	(modify ?actor (visionRange ?tmp)(effectivity_1 ?tmp_eff1))
 )
 
 ;-----------------------------rola jedz------------------------------------;
@@ -71,52 +63,69 @@
                         (moveRange ?rangeMove)
                         (attackRange ?rangeAttack)
 						(hp ?hp)
-                        (weight ?waga)
-                        (isAlive ?isAlive)(hunger ?hunger))
+						(howManyFishes ?fish_count)
+                        (isAlive ?isAlive))
+	;drapieznik
   	?actorSec   <-  (actor
                         (id ?actor-id-sec)
                         (type ?actor-name-sec)
                         (atField ?atField-sec)
-                        (weight ?waga-sec)
                         (isAlive ?isAlive-sec))
-
+	;drapieznik lub roslinozerna
 	
 	(and
         ?fi <- (field (id ?ff-id) (x ?x)   (y ?y)  (occupied yes))  ;from
         (field (id ?tf-id) (x ?tX)  (y ?tY) (occupied yes))         ;to
-        (test (= 1 (check_type_pred ?actor-name)) )                 ;spr czy atakujacy jest drapierzny
+       
+		(test (eq (sub-string 1 14 ?actor-id) "PredatorFishLR"))
         (test
             (or
-                (= 1 (check_type_pred ?actor-name-sec))             ;spr czy ofiara jest roslino lub mieso zernaa
-                (= 1 (check_type_herbi ?actor-name-sec))
+                (eq (sub-string 1 15 ?actor-id-sec) "HerbivoreFishLR")             ;spr czy ofiara jest roslino lub mieso zernaa
+                (eq (sub-string 1 14 ?actor-id-sec) "PredatorFishLR")
             )
         )
-		;(or
-		;	(test (eq (sub-string 1 20 ?actor-id) "HerbivoreFishActorLR"))
-		;	(test (eq (sub-string 1 19 ?actor-id) "PredatorFishActorLR"))
-		;)
         (test (= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)))       ;czy ofiara jest w polu ataku
         (test (or(!= ?tX ?x) (!= ?tX ?x)))
         (test (= ?atField ?ff-id))
         (test (= ?atField-sec ?tf-id))
-        (test (>= ?waga ?waga-sec))
         (test (and(eq yes ?isAlive)(eq yes ?isAlive-sec)))
-		;(test (< 13 ?waga))
-		;(test (neq ?actor-id ?actor-st))  ;czy nie został zmieniony
-		(not (predator ?actor-id))
+		
+		(not (predator_eat ?actor-id))
 		)
 
 	=> 
-		(assert (predator ?actor-id))
+		(assert (predator_eat ?actor-id))
         (printout t ?actor-id "/" ?actor-name " zjada rybe " ?actor-id-sec "/"?actor-name-sec crlf crlf)
-        (bind ?tmp(+ ?waga ?waga-sec))
-        (bind ?tmpSpeed(- ?rangeMove(div ?rangeMove (div ?waga ?waga-sec))))
-		(bind ?tmp_hun(+ ?hunger 60))
-		(bind ?tmp_hp(+ ?hp ?tmp))    
-		(modify ?actor (weight ?tmp)(moveRange ?tmpSpeed) (hunger ?tmp_hun)(hp ?tmp_hp))
-
+        (bind ?tmp_count (+ ?fish_count 1))
+		(bind ?tmp_hp(+ ?hp 16))
+		
+		   
+		(modify ?actor (moveRange 2) (hp ?tmp_hp)(howManyFishes ?tmp_count))
         (modify ?actorSec (isAlive no)(hp -1))
 )
+
+;wykonuje sie co runde 1 raz
+
+(defrule survived_turns_predator 
+        ?actor 	<-(actor (id ?actor-id)  (hp ?hp)(type ?actor-name)(isAlive ?isAlive)(effectivity_2 ?eff2));roslinozerna
+  	
+	(and
+	
+	(test (eq (sub-string 1 14 ?actor-id) "PredatorFishLR"))
+	(test (eq yes ?isAlive))									;czy zyje
+	(not (predator_survived_flag ?actor-id))							
+		)
+	=> 
+	(assert (predator_survived_flag ?actor-id))
+    (printout t ?actor-id "/" ?actor-name " przezyła obecna ture" crlf crlf crlf)
+
+	(bind ?tmp_hp(- ?hp 3))    
+	(bind ?tmp_eff2(+ ?eff2 1.0))    
+	
+	(modify ?actor (effectivity_2 ?tmp_eff2)(hp ?tmp_hp))
+)
+
+
 ;(defrule dead 
 ; ?actorSec <- (actor(id ?actor-id-sec)(type ?actor-name-sec) (atField ?atField-sec)(isAlive ?isAlive-sec)(hp ?hp)) 
 ; (not (zabij ?actor-id-sec))
