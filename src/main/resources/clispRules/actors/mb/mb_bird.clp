@@ -1,3 +1,17 @@
+(defrule initializeBIRD
+?actor <- (actor (id ?id) (moveRange ?mr) (type ?type) (effectivity_1 ?eff1) (effectivity_2 ?eff2) (isAlive ?alive))
+(test (eq ?type bird))
+(test (eq (sub-string 1 11 ?id) "BirdActorMB"))
+(not (test (eq ?eff1 ?eff2)))
+(not (test (eq ?eff1 0.0)))
+(test (eq yes ?alive))
+=>
+(modify ?actor (effectivity_2 (+ ?eff2 1)))
+)
+
+
+
+
 ;----------------glodny - > wolniejszy---------------;
 (defrule hungrybird
 ?actor <- (actor (id ?id) (moveRange ?mr) (visionRange ?vr) (attackPower ?ap) (hunger ?hunger) (aggressive ?aggressive) (type ?type))
@@ -40,7 +54,7 @@
 ;------------------agresywny+cel w zasiegu = omnomnom---------;
 (defrule attackb
 (declare (salience 101)) 
-?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (aggressive ?ag) (hunger ?hunger) (type ?typ) (howManyFishes ?num))
+?actor <- (actor (id ?id) (attackRange ?ar)(atField ?paf) (attackPower ?ap) (aggressive ?ag) (hunger ?hunger) (type ?typ) (howManyFishes ?num) )
 ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
 ?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (isAlive ?alive))
 ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
@@ -64,20 +78,20 @@
 
 ;---------------czas = glod -----------------------;
 (defrule growinghungerb
-?actor <- (actor (id ?id) (hunger ?hunger) (type ?type))
+?actor <- (actor (id ?id) (hunger ?hunger) (type ?type) (effectivity_1 ?eff1))
 (not (hunger-increasedb ?id))
 (test (eq ?type bird))
 (test (eq (sub-string 1 11 ?id) "BirdActorMB"))
 =>
 (assert (hunger-increasedb ?id))
-(modify ?actor (hunger (- ?hunger 1)))
+(modify ?actor (hunger (- ?hunger 1)) (effectivity_1 (+ ?eff1 1)))
 )
 
 
 ;-------------kuku dla ludzi-------------------;
 (defrule troll
 (declare (salience 100)) 
-?actor <- (actor (id ?id) (attackRange ?ar) (atField ?paf) (type ?typ))
+?actor <- (actor (id ?id) (attackRange ?ar) (atField ?paf) (type ?typ) (howManyFishes ?num))
 ?fieldp <- (field (id ?fid) (x ?x) (y ?y))
 ?target <- (actor (id ?tid) (atField ?taf) (hp ?hp) (type ?type) (moveRange ?mr) (visionRange ?vr))
 ?fieldt <- (field (id ?tfid) (x ?tX) (y ?tY))
@@ -92,7 +106,7 @@
 (test (eq ?typ bird))
 (test (eq (sub-string 1 11 ?id) "BirdActorMB"))
 =>
-(modify ?target (moveRange (- ?mr 1)) (visionRange (- ?vr 1)))
+(modify ?target (moveRange (- ?mr 1)) (howManyFishes (+ ?num 1)) (visionRange (- ?vr 1)))
 (assert (pooped ?id ?tid))
 )
 

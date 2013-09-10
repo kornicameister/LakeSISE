@@ -52,5 +52,4 @@
      (test (eq (sub-string 1 11 ?id) "BirdActorKG"))
      =>
      (modify ?actor (hunger (- ?hunger 3)) (actionDone ?*true*))
-     (printout t "amem" crlf)
  )

@@ -36,6 +36,7 @@
                             (cash ?equivocalCash)
                             (type angler)
                             (validId no)
+                            (effectivity_1  ?eef)
                     )
     (test
         (and
@@ -44,6 +45,6 @@
         )
     )
     =>
-	(modify ?equivocal (cash (- ?equivocalCash ?foresterPower)))
-	(modify ?forester (actionDone ?*true*) (effectivity_1  (+ ?ef 1)))
+	(modify ?equivocal (cash (- ?equivocalCash ?foresterPower)) (effectivity_1  (+ ?eef 1.0)))
+	(modify ?forester (actionDone ?*true*) (effectivity_1  (+ ?ef 1.0)))
 )
