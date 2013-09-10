@@ -25,6 +25,15 @@ public class BirdActorMB extends DefaultActor {
     public void run() {
     }
 
+	
+	 @Override 
+	public Set<EffectivenessResult> getEffectiveness() 
+	 { Set<EffectivenessResult> results = new HashSet<>();
+	 results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_LIVE,Double.toString(this.getEffectivity_2())));
+	 results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_CAUGHT_FISHES,Integer.toString(this.getHowManyFishes()))); 
+	 return results; 
+	 }
+	
     @Override
     public String getFactName() {
         return BirdActorMB.class.getSimpleName();
