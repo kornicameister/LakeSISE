@@ -1,45 +1,6 @@
 ;
 
 
-(defrule tryToBreakFree ; if fish hp is greater than angler attack, fish can break free but loses it's hp 
-	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
-	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS))
-	?anglerField <- (field (id ?AF)(x ?ax)(y ?ay))
-	?actorField <- (field (id ?VF)(x ?vx)(y ?vy))
-	(and
-		(test (eq ?AF ?curField))
-		(test (eq ?VF ?curTField))
-		(test (>= ?attackR (sqrt (+ (abs (- ?ax ?vx)) (abs (- ?ay ?vy))))))
-		
-		(test (eq ?alive yes))
-		;(bind ?tmpattk (+ ?attackP ?attackP))
-		(test (> ?hp ?attackP))
-		;(test (eq ?typ angler))
-		(test (eq (sub-string 1 13 ?actorId) "AnglerActorRG"))
-		(not (breakfree ?actorId))
-		
-		(or 
-			(test (eq (sub-string 1 9 ?actorTId) "Herbivore"))
-			(test (eq (sub-string 1 8 ?actorTId) "Predator"))
-		)
-	)
-	
-	=>
-	(assert (breakfree ?actorId))
-	;(printout t ?actorTId " had "?hp" hp points, and "?weight" weight points" crlf crlf)
-	;(modify ?actor (hp (- ?hp ?attackP)))
-	;(modify ?actor (weight (- ?weight 4)))
-	(if (> ?weight 20) then
-		(bind ?tmpw (- ?weight 4))
-	else then    
-		(bind ?tmpw (- ?weight 0))
-	)
- 	(modify ?actor (hp (- ?hp ?attackP))(weight ?tmpw))
-	;(printout t ?actorId" attack dist: "?attackR crlf crlf)
-	(printout t ?actorTId " now has "?hp" hp (lost "?attackP") points, and "?weight" weight points, attacked by: "?actorId crlf crlf)
-)
-
-
 (defrule catchFish ; if fish hp is lower than angler attack, fish can be caught 
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
 	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS)(howManyFishes ?fishes))
