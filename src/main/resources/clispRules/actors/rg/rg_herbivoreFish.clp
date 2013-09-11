@@ -3,7 +3,7 @@
 
 (defrule tryToBreakFree ; if fish hp is greater than angler attack, fish can break free but loses it's hp 
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp)		(effectivity_1 ?eff1))
-	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS))
+	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS)(effectivity_2 ?anglEff2))
 	?anglerField <- (field (id ?AF)(x ?ax)(y ?ay))
 	?actorField <- (field (id ?VF)(x ?vx)(y ?vy))
 	(and
@@ -35,10 +35,12 @@
 	else then    
 		(bind ?tmpw (- ?weight 0))
 	)
-	(bind ?tmp_eff_1 (+ ?eff1 1))
- 	(modify ?actor (hp (- ?hp ?attackP))(weight ?tmpw)(effectivity_1 ?tmp_eff_1))
+	(bind ?tmp_eff_1 (+ ?eff1 1.0))
+ 	(bind ?anglTmp_eff2 (+ ?anglEff2 1.0))
+	(modify ?actor (hp (- ?hp ?attackP))(weight ?tmpw)(effectivity_1 ?tmp_eff_1))
+	(modify ?attacker (effectivity_2 ?anglTmp_eff2))
 	;(printout t ?actorId" attack dist: "?attackR crlf crlf)
-	;(printout t ?actorTId " now has "?hp" hp (lost "?attackP") points, and "?weight" weight points, attacked by: "?actorId " escaped times: " ?tmp_eff_1 crlf crlf)
+	(printout t ?actorTId " now has "?hp" hp (lost "?attackP") points, and "?weight" weight points, attacked by: "?actorId " escaped times: " ?tmp_eff_1 crlf crlf)
 )
 
 (defrule stormaffect ;Fish is affected by storm

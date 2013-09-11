@@ -3,7 +3,7 @@
 
 (defrule catchFish ; if fish hp is lower than angler attack, fish can be caught 
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))
-	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS)(howManyFishes ?fishes))
+	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS)(howManyFishes ?fishes)(effectivity_2 ?eff2))
 	?anglerField <- (field (id ?AF)(x ?ax)(y ?ay))
 	?actorField <- (field (id ?VF)(x ?vx)(y ?vy))
 	(and
@@ -34,8 +34,9 @@
 	else then    
 		(bind ?tmpf (+ ?fishes 1))
 	)
+	(bind ?tmp_eff2 (+ ?eff2 1.0))
  	(modify ?actor (hp -1)(isAlive no))
-	(modify ?attacker (weight (+ ?weight ?weightS))(howManyFishes ?tmpf))
+	(modify ?attacker (weight (+ ?weight ?weightS))(howManyFishes ?tmpf)(effectivity_2 ?tmp_eff2))
 	;(printout t ?actorId" attack dist: "?attackR crlf crlf)
 	(printout t ?actorId " caught "?tmpf" fishes, right now caught "?actorTId crlf crlf)
 )
