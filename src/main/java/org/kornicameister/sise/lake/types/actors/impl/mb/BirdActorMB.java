@@ -1,7 +1,12 @@
 package org.kornicameister.sise.lake.types.actors.impl.mb;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.actors.LakeActors;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessConstants;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
 
 /**
  * Created with IntelliJ IDEA.
