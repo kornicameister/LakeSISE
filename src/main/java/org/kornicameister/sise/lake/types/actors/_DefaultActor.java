@@ -157,8 +157,6 @@ public abstract class _DefaultActor
      */
     public void clear() {
         this.tookBribe = false;
-        this.effectivity_1 = 0d;
-        this.effectivity_2 = 0d;
         this.targetHit = false;
     }
 
