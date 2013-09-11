@@ -1,5 +1,6 @@
 ;Herbivore fish is an actor, who live only in lake, trying to avoid predator fishes and anglers fishing rodes
 
+
 (defrule tryToBreakFree ; if fish hp is greater than angler attack, fish can break free but loses it's hp 
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp)		(effectivity_1 ?eff1))
 	?attacker	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS))
@@ -16,7 +17,7 @@
 		;(test (eq ?typ angler))
 		(test (eq (sub-string 1 20 ?actorTId) "HerbivoreFishActorRG"))
 		(test (eq (sub-string 1 13 ?actorId) "AnglerActorRG"))
-		(not (breakfree ?actorTId))
+		(not (breakfree ?actorId))
 		
 		;(or 
 		;	(test (eq (sub-string 1 9 ?actorTId) "Herbivore"))
@@ -25,7 +26,7 @@
 	)
 	
 	=>
-	(assert (breakfree ?actorTId))
+	(assert (breakfree ?actorId))
 	;(printout t ?actorTId " had "?hp" hp points, and "?weight" weight points" crlf crlf)
 	;(modify ?actor (hp (- ?hp ?attackP)))
 	;(modify ?actor (weight (- ?weight 4)))
@@ -37,9 +38,8 @@
 	(bind ?tmp_eff_1 (+ ?eff1 1))
  	(modify ?actor (hp (- ?hp ?attackP))(weight ?tmpw)(effectivity_1 ?tmp_eff_1))
 	;(printout t ?actorId" attack dist: "?attackR crlf crlf)
-	(printout t ?actorTId " now has "?hp" hp (lost "?attackP") points, and "?weight" weight points, attacked by: "?actorId crlf crlf)
+	;(printout t ?actorTId " now has "?hp" hp (lost "?attackP") points, and "?weight" weight points, attacked by: "?actorId " escaped times: " ?tmp_eff_1 crlf crlf)
 )
-
 
 (defrule stormaffect ;Fish is affected by storm
 	?actor	<- (actor (id ?actorTId)(atField ?curTField)(type ?typT)(isAlive ?alive)(moveRange ?move)(weight ?weight)(hp ?hp))

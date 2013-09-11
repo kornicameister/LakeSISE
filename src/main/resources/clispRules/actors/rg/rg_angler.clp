@@ -72,3 +72,45 @@
 		(printout t ?actorId ": gains 1 attack power unit due to sun affection" crlf crlf)
 		(modify ?angler (attackPower (+ ?attackP 1)))
 )
+
+
+;(defrule payment ;Angler pays forester for fishing
+;	?angler	<- (actor (id ?anglerId)(attackRange ?anglerAttackR)(atField ?anglerCurField)(attackPower ?anglerAttackP)(type ?anglerTyp)(weight ?anglerWeightS))
+;	?forester <- (actor (id ?foresterId)(attackRange ?foresterAttackR)(atField ?foresterCurField)(attackPower ?foresterAttackP)(type ?foresterTyp)(weight ?foresterWeightS))
+;	(and
+;		(test (eq ?alive yes))
+;		(test angler-cash>100
+;	1.vision range	
+;		(test (eq (sub-string 1 13 ?actorId) "AnglerActorRG"))
+;		(test (<= ?attackP 15))
+;		(test (> ?attackP 10))
+;		(not (strmaffa ?actorId))
+;	)
+;	=>
+;catsh-100		(assert (strmaffa ?actorId))
+;		(printout t ?actorId ": looses 1 attack power unit due to storm affection" crlf crlf)
+;		(modify ?angler (attackPower (- ?attackP 1)))
+;)
+
+;(defrule mandat ;Angler is affected by storm
+;	?angler	<- (actor (id ?actorId)(attackRange ?attackR)(atField ?curField)(attackPower ?attackP)(type ?typ)(weight ?weightS)(howManyFishes ?fishes))
+;	?forester----
+;	(and
+;;1		(test (eq ?*storm* yes))
+;		;(test (eq ?alive yes))
+;	1.test angler-cash<=100
+;	1.vision range	
+;		(test (eq (sub-string 1 13 ?actorId) "AnglerActorRG"))
+;		(test (<= ?attackP 15))
+;		(test (> ?attackP 10))
+;		(not (strmaffa ?actorId))
+;	)
+;	=>
+;mandat++		(assert (strmaffa ?actorId))
+;		(printout t ?actorId ": looses 1 attack power unit due to storm affection" crlf crlf)
+;		(modify ?angler (attackPower (- ?attackP 1)))
+;
+;)
+
+
+
