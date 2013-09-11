@@ -59,7 +59,7 @@ public class AnglerActorRG extends DefaultActor {
            if(this.getEffectivity_2() > 0.0)
         	   results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_CAUGHT_FISHES,  this.getHowManyFishes()/this.getEffectivity_2()));
            else
-        	   results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_CAUGHT_FISHES,  this.getHowManyFishes()/1.0));
+        	   results.add(new EffectivenessResult<>(EffectivenessConstants.Effectiveness.EFF_CAUGHT_FISHES,  0d));
            return results;
     }
 
