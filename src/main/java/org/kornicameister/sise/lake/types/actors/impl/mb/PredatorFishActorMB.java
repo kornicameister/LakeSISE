@@ -36,6 +36,7 @@ public class PredatorFishActorMB extends DefaultActor {
 	  @Override
     public void applyEffectiveness(final PrimitiveValue value) throws Exception {
         this.effectivity_1 += value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_1).doubleValue();
+		 this.effectivity_2 += value.getFactSlot(EffectivenessConstants.FieldsNames.EFF_2).doubleValue();
     }
 
 	
