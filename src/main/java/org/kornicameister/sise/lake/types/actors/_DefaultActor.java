@@ -159,6 +159,7 @@ public abstract class _DefaultActor
         this.tookBribe = false;
         this.effectivity_1 = 0d;
         this.effectivity_2 = 0d;
+        this.targetHit = false;
     }
 
     public List<StatField> getStats() {

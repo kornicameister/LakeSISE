@@ -119,10 +119,12 @@
 		(type INTEGER))     			;id of the actor we want to attack
     (slot targetHit
 		(type SYMBOL)
-		(allowed-symbols yes no))    	;was actor hit
+		(allowed-symbols yes no)
+		(default no))    	            ;was actor hit
 	(slot aggressive
 		(type SYMBOL)					;is actor aaggresive	
-		(allowed-symbols yes no))
+		(allowed-symbols yes no)
+		(default no))
     ;-----------------attack-properties---------------;
 
     ;-----------------corruption-properties-----------;
