@@ -64,7 +64,8 @@
                         (attackRange ?rangeAttack)
 						(hp ?hp)
 						(howManyFishes ?fish_count)
-                        (isAlive ?isAlive))
+                        (isAlive ?isAlive)
+						(effectivity_1 ?eff_1))
 	;drapieznik
   	?actorSec   <-  (actor
                         (id ?actor-id-sec)
@@ -84,6 +85,7 @@
                 (eq (sub-string 1 14 ?actor-id-sec) "PredatorFishLR")
             )
         )
+		
         (test (= 1 (isActorInRange ?x ?y ?tX ?tY ?rangeAttack)))       ;czy ofiara jest w polu ataku
         (test (or(!= ?tX ?x) (!= ?tX ?x)))
         (test (= ?atField ?ff-id))
@@ -94,13 +96,15 @@
 		)
 
 	=> 
+	;(printout t "tttttttttttttttttt" ?rangeAttack)
 		(assert (predator_eat ?actor-id))
         (printout t ?actor-id "/" ?actor-name " zjada rybe " ?actor-id-sec "/"?actor-name-sec crlf crlf)
         (bind ?tmp_count (+ ?fish_count 1))
 		(bind ?tmp_hp(+ ?hp 16))
-		
+		(bind ?tmp_eff1 (+ ?eff_1 1.0))
 		   
-		(modify ?actor (moveRange 2) (hp ?tmp_hp)(howManyFishes ?tmp_count))
+		(modify ?actor (moveRange 2) (hp ?tmp_hp)(howManyFishes ?tmp_count)(effectivity_1 ?tmp_eff1))
+		(printout t " eff1= " ?tmp_eff1 crlf crlf)
         (modify ?actorSec (isAlive no)(hp -1))
 )
 
@@ -121,7 +125,7 @@
 
 	(bind ?tmp_hp(- ?hp 3))    
 	(bind ?tmp_eff2(+ ?eff2 1.0))    
-	
+		;(printout t " eff2= " ?tmp_eff2 crlf crlf)
 	(modify ?actor (effectivity_2 ?tmp_eff2)(hp ?tmp_hp))
 )
 

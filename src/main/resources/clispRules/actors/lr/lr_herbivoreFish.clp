@@ -63,7 +63,7 @@
 	(printout t ?actor-id "/" ?actor-name " " ?x " " ?y  " ryba ucieka " ?actor-id-sec "/" ?actor-name-sec " " ?tX " " ?tY  crlf crlf)
 )
 ;-----------------------------rola jedz------------------------------------;
-;rola sprawdza okolice roslinozernej nastepnie zjada pokarm; 
+;rola sprawdza okolice roslinozernej nastepnie zjada pokarm ; 
 ;Ryba traci predkosc poniewaz jest  coraz ciezsza
 ;nie ma pokarmu!!!!!;
 
