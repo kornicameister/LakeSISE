@@ -48,3 +48,32 @@
 	(modify ?equivocal (cash (- ?equivocalCash ?foresterPower)) (effectivity_1  (+ ?eef 1.0)))
 	(modify ?forester (actionDone ?*true*) (effectivity_1  (+ ?ef 1.0)))
 )
+
+(defrule kg_forester_ticketForPoacher
+	?forester 	<-	(actor  (id ?f-id)
+    	                        (atField ?foresterField)
+    	                        (moveRange ?foresterMoveRange)
+    	                        (attackPower ?foresterPower)
+    	                        (cash ?f-cash)
+    	                        (corruptionThreshold ?f-ct)
+    	                        (type forester)
+    	                        (actionDone no)
+    	                        (effectivity_1  ?ef)
+    	                )
+    ?equivocal 	<-	(actor  (id ?equivocalId)
+                            (atField ?equivocalField)
+                            (cash ?equivocalCash)
+                            (type poacher)
+                            (validId no)
+                            (effectivity_1  ?eef)
+                    )
+    (test
+        (and
+            (eq (sub-string 1 17 ?f-id) "ForesterActorKG")
+            (= 1 (isActorInRangeByField ?foresterField ?equivocalField ?foresterMoveRange))
+        )
+    )
+    =>
+	(modify ?equivocal (cash (- ?equivocalCash ?foresterPower)) (effectivity_1  (+ ?eef 1.0)))
+	(modify ?forester (actionDone ?*true*) (effectivity_1  (+ ?ef 1.0)))
+)

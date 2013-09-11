@@ -157,8 +157,7 @@ public abstract class _DefaultActor
      */
     public void clear() {
         this.tookBribe = false;
-      //  this.effectivity_1 = 0d;
-       // this.effectivity_2 = 0d;
+        this.targetHit = false;
     }
 
     public List<StatField> getStats() {
@@ -187,9 +186,7 @@ public abstract class _DefaultActor
         stats.add(new StatField("MoveRange", this.getMoveRange()));
         stats.add(new StatField("VisionRange", this.getVisionRange()));
         stats.add(new StatField("-------", ""));
-        stats.add(new StatField("effectivity_1", this.getEffectivity_1()));
-        stats.add(new StatField("effectivity_2", this.getEffectivity_2()));
-        stats.add(new StatField("-------", ""));
+
         return stats;
     }
 
