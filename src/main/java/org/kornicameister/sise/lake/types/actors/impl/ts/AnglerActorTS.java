@@ -14,7 +14,7 @@ import CLIPSJNI.PrimitiveValue;
 import com.google.common.collect.Sets;
 
 public class AnglerActorTS extends DefaultActor {
-	private static final Logger LOGGER = Logger.getLogger(PoacherActorTS.class);
+	private static final Logger LOGGER = Logger.getLogger(AnglerActorTS.class);
 	public AnglerActorTS () {
 		super();
 		}
