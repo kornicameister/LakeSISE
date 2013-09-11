@@ -2,6 +2,11 @@ package org.kornicameister.sise.lake.types.actors.impl.mb;
 
 import org.kornicameister.sise.lake.types.actors.DefaultActor;
 import org.kornicameister.sise.lake.types.actors.LakeActors;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessConstants;
+import org.kornicameister.sise.lake.types.effectiveness.EffectivenessResult;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,15 +30,15 @@ public class PredatorFishActorMB extends DefaultActor {
     public void run() {
     }
 
- @Override 
- public Set<EffectivenessResult> getEffectiveness() 
-	 { Set<EffectivenessResult> results = new HashSet<>();
-	 results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_LIVE,Double.toString(this.getEffectivity_2())));
-	 results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_CAUGHT_FISHES,Integer.toString(this.getHowManyFishes()))); 
-	 return results; 
-	 }
-	
-	
+    @Override
+    public Set<EffectivenessResult> getEffectiveness() {
+        Set<EffectivenessResult> results = new HashSet<>();
+        results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_LIVE, Double.toString(this.getEffectivity_2())));
+        results.add(new EffectivenessResult(EffectivenessConstants.Effectiveness.EFF_CAUGHT_FISHES, Integer.toString(this.getHowManyFishes())));
+        return results;
+    }
+
+
     @Override
     public String getFactName() {
         return PredatorFishActorMB.class.getSimpleName();
